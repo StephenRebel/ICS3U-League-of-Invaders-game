@@ -1,5 +1,5 @@
 import pygame
-import random
+import random, math
 pygame.init()
 
 #Basic game setup
@@ -11,14 +11,19 @@ bg_scale = pygame.transform.scale(bg, (1280, 720))
 char1img = pygame.image.load("gamefiles/images/green_char.png")
 char2img = pygame.image.load("gamefiles/images/blue_char.png")
 arrowimg = pygame.image.load("gamefiles/images/arrow.png")
-enemyimg = pygame.image.load("gamefiles/images/red_enemy.png")
+enemy1img = pygame.image.load("gamefiles/images/red_enemy.png")
+enemy2img = pygame.image.load("gamefiles/images/orange_enemy.png")
+ballimg = pygame.image.load("gamefiles/images/spike_ball.png")
 
 #Game variables
-multiplayer = True
-char, charx, chary, charwidth, charheight, charface, charability = [1, 2], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], 64, 64, [0, 0], [1, 1]
+multiplayer = False
+char, charx, chary, charwidth, charheight, charface, charability = [1, 2], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], 64, 64, [0, 0], [1, 0]
 arrowx, arrowy, arrowwidth, arrowheight, arrowface = [-100, -100], [0, 0], [10, 10], [62, 62], [0, 0]
-enemyx, enemyy, enemywidth, enemyheight, enemyface = 300, 200, 64, 64, 0
 ammo, isshooting = [1, 1], [False, False]
+enemy1, enemy1x, enemy1y, enemy1width, enemy1height, enemy1face, enemy1speed = [1], [300], [200], [64], [64], [""], [1]
+enemy2, enemy2x, enemy2y, enemy2width, enemy2height, enemy2face, enemy2speed = [1], [500], [300], [64], [64], [""], [0.5]
+enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = [-100], [-100], [28], [28], [0]
+ballammo, ballisshooting = [1], [False]
 
 #Draw characters
 def draw_char(img, x, y, face):
@@ -33,11 +38,6 @@ def draw_arrow(img, x, y, face):
     elif face == 90 or face == 270:
         y -= 30
     screen.blit(new_arrow, (x, y))
-
-#Draw enemies
-def draw_enemy(img, x, y, face):
-    new_enemy = pygame.transform.rotate(img, face)
-    screen.blit(new_enemy, (x, y))
 
 #Draw the screen
 def draw_screen():
@@ -55,7 +55,10 @@ def draw_screen():
         draw_arrow(arrowimg, arrowx[1], arrowy[1], arrowface[1])
 
     #Enemy
-    draw_enemy(enemyimg, enemyx, enemyy, enemyface)
+    screen.blit(enemy1img, (enemy1x[0], enemy1y[0]))
+    screen.blit(enemy2img, (enemy2x[0], enemy2y[0]))
+
+    screen.blit(ballimg, (enemyballx[0], enemybally[0]))
 
     pygame.display.update()
 
@@ -108,47 +111,65 @@ def use_ability(char, charx, chary, charwidth, charheight, charface, ability, am
     key_type = []
     if char == 1:
         key_type.append(keys[pygame.K_SPACE])
-        i = 0
     elif char == 2:
         key_type.append(keys[pygame.K_e])
-        i = 1
         
     #Arrow ability    
-    if ability == 1 and key_type[0] and ammo[i] > 0 and isshooting[i] == False:
-        ammo[i] -= 1
-        face[i] = charface
-        if face[i] == 0 or face[i] == 180:
-            width[i], height[i] = 8, 64
-            x[i], y[i] = charx + (charwidth / 2) - width[i] / 2, chary + (charheight / 2)
-        elif face[i] == 90 or face[i] == 270:
-            width[i], height[i] = 64, 8
-            x[i], y[i] = charx + (charwidth / 2), chary + (charheight / 2) - height[i] / 2
-        isshooting[i] = True
-    return x[i], y[i], width[i], height[i], face[i], isshooting[i], ammo[i]
+    if ability == 1 and key_type[0] and ammo > 0 and isshooting == False:
+        ammo -= 1
+        face = charface
+        if face == 0 or face == 180:
+            width, height = 8, 64
+            x, y = charx + (charwidth / 2) - width / 2, chary + (charheight / 2)
+        elif face == 90 or face == 270:
+            width, height = 64, 8
+            x, y = charx + (charwidth / 2), chary + (charheight / 2) - height / 2
+        isshooting = True
+    return x, y, width, height, face, isshooting, ammo
 
 #Run ability function
 def run_ability(char, ability, ammo, isshooting, x, y, face):
-    i = 0
-    if char == 1:
-        i = 0
-    elif char == 2:
-        i = 1
-    if ability == 1 and isshooting[i] == True:
-        if face[i] == 0 and y[i] > -64:
-            y[i] -= 10
-        elif face[i] == 180 and y[i] < size[1] + 64:
-            y[i] += 10
-        elif face[i] == 270 and x[i] < size[0] + 64:
-            x[i] += 10
-        elif face[i] == 90 and x[i] > -64:
-            x[i] -= 10
+    if ability == 1 and isshooting == True:
+        if face == 0 and y > -64:
+            y -= 10
+        elif face == 180 and y < size[1] + 64:
+            y += 10
+        elif face == 270 and x < size[0] + 64:
+            x += 10
+        elif face == 90 and x > -64:
+            x -= 10
         else:
-            isshooting[i] = False
-            ammo[i] += 1
-    return x[i], y[i], isshooting[i], ammo[i]
+            isshooting = False
+            ammo += 1
+    return x, y, isshooting, ammo
+
+#Run spike ball function
+def enemy_shoot_spike_ball(enemy, enemyx, enemyy, enemywidth, enemyheight, enemyface, ballx, bally, ballwidth, ballheight, ballface, ammo, isshooting):    
+    if ammo > 0 and isshooting == False:
+        ammo -= 1
+        ballface = enemyface
+        ballx, bally = enemyx, enemyy
+        isshooting = True
+    if isshooting == True:
+        if ballface == "North" and bally > -32:
+            bally -= 3
+            ballx += 5 * math.sin(0.1 * bally)
+        elif ballface == "East" and ballx < size[0] + 32:
+            ballx += 3
+            bally += (5 * math.sin(0.1 * ballx))
+        elif ballface == "South" and bally < size[1] + 32:
+            bally += 3
+            ballx += 5 * math.sin(0.1 * bally)
+        elif ballface == "West" and ballx > -32:
+            ballx -= 3
+            bally += (5 * math.sin(0.1 * ballx))
+        else:
+            isshooting = False
+            ammo += 1
+    return ballx, bally, ballface, ammo, isshooting
   
 #Find closest character
-def find_closest_char():
+def find_closest_char(enemyx, enemyy):
     if multiplayer:
         if (abs(enemyx - charx[0]) ** 2 + abs(enemyy - chary[0]) ** 2) < (abs(enemyx - charx[1]) ** 2 + abs(enemyy - chary[1]) ** 2):
             closest_char = [charx[0], chary[0]]
@@ -159,8 +180,8 @@ def find_closest_char():
     return closest_char
 
 #Run function to move enemy
-def move_enemy(enemyx, enemyy, enemywidth, enemyheight):
-    closest_char = find_closest_char()
+def move_enemy(enemyx, enemyy, enemywidth, enemyheight, enemyspeed, enemyface):
+    closest_char = find_closest_char(enemyx, enemyy)
 
     #Move enemy towards closest character
     if (enemyx + enemywidth / 2) - (closest_char[0] + charwidth / 2) == 0:
@@ -169,27 +190,31 @@ def move_enemy(enemyx, enemyy, enemywidth, enemyheight):
         slope = abs(((enemyy + enemyheight / 2) - (closest_char[1] + charheight / 2)) / ((enemyx + enemywidth / 2) - (closest_char[0] + charwidth / 2)))
     if slope < 1:
         if (enemyx + enemywidth / 2) - (closest_char[0] + charwidth / 2) > 0:
-            enemyx -= 1
+            enemyx -= enemyspeed
+            enemyface = "West"
         elif (enemyx + enemywidth / 2) - (closest_char[0] + charwidth / 2) < 0:
-            enemyx += 1
+            enemyx += enemyspeed
+            enemyface = "East"
         if (enemyy + enemyheight / 2) - (closest_char[1] + charheight / 2) > 0:
-            enemyy -= slope * 1
+            enemyy -= slope * enemyspeed
         elif (enemyy + enemyheight / 2) - (closest_char[1] + charheight / 2) < 0:
-            enemyy += slope * 1
+            enemyy += slope * enemyspeed
     else:
         if (enemyy + enemyy / 2) - (closest_char[1] + charheight / 2) == 0:
             slope = 0.01
         else:
             slope = abs(((enemyx + enemywidth / 2) - (closest_char[0] + charwidth / 2)) / ((enemyy + enemyheight / 2) - (closest_char[1] + charheight / 2)))             
         if (enemyx + enemywidth / 2) - (closest_char[0] + charwidth / 2) > 0:
-            enemyx -= slope * 1
+            enemyx -= slope * enemyspeed
         elif (enemyx + enemywidth / 2) - (closest_char[0] + charwidth / 2) < 0:
-            enemyx += slope * 1
+            enemyx += slope * enemyspeed
         if (enemyy + enemyheight / 2) - (closest_char[1] + charheight / 2) > 0:
-            enemyy -= 1
+            enemyy -= enemyspeed
+            enemyface = "North"
         elif (enemyy + enemyheight / 2) - (closest_char[1] + charheight / 2) < 0:
-            enemyy += 1
-    return enemyx, enemyy
+            enemyy += enemyspeed
+            enemyface = "South"
+    return enemyx, enemyy, enemyface
 
 #Run function to detect collision between enemy and player
 def enemy_player_collision(enemyx, enemyy, enemywidth, enemyheight, char, charx, chary):
@@ -213,6 +238,19 @@ def enemy_arrow_collision(enemyx, enemyy, enemywidth, enemyheight, arrowx, arrow
                     enemyx, enemyy = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
                     return enemyx, enemyy, arrowx, arrowy, isshooting, ammo
     return enemyx, enemyy, arrowx, arrowy, isshooting, ammo
+
+#Run function to detect collision between enemy and arrow
+def player_ball_collision(ballx, bally, charx, chary, charwidth, charheight, isshooting, ammo):
+    for ballxpos in range(int(ballx + 18), int(ballx + 48)):
+        if charx + charwidth >= ballxpos >= charx:
+            for ballypos in range(int(bally + 18), int(bally + 48)):
+                if chary + charheight >= ballypos >= chary:
+                    ballx, bally = -64, -64 
+                    isshooting = False
+                    ammo += 1
+                    charx, chary = (random.randrange(charwidth, size[0] - charwidth), random.randrange(charheight, size[1] - charheight))
+                    return ballx, bally, charx, chary, isshooting, ammo
+    return ballx, bally, charx, chary, isshooting, ammo
       
 
 #Main game loop
@@ -235,25 +273,41 @@ while rungame:
 
     #Drawing Arrows
     if charability[0] == 1:
-        arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isshooting[0], ammo[0] = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], ammo, arrowx, arrowy, arrowwidth, arrowheight, arrowface, isshooting)
-        arrowx[0], arrowy[0], isshooting[0], ammo[0] = run_ability([char[0]], charability[0], ammo, isshooting, arrowx, arrowy, arrowface)
+        arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isshooting[0], ammo[0] = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], ammo[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isshooting[0])
+        arrowx[0], arrowy[0], isshooting[0], ammo[0] = run_ability([char[0]], charability[0], ammo[0], isshooting[0], arrowx[0], arrowy[0], arrowface[0])
     if multiplayer == True and charability[1] == 1:
-        arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isshooting[1], ammo[1] = use_ability(char[1], charx[1], chary[1], charwidth, charheight, charface[1], charability[1], ammo, arrowx, arrowy, arrowwidth, arrowheight, arrowface, isshooting)
-        arrowx[1], arrowy[1], isshooting[1], ammo[1] = run_ability(char[1], charability[1], ammo, isshooting, arrowx, arrowy, arrowface)
+        arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isshooting[1], ammo[1] = use_ability(char[1], charx[1], chary[1], charwidth, charheight, charface[1], charability[1], ammo[1], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isshooting[1])
+        arrowx[1], arrowy[1], isshooting[1], ammo[1] = run_ability(char[1], charability[1], ammo[1], isshooting[1], arrowx[1], arrowy[1], arrowface[1])
 
     #Drawing Enemies
-    enemyx, enemyy = move_enemy(enemyx, enemyy, enemywidth, enemyheight)
+    enemy1x[0], enemy1y[0], enemy1face[0] = move_enemy(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], enemy1speed[0], enemy1face[0])
+    enemy2x[0], enemy2y[0], enemy2face[0] = move_enemy(enemy2x[0], enemy2y[0], enemy2width[0], enemy1height[0], enemy2speed[0], enemy2face[0])
+ 
+    #Drawing enemy spike ball
+    enemyballx[0], enemybally[0], enemyballface[0], ballammo[0], ballisshooting[0] = enemy_shoot_spike_ball(enemy2[0], enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], enemy2face[0], enemyballx[0], enemybally[0], enemyballwidth[0], enemyballheight[0], enemyballface[0], ballammo[0], ballisshooting[0])
 
     #Enemy collision with player
-    charx[0], chary[0] = enemy_player_collision(enemyx, enemyy, enemywidth, enemyheight, char[0], charx[0], chary[0])  
+    charx[0], chary[0] = enemy_player_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], char[0], charx[0], chary[0])  
     if multiplayer:
-        charx[1], chary[1] = enemy_player_collision(enemyx, enemyy, enemywidth, enemyheight, char[1], charx[1], chary[1])  
+        charx[1], chary[1] = enemy_player_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], char[1], charx[1], chary[1])  
+    charx[0], chary[0] = enemy_player_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], char[0], charx[0], chary[0])  
+    if multiplayer:
+        charx[1], chary[1] = enemy_player_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], char[1], charx[1], chary[1])  
 
     #Enemy collision with arrow
     if charability[0] == 1:
-        enemyx, enemyy, arrowx[0], arrowy[0], isshooting[0], ammo[0] = enemy_arrow_collision(enemyx, enemyy, enemywidth, enemyheight, arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], isshooting[0], ammo[0])
+        enemy1x[0], enemy1y[0], arrowx[0], arrowy[0], isshooting[0], ammo[0] = enemy_arrow_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], isshooting[0], ammo[0])
     if charability[1] == 1 and multiplayer == True:
-        enemyx, enemyy, arrowx[1], arrowy[1], isshooting[1], ammo[1] = enemy_arrow_collision(enemyx, enemyy, enemywidth, enemyheight, arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], isshooting[1], ammo[1])
+        enemy1x[0], enemy1y[0], arrowx[1], arrowy[1], isshooting[1], ammo[1] = enemy_arrow_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], isshooting[1], ammo[1])
+    if charability[0] == 1:
+        enemy2x[0], enemy2y[0], arrowx[0], arrowy[0], isshooting[0], ammo[0] = enemy_arrow_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], isshooting[0], ammo[0])
+    if charability[1] == 1 and multiplayer == True:
+        enemy2x[0], enemy2y[0], arrowx[1], arrowy[1], isshooting[1], ammo[1] = enemy_arrow_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], isshooting[1], ammo[1])
+    
+    #Enemy spike ball collision with player
+    enemyballx[0], enemybally[0], charx[0], chary[0], ballisshooting[0], ballammo[0] = player_ball_collision(enemyballx[0], enemybally[0], charx[0], chary[0], charwidth, charheight, ballisshooting[0], ballammo[0])
+    if multiplayer:
+        enemyballx[0], enemybally[0], charx[1], chary[1], ballisshooting[0], ballammo[0] = player_ball_collision(enemyballx[0], enemybally[0], charx[1], chary[1], charwidth, charheight, ballisshooting[0], ballammo[0])
     
     draw_screen()
 
