@@ -1,25 +1,33 @@
+#Start Menu
 def menu():
+    #Importing the necessary libraries and varibales from the main
     import main
     from main import pygame, window, big_font, med_font, background, BLACK, RED, DARK_GR, LIGHT_GR, screen, size
     pygame.init()
 
-    logo = pygame.image.load("gamefiles/images/leagueofinvaders.png")
-    text1 = big_font.render("Play", True, BLACK)
-    text2 = big_font.render("Play", True, RED)
-    text3 = med_font.render("Controls", True, BLACK)
-    text4 = med_font.render("Controls", True, RED)
-    text5 = med_font.render("Instructions", True, BLACK)
-    text6 = med_font.render("Instructions", True, RED)
-
+    #Handles a quit event
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
 
+    #Allows for interaction with the mouse
     mouse = pygame.mouse.get_pos()
     pressed = pygame.mouse.get_pressed()
 
+    #Importing the logo file for the menu
+    logo = pygame.image.load("gamefiles/images/leagueofinvaders.png")
+
+    #Generation of the background and logo onto the screen
     screen.blit(background, (0, 0))
     screen.blit(logo, ((size[0]/2) - 403, 0))
+
+    #Creating all texts that will be used in the menu
+    text1 = big_font.render("PLAY", True, BLACK)
+    text2 = big_font.render("PLAY", True, RED)
+    text3 = med_font.render("CONTROLS", True, BLACK)
+    text4 = med_font.render("CONTROLS", True, RED)
+    text5 = med_font.render("INSTRUCTIONS", True, BLACK)
+    text6 = med_font.render("INSTRUCTIONS", True, RED)
     
     # Play Button
     if 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675 and pressed[0] == True:

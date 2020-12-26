@@ -3,6 +3,8 @@ import random, math
 pygame.init()
 
 from startMenu import menu
+from controlsMenu import controls
+from instructionsMenu import instructions
 
 #Basic game setup
 pygame.display.set_caption("League Of Invaders")
@@ -29,6 +31,7 @@ ballammo, ballisshooting = [1], [False]
 
 #Menu setup
 window = 0
+title_font = pygame.font.SysFont("Cambria", 65)
 big_font = pygame.font.SysFont("Cambria", 54)
 med_font = pygame.font.SysFont("Cambria", 36)
 background = pygame.image.load("gamefiles/images/GameBackground.jpg")
@@ -36,6 +39,7 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 LIGHT_GR = (211, 211, 211)
 DARK_GR = (71, 71, 71)
+WHITE = (255, 255, 255)
 
 #Draw characters
 def draw_char(img, x, y, face):
@@ -278,7 +282,7 @@ while rungame:
     
     """
     if window == 0:
-        menu()
+        instructions()
         pygame.display.update()
 
     elif window == 1:

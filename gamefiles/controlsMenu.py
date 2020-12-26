@@ -1,6 +1,6 @@
-def menu():
+def controls():
     import main
-    from main import pygame, window, big_font, med_font, background, BLACK, RED, DARK_GR, LIGHT_GR, screen, size
+    from main import pygame, window, big_font, med_font, background, BLACK, RED, DARK_GR, LIGHT_GR, WHITE, screen, size
     pygame.init()
     
     for event in pygame.event.get():
@@ -13,7 +13,7 @@ def menu():
     screen.blit(background, (0, 0))
     
     if 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675 and pressed[0] == True:
-        main.window = 1
+        main.window = 0
     elif 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675:
         pygame.draw.rect(screen, DARK_GR, ((size[0]/2) - 194, 561, 389, 114))
     else:
