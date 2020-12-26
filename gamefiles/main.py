@@ -275,14 +275,15 @@ while rungame:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             rungame = False
-
+    """
     if window == 0:
         menu()
         pygame.display.update()
 
     elif window == 1:
+        pass
         #Drawing stuff
-
+    """
     #Drawing Arrows
     if charability[0] == 1:
         arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isshooting[0], ammo[0] = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], ammo[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isshooting[0])
