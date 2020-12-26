@@ -29,8 +29,8 @@ ballammo, ballisshooting = [1], [False]
 
 #Menu setup
 window = 0
-bigFont = pygame.font.SysFont("Cambria", 54)
-medFont = pygame.font.SysFont("Cambria", 36)
+big_font = pygame.font.SysFont("Cambria", 54)
+med_font = pygame.font.SysFont("Cambria", 36)
 background = pygame.image.load("gamefiles/images/GameBackground.jpg")
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -275,6 +275,7 @@ while rungame:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             rungame = False
+    
     """
     if window == 0:
         menu()
@@ -284,6 +285,12 @@ while rungame:
         pass
         #Drawing stuff
     """
+
+    #Drawing characters
+    charx[0], chary[0], charface[0] = move_char(char[0], charx[0], chary[0], charwidth, charheight, charface[0])
+    if multiplayer == True:
+        charx[1], chary[1], charface[1] = move_char(char[1], charx[1], chary[1], charwidth, charheight, charface[1])
+    
     #Drawing Arrows
     if charability[0] == 1:
         arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isshooting[0], ammo[0] = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], ammo[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isshooting[0])
@@ -323,5 +330,5 @@ while rungame:
         enemyballx[0], enemybally[0], charx[1], chary[1], ballisshooting[0], ballammo[0] = player_ball_collision(enemyballx[0], enemybally[0], charx[1], chary[1], charwidth, charheight, ballisshooting[0], ballammo[0])
     
     draw_screen()
-
+    
 pygame.quit()

@@ -1,7 +1,8 @@
 def menu():
     import main
-    from main import pygame, window, bigFont, medFont, background, BLACK, RED, DARK_GR, LIGHT_GR, screen, size
-
+    from main import pygame, window, big_font, med_font, background, BLACK, RED, DARK_GR, LIGHT_GR, screen, size
+    pygame.init()
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
