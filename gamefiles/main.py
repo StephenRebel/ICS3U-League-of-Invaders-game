@@ -2,6 +2,8 @@ import pygame
 import random, math
 pygame.init()
 
+from startMenu import menu
+
 #Basic game setup
 pygame.display.set_caption("League Of Invaders")
 size = (1280, 720)
@@ -24,6 +26,16 @@ enemy1, enemy1x, enemy1y, enemy1width, enemy1height, enemy1face, enemy1speed = [
 enemy2, enemy2x, enemy2y, enemy2width, enemy2height, enemy2face, enemy2speed = [1], [500], [300], [64], [64], [""], [0.5]
 enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = [-100], [-100], [28], [28], [0]
 ballammo, ballisshooting = [1], [False]
+
+#Menu setup
+window = 0
+bigFont = pygame.font.SysFont("Cambria", 54)
+medFont = pygame.font.SysFont("Cambria", 36)
+background = pygame.image.load("gamefiles/images/GameBackground.jpg")
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+LIGHT_GR = (211, 211, 211)
+DARK_GR = (71, 71, 71)
 
 #Draw characters
 def draw_char(img, x, y, face):
@@ -264,12 +276,12 @@ while rungame:
         if event.type == pygame.QUIT:
             rungame = False
 
-    #Drawing stuff
+    if window == 0:
+        menu()
+        pygame.display.update()
 
-    #Drawing characters
-    charx[0], chary[0], charface[0] = move_char(char[0], charx[0], chary[0], charwidth, charheight, charface[0])
-    if multiplayer == True:
-        charx[1], chary[1], charface[1] = move_char(char[1], charx[1], chary[1], charwidth, charheight, charface[1])
+    elif window == 1:
+        #Drawing stuff
 
     #Drawing Arrows
     if charability[0] == 1:
