@@ -10,6 +10,7 @@ def instructions():
         if event.type == pygame.QUIT:
             pygame.quit()
 
+    #Handles mouse interactions
     mouse = pygame.mouse.get_pos()
     pressed = pygame.mouse.get_pressed()
 
@@ -39,6 +40,7 @@ def instructions():
     #Creates the main menu button and handles animations
     if 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675 and pressed[0] == True:
         main.window = 0
+        pygame.time.delay(100)
     elif 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675:
         pygame.draw.rect(screen, DARK_GR, ((size[0]/2) - 194, 561, 389, 114))
         screen.blit(text9, (493, 585))

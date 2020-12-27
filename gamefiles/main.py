@@ -305,18 +305,16 @@ while rungame:
     
     """
     if window == 0:
-        instructions()
+        menu()
         pygame.display.update()
 
     elif window == 1:
-        pass
-        #Drawing stuff
     """
     #Drawing characters
     charx[0], chary[0], charface[0] = move_char(char[0], charx[0], chary[0], charwidth, charheight, charface[0])
     if multiplayer == True:
         charx[1], chary[1], charface[1] = move_char(char[1], charx[1], chary[1], charwidth, charheight, charface[1])
-    
+        
     #Drawing Arrows
     if charability[0] == 1:
         arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isactive[0], ammo[0] = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], ammo[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isactive[0])
@@ -324,11 +322,11 @@ while rungame:
     if multiplayer == True and charability[1] == 1:
         arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isactive[1], ammo[1] = use_ability(char[1], charx[1], chary[1], charwidth, charheight, charface[1], charability[1], ammo[1], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isactive[1])
         arrowx[1], arrowy[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1] = run_ability(charability[1], ammo[1], isactive[1], arrowx[1], arrowy[1], arrowface[1], cooldownstarted[1], starttime[1], passedtime[1])
-    
+
     #Drawing Enemies
     enemy1x[0], enemy1y[0], enemy1face[0] = move_enemy(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], enemy1speed[0], enemy1face[0])
     enemy2x[0], enemy2y[0], enemy2face[0] = move_enemy(enemy2x[0], enemy2y[0], enemy2width[0], enemy1height[0], enemy2speed[0], enemy2face[0])
- 
+
     #Drawing enemy spike ball
     enemyballx[0], enemybally[0], enemyballface[0], ballammo[0], ballisshooting[0] = enemy_shoot_spike_ball(enemy2x[0], enemy2y[0], enemy2face[0], enemyballx[0], enemybally[0], enemyballwidth[0], enemyballheight[0], enemyballface[0], ballammo[0], ballisshooting[0])
 
@@ -349,12 +347,22 @@ while rungame:
         enemy2x[0], enemy2y[0], arrowx[0], arrowy[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0], collisionoccured[0] = enemy_arrow_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0], collisionoccured[0])
     if charability[1] == 1 and multiplayer == True:
         enemy2x[0], enemy2y[0], arrowx[1], arrowy[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1], collisionoccured[1] = enemy_arrow_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1], collisionoccured[1])
-    
+        
     #Enemy spike ball collision with player
     enemyballx[0], enemybally[0], charx[0], chary[0], ballisshooting[0], ballammo[0] = player_ball_collision(enemyballx[0], enemybally[0], charx[0], chary[0], charwidth, charheight, ballisshooting[0], ballammo[0])
     if multiplayer:
         enemyballx[0], enemybally[0], charx[1], chary[1], ballisshooting[0], ballammo[0] = player_ball_collision(enemyballx[0], enemybally[0], charx[1], chary[1], charwidth, charheight, ballisshooting[0], ballammo[0])
 
     draw_screen()
+
+    """
+    elif window == 2:
+        controls()
+        pygame.display.update()
+
+    elif window == 3:
+        instructions()
+        pygame.display.update()
+    """
     
 pygame.quit()
