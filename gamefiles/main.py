@@ -5,6 +5,7 @@ pygame.init()
 from startMenu import menu
 from controlsMenu import controls
 from instructionsMenu import instructions
+from playMenu import char_selection
 
 #Basic game setup
 pygame.display.set_caption("League Of Invaders")
@@ -16,6 +17,8 @@ bg_scale = pygame.transform.scale(bg, (1280, 720))
 char1img = pygame.image.load("gamefiles/images/green_char.png")
 char2img = pygame.image.load("gamefiles/images/blue_char.png")
 arrowimg = pygame.image.load("gamefiles/images/arrow.png")
+swordimg = pygame.image.load("gamefiles/images/sword.png")
+staffimg = pygame.image.load("gamefiles/images/staff.png")
 enemy1img = pygame.image.load("gamefiles/images/red_enemy.png")
 enemy2img = pygame.image.load("gamefiles/images/orange_enemy.png")
 ballimg = pygame.image.load("gamefiles/images/spike_ball.png")
@@ -303,13 +306,12 @@ while rungame:
         if event.type == pygame.QUIT:
             rungame = False
     
-    """
-    if window == 0:
-        menu()
-        pygame.display.update()
 
-    elif window == 1:
+    if window == 0:
+        char_selection()
+        pygame.display.update()
     """
+    elif window == 1:
     #Drawing characters
     charx[0], chary[0], charface[0] = move_char(char[0], charx[0], chary[0], charwidth, charheight, charface[0])
     if multiplayer == True:
@@ -355,7 +357,7 @@ while rungame:
 
     draw_screen()
 
-    """
+
     elif window == 2:
         controls()
         pygame.display.update()
