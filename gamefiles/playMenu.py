@@ -2,7 +2,7 @@
 def char_selection():
     #Importing all necessary libraries and variables from main
     import main
-    from main import pygame, title_font, big_font, med_font, background, window, BLACK, RED, DARK_GR, LIGHT_GR, screen, arrowimg, staffimg, swordimg, grayed_out, player_count
+    from main import pygame, title_font, big_font, med_font, background, window, BLACK, RED, DARK_GR, LIGHT_GR, screen, arrowimg, staffimg, swordimg, grayed_out, player_count, player_char
     pygame.init()
 
     GREEN = (0, 230, 0)
@@ -79,7 +79,18 @@ def char_selection():
     screen.blit(staffimg, (283, 515))
     pygame.draw.rect(screen, BLACK, (280, 512, 70, 70), 5)
 
-    #Graying out unsuable buttons
-    screen.blit(gray_out_enterBattle, (730, 470))
-    screen.blit(gray_out_playerSelect, (100, 65))
-    screen.blit(gray_out_playerSelect, (100, 380))
+    if player_count == 0:
+        screen.blit(gray_out_enterBattle, (730, 470))
+        screen.blit(gray_out_playerSelect, (100, 65))
+        screen.blit(gray_out_playerSelect, (100, 380))
+    
+    elif player_count == 1:
+        screen.blit(gray_out_playerSelect, (100, 380))
+        if player_char[0] == 0:
+            screen.blit(gray_out_enterBattle, (730, 470))
+
+    else:
+        if player_char[0] != 0 and player_char[1] !=0:
+            pass
+        else:
+            screen.blit(gray_out_enterBattle, (730, 470))

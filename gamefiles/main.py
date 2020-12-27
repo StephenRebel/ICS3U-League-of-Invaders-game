@@ -47,6 +47,7 @@ LIGHT_GR = (211, 211, 211)
 DARK_GR = (71, 71, 71)
 WHITE = (255, 255, 255)
 player_count = 0
+player_char = [0, 0]
 
 #Draw characters
 def draw_char(img, x, y, face):
@@ -308,12 +309,13 @@ while rungame:
         if event.type == pygame.QUIT:
             rungame = False
     
-
+    """
     if window == 0:
         char_selection()
         pygame.display.update()
-    """
+
     elif window == 1:
+    """
     #Drawing characters
     charx[0], chary[0], charface[0] = move_char(char[0], charx[0], chary[0], charwidth, charheight, charface[0])
     if multiplayer == True:
@@ -359,7 +361,7 @@ while rungame:
 
     draw_screen()
 
-
+    """
     elif window == 2:
         controls()
         pygame.display.update()
