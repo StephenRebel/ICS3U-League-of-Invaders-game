@@ -40,11 +40,13 @@ title_font = pygame.font.SysFont("Cambria", 65)
 big_font = pygame.font.SysFont("Cambria", 54)
 med_font = pygame.font.SysFont("Cambria", 36)
 background = pygame.image.load("gamefiles/images/GameBackground.jpg")
+grayed_out = pygame.image.load("gamefiles/images/Gray_out.png")
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 LIGHT_GR = (211, 211, 211)
 DARK_GR = (71, 71, 71)
 WHITE = (255, 255, 255)
+player_count = 0
 
 #Draw characters
 def draw_char(img, x, y, face):

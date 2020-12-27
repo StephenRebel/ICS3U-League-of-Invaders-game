@@ -2,8 +2,12 @@
 def char_selection():
     #Importing all necessary libraries and variables from main
     import main
-    from main import pygame, title_font, big_font, med_font, background, window, BLACK, RED, DARK_GR, LIGHT_GR, screen, arrowimg, staffimg, swordimg
+    from main import pygame, title_font, big_font, med_font, background, window, BLACK, RED, DARK_GR, LIGHT_GR, screen, arrowimg, staffimg, swordimg, grayed_out, player_count
     pygame.init()
+
+    GREEN = (0, 230, 0)
+    gray_out_enterBattle = pygame.transform.scale(grayed_out, (500, 175))
+    gray_out_playerSelect = pygame.transform.scale(grayed_out, (275, 275))
 
     #Handles a quit event
     for event in pygame.event.get():
@@ -44,3 +48,38 @@ def char_selection():
     pygame.draw.rect(screen, LIGHT_GR, (100, 380, 275, 275), 20, 30)
     pygame.draw.rect(screen, LIGHT_GR, (120, 400, 235, 235))
     pygame.draw.rect(screen, BLACK, (95, 375, 285, 285), 5, 35)
+
+    #Text outputted to screen
+    screen.blit(text1, (795, 485))
+    screen.blit(text3, (865, 555))
+    screen.blit(text5, (840, 90))
+    screen.blit(text7, (850, 240))
+    screen.blit(text9, (160, 100))
+    screen.blit(text10, (160, 415))
+    screen.blit(text11, (470, 40))
+    screen.blit(text12, (475, 90))
+
+    #Outputting images to the screen
+    pygame.draw.rect(screen, GREEN, (133, 200, 64, 64))
+    screen.blit(arrowimg, (133, 200))
+    pygame.draw.rect(screen, BLACK, (130, 197, 70, 70), 5)
+    pygame.draw.rect(screen, GREEN, (208, 200, 64, 64))
+    screen.blit(swordimg, (208, 200))
+    pygame.draw.rect(screen, BLACK, (205, 197, 70, 70), 5)
+    pygame.draw.rect(screen, GREEN, (283, 200, 64, 64))
+    screen.blit(staffimg, (283, 200))
+    pygame.draw.rect(screen, BLACK, (280, 197, 70, 70), 5)
+    pygame.draw.rect(screen, GREEN, (133, 515, 64, 64))
+    screen.blit(arrowimg, (133, 515))
+    pygame.draw.rect(screen, BLACK, (130, 512, 70, 70), 5)
+    pygame.draw.rect(screen, GREEN, (208, 515, 64, 64))
+    screen.blit(swordimg, (208, 515))
+    pygame.draw.rect(screen, BLACK, (205, 512, 70, 70), 5)
+    pygame.draw.rect(screen, GREEN, (283, 515, 64, 64))
+    screen.blit(staffimg, (283, 515))
+    pygame.draw.rect(screen, BLACK, (280, 512, 70, 70), 5)
+
+    #Graying out unsuable buttons
+    screen.blit(gray_out_enterBattle, (730, 470))
+    screen.blit(gray_out_playerSelect, (100, 65))
+    screen.blit(gray_out_playerSelect, (100, 380))
