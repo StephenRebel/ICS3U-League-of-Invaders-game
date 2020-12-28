@@ -31,7 +31,7 @@ def menu():
     
     # Play Button
     if 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675 and pressed[0] == True:
-        main.window = 1
+        main.window = 3
         pygame.time.delay(100)
     elif 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675:
         pygame.draw.rect(screen, DARK_GR, ((size[0]/2) - 194, 561, 389, 114))
@@ -43,7 +43,7 @@ def menu():
 
     #Controls Button
     if 78 <= mouse[0] <= 372 and 578 <= mouse[1] <= 657 and pressed[0] == True:
-        main.window = 2
+        main.window = 1
         pygame.time.delay(100)
     elif 78 <= mouse[0] <= 372 and 578 <= mouse[1] <= 657:
         pygame.draw.rect(screen, DARK_GR, (78, 578, 294, 79))
@@ -55,7 +55,7 @@ def menu():
 
     #Instructions Button
     if 908 <= mouse[0] <= 1202 and 578 <= mouse[1] <= 657 and pressed[0] == True:
-        main.window = 3
+        main.window = 2
         pygame.time.delay(100)
     elif 908 <= mouse[0] <= 1202 and 578 <= mouse[1] <= 657:
         pygame.draw.rect(screen, DARK_GR, (908, 578, 294, 79))
