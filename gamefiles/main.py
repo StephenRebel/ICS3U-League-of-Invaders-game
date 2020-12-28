@@ -40,7 +40,7 @@ title_font = pygame.font.SysFont("Cambria", 65)
 big_font = pygame.font.SysFont("Cambria", 54)
 med_font = pygame.font.SysFont("Cambria", 36)
 background = pygame.image.load("gamefiles/images/game_background.jpg")
-grayed_out = pygame.image.load("gamefiles/images/Gray_out.png")
+grayed_out = pygame.image.load("gamefiles/images/gray_out.png")
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 LIGHT_GR = (211, 211, 211)
@@ -285,7 +285,7 @@ def enemy_arrow_collision(enemyx, enemyy, enemywidth, enemyheight, arrowx, arrow
 
     return enemyx, enemyy, arrowx, arrowy, isactive, ammo, cooldownstarted, starttime, passedtime, collisionoccured
 
-#Run function to detect collision between enemy and arrow
+#Run function to detect collision between enemy and ball
 def player_ball_collision(ballx, bally, charx, chary, charwidth, charheight, isactive, ammo):
     for ballxpos in range(int(ballx + 18), int(ballx + 48)):
         if charx + charwidth >= ballxpos >= charx:
@@ -309,68 +309,72 @@ while rungame:
         if event.type == pygame.QUIT:
             rungame = False
     
-    """
+    #Main menu
     if window == 0:
         menu()
         pygame.display.update()
 
+    #Control menu
     elif window == 1:
         controls()
         pygame.display.update()
 
+    #Instruction menu
     elif window == 2:
         instructions()
         pygame.display.update()
 
+    #Character select menu
     elif window == 3:
         char_selection()
         pygame.display.update()
 
+    #Main game
     elif window == 4:
-    """
-    #Drawing characters
-    charx[0], chary[0], charface[0] = move_char(char[0], charx[0], chary[0], charwidth, charheight, charface[0])
-    if multiplayer == True:
-        charx[1], chary[1], charface[1] = move_char(char[1], charx[1], chary[1], charwidth, charheight, charface[1])
+
+        #Drawing characters
+        charx[0], chary[0], charface[0] = move_char(char[0], charx[0], chary[0], charwidth, charheight, charface[0])
+        if multiplayer == True:
+            charx[1], chary[1], charface[1] = move_char(char[1], charx[1], chary[1], charwidth, charheight, charface[1])
             
-    #Drawing Arrows
-    if charability[0] == 1:
-        arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isactive[0], ammo[0] = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], ammo[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isactive[0])
-        arrowx[0], arrowy[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0] = run_ability(charability[0], ammo[0], isactive[0], arrowx[0], arrowy[0], arrowface[0], cooldownstarted[0], starttime[0], passedtime[0])
-    if multiplayer == True and charability[1] == 1:
-        arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isactive[1], ammo[1] = use_ability(char[1], charx[1], chary[1], charwidth, charheight, charface[1], charability[1], ammo[1], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isactive[1])
-        arrowx[1], arrowy[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1] = run_ability(charability[1], ammo[1], isactive[1], arrowx[1], arrowy[1], arrowface[1], cooldownstarted[1], starttime[1], passedtime[1])
+        #Drawing Arrows
+        if charability[0] == 1:
+            arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isactive[0], ammo[0] = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], ammo[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isactive[0])
+            arrowx[0], arrowy[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0] = run_ability(charability[0], ammo[0], isactive[0], arrowx[0], arrowy[0], arrowface[0], cooldownstarted[0], starttime[0], passedtime[0])
+        if multiplayer == True and charability[1] == 1:
+            arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isactive[1], ammo[1] = use_ability(char[1], charx[1], chary[1], charwidth, charheight, charface[1], charability[1], ammo[1], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isactive[1])
+            arrowx[1], arrowy[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1] = run_ability(charability[1], ammo[1], isactive[1], arrowx[1], arrowy[1], arrowface[1], cooldownstarted[1], starttime[1], passedtime[1])
 
-    #Drawing Enemies
-    enemy1x[0], enemy1y[0], enemy1face[0] = move_enemy(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], enemy1speed[0], enemy1face[0])
-    enemy2x[0], enemy2y[0], enemy2face[0] = move_enemy(enemy2x[0], enemy2y[0], enemy2width[0], enemy1height[0], enemy2speed[0], enemy2face[0])
+        #Drawing Enemies
+        enemy1x[0], enemy1y[0], enemy1face[0] = move_enemy(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], enemy1speed[0], enemy1face[0])
+        enemy2x[0], enemy2y[0], enemy2face[0] = move_enemy(enemy2x[0], enemy2y[0], enemy2width[0], enemy1height[0], enemy2speed[0], enemy2face[0])
 
-    #Drawing enemy spike ball
-    enemyballx[0], enemybally[0], enemyballface[0], ballammo[0], ballisshooting[0] = enemy_shoot_spike_ball(enemy2x[0], enemy2y[0], enemy2face[0], enemyballx[0], enemybally[0], enemyballwidth[0], enemyballheight[0], enemyballface[0], ballammo[0], ballisshooting[0])
+        #Drawing enemy spike ball
+        enemyballx[0], enemybally[0], enemyballface[0], ballammo[0], ballisshooting[0] = enemy_shoot_spike_ball(enemy2x[0], enemy2y[0], enemy2face[0], enemyballx[0], enemybally[0], enemyballwidth[0], enemyballheight[0], enemyballface[0], ballammo[0], ballisshooting[0])
 
-    #Enemy collision with player
-    charx[0], chary[0] = enemy_player_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], charx[0], chary[0])  
-    if multiplayer:
-        charx[1], chary[1] = enemy_player_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], charx[1], chary[1])  
-    charx[0], chary[0] = enemy_player_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], charx[0], chary[0])  
-    if multiplayer:
-        charx[1], chary[1] = enemy_player_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], charx[1], chary[1])  
+        #Enemy collision with player
+        charx[0], chary[0] = enemy_player_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], charx[0], chary[0])  
+        if multiplayer:
+            charx[1], chary[1] = enemy_player_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], charx[1], chary[1])  
+        charx[0], chary[0] = enemy_player_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], charx[0], chary[0])  
+        if multiplayer:
+            charx[1], chary[1] = enemy_player_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], charx[1], chary[1])  
 
-    #Enemy collision with arrow
-    if charability[0] == 1:
-        enemy1x[0], enemy1y[0], arrowx[0], arrowy[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0], collisionoccured[0] = enemy_arrow_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0], collisionoccured[0])
-    if charability[1] == 1 and multiplayer == True:
-        enemy1x[0], enemy1y[0], arrowx[1], arrowy[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1], collisionoccured[1] = enemy_arrow_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1], collisionoccured[1])
-    if charability[0] == 1:
-        enemy2x[0], enemy2y[0], arrowx[0], arrowy[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0], collisionoccured[0] = enemy_arrow_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0], collisionoccured[0])
-    if charability[1] == 1 and multiplayer == True:
-        enemy2x[0], enemy2y[0], arrowx[1], arrowy[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1], collisionoccured[1] = enemy_arrow_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1], collisionoccured[1])
+        #Enemy collision with arrow
+        if charability[0] == 1:
+            enemy1x[0], enemy1y[0], arrowx[0], arrowy[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0], collisionoccured[0] = enemy_arrow_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0], collisionoccured[0])
+        if charability[1] == 1 and multiplayer == True:
+            enemy1x[0], enemy1y[0], arrowx[1], arrowy[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1], collisionoccured[1] = enemy_arrow_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1], collisionoccured[1])
+        if charability[0] == 1:
+            enemy2x[0], enemy2y[0], arrowx[0], arrowy[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0], collisionoccured[0] = enemy_arrow_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0], collisionoccured[0])
+        if charability[1] == 1 and multiplayer == True:
+            enemy2x[0], enemy2y[0], arrowx[1], arrowy[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1], collisionoccured[1] = enemy_arrow_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1], collisionoccured[1])
             
-    #Enemy spike ball collision with player
-    enemyballx[0], enemybally[0], charx[0], chary[0], ballisshooting[0], ballammo[0] = player_ball_collision(enemyballx[0], enemybally[0], charx[0], chary[0], charwidth, charheight, ballisshooting[0], ballammo[0])
-    if multiplayer:
-        enemyballx[0], enemybally[0], charx[1], chary[1], ballisshooting[0], ballammo[0] = player_ball_collision(enemyballx[0], enemybally[0], charx[1], chary[1], charwidth, charheight, ballisshooting[0], ballammo[0])
+        #Enemy spike ball collision with player
+        enemyballx[0], enemybally[0], charx[0], chary[0], ballisshooting[0], ballammo[0] = player_ball_collision(enemyballx[0], enemybally[0], charx[0], chary[0], charwidth, charheight, ballisshooting[0], ballammo[0])
+        if multiplayer:
+            enemyballx[0], enemybally[0], charx[1], chary[1], ballisshooting[0], ballammo[0] = player_ball_collision(enemyballx[0], enemybally[0], charx[1], chary[1], charwidth, charheight, ballisshooting[0], ballammo[0])
 
-    draw_screen()
+        draw_screen()
     
 pygame.quit()
