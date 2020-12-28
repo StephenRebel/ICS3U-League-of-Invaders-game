@@ -3,7 +3,7 @@ selected = [0, 0]
 def char_selection():
     #Importing all necessary libraries and variables from main
     import main
-    from main import pygame, title_font, big_font, med_font, background, window, BLACK, RED, DARK_GR, LIGHT_GR, screen, arrowimg, staffimg, swordimg, grayed_out, player_count, player_char
+    from main import pygame, title_font, big_font, med_font, background, window, BLACK, RED, DARK_GR, LIGHT_GR, screen, arrowimg, staffimg, swordimg, grayed_out, player_count, player_char, reset_menu
     pygame.init()
 
     #Added variables needed for this menu
@@ -38,6 +38,8 @@ def char_selection():
     text10 = med_font.render("PLAYER 2", True, BLACK)
     text11 = big_font.render("Select your", True, BLACK)
     text12 = big_font.render("characters", True, BLACK)
+    text13 = med_font.render("BACK", True, BLACK)
+    text14 = med_font.render("BACK", True, RED)
 
     #Button locations template
     pygame.draw.rect(screen, LIGHT_GR, (730, 470, 500, 175))
@@ -56,6 +58,20 @@ def char_selection():
     screen.blit(text10, (160, 415))
     screen.blit(text11, (470, 40))
     screen.blit(text12, (475, 90))
+
+    #Return to main menu back button
+    if 8 <= mouse[0] <= 108 and 8 <= mouse[1] <= 58 and pressed[0] == True:
+        main.window = 0
+        reset_menu()
+        pygame.time.delay(100)
+    elif 8 <= mouse[0] <= 108 and 8 <= mouse[1] <= 58:
+        pygame.draw.rect(screen, DARK_GR, (8, 8, 100, 50))
+        pygame.draw.rect(screen, RED, (5, 5, 106, 56), 3, 5)
+        screen.blit(text14, (10, 10))
+    else:
+        pygame.draw.rect(screen, LIGHT_GR, (8, 8, 100, 50))
+        pygame.draw.rect(screen, BLACK, (5, 5, 106, 56), 3, 5)
+        screen.blit(text13, (10, 10))    
 
     #Allows for interaction with singleplayer button
     if 830 <= mouse[0] <= 1230 and 75 <= mouse[1] <= 175 and pressed[0] == True:

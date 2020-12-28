@@ -297,6 +297,17 @@ def player_ball_collision(ballx, bally, charx, chary, charwidth, charheight, isa
                     charx, chary = (random.randrange(charwidth, size[0] - charwidth), random.randrange(charheight, size[1] - charheight))
                     return ballx, bally, charx, chary, isactive, ammo
     return ballx, bally, charx, chary, isactive, ammo
+
+#Run function to reset menu variables when using a button to take you back to main menu
+def reset_menu():
+    import main
+    import playMenu
+    from playMenu import selected
+    from main import player_count, player_char
+
+    main.player_count, main.player_char = 0, [0,0]
+    playMenu.selected = [0,0]
+    
       
 #Main game loop
 rungame = True
