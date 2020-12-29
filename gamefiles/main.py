@@ -24,11 +24,12 @@ enemy2img = pygame.image.load("gamefiles/images/orange_enemy.png")
 ballimg = pygame.image.load("gamefiles/images/spike_ball.png")
 
 #Game variables
-multiplayer = True
-char, charx, chary, charwidth, charheight, charface, charability = [1, 2], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], 64, 64, [0, 0], [1, 1]
-arrowx, arrowy, arrowwidth, arrowheight, arrowface, collisionoccured = [-100, -100], [0, 0], [10, 10], [62, 62], [0, 0], [False, False]
+multiplayer = False
+char, charx, chary, charwidth, charheight, charface, charability = [1, 2], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], 64, 64, [0, 0], [0, 0]
+arrowx, arrowy, arrowwidth, arrowheight, arrowface, arrowcollisionoccured = [-100, -100], [0, 0], [10, 10], [62, 62], [0, 0], [False, False]
+swordx, swordy, swordwidth, swordheight, swordface, swordcollisionoccured = [-100, -100], [0, 0], [22, 22], [50, 50], [0, 0], [False, False]
 starttime, cooldownstarted, passedtime = [0, 0], [False, False], [0, 0],
-ammo, isactive = [1, 1], [False, False]
+isactive, canuse, increment = [False, False], [True, True], [0, 0]
 enemy1, enemy1x, enemy1y, enemy1width, enemy1height, enemy1face, enemy1speed = [1], [300], [200], [64], [64], [""], [1]
 enemy2, enemy2x, enemy2y, enemy2width, enemy2height, enemy2face, enemy2speed = [1], [500], [300], [64], [64], [""], [0.5]
 enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = [-100], [-100], [18], [18], [0]
@@ -47,7 +48,6 @@ LIGHT_GR = (211, 211, 211)
 DARK_GR = (71, 71, 71)
 WHITE = (255, 255, 255)
 player_count = 0
-player_char = [0, 0]
 
 #Draw characters
 def draw_char(img, x, y, face):
@@ -62,6 +62,11 @@ def draw_arrow(img, x, y, face):
     elif face == 90 or face == 270:
         y -= 30
     screen.blit(new_arrow, (x, y))
+
+#Draw arrows
+def draw_sword(img, x, y, face):
+    new_sword = pygame.transform.rotate(img, face)
+    screen.blit(new_sword, (x, y))
 
 #Draw the screen
 def draw_screen():
@@ -78,13 +83,16 @@ def draw_screen():
     if multiplayer == True and charability[1] == 1:
         draw_arrow(arrowimg, arrowx[1], arrowy[1], arrowface[1])
 
+    if charability[0] == 2:
+        draw_sword(swordimg, swordx[0], swordy[0], swordface[0])
+    if multiplayer == True and charability[1] == 2:
+        draw_sword(swordimg, swordx[1], swordy[1], swordface[1])
+
     #Enemy
     screen.blit(enemy1img, (enemy1x[0], enemy1y[0]))
     screen.blit(enemy2img, (enemy2x[0], enemy2y[0]))
 
     screen.blit(ballimg, (enemyballx[0], enemybally[0]))
-
-    pygame.display.update()
 
 #Move character function
 def move_char(char, x, y, width, height, face):
@@ -130,7 +138,7 @@ def move_char(char, x, y, width, height, face):
     return x, y, face
 
 #Use ability function
-def use_ability(char, charx, chary, charwidth, charheight, charface, ability, ammo, x, y, width, height, face, isactive):
+def use_ability(char, charx, chary, charwidth, charheight, charface, ability, x, y, width, height, face, isactive, canuse):
     keys = pygame.key.get_pressed()
     key_type = []
     if char == 1:
@@ -139,8 +147,7 @@ def use_ability(char, charx, chary, charwidth, charheight, charface, ability, am
         key_type.append(keys[pygame.K_e])
         
     #Arrow ability    
-    if ability == 1 and key_type[0] and ammo > 0 and isactive == False:
-        ammo -= 1
+    if ability == 1 and key_type[0] and isactive == False and canuse == True:
         face = charface
         if face == 0 or face == 180:
             width, height = 8, 64
@@ -149,10 +156,28 @@ def use_ability(char, charx, chary, charwidth, charheight, charface, ability, am
             width, height = 64, 8
             x, y = charx + (charwidth / 2), chary + (charheight / 2) - height / 2
         isactive = True
-    return x, y, width, height, face, isactive, ammo
+        canuse = False
+    elif ability == 2 and key_type[0] and isactive == False and canuse == True:
+        face = charface
+        if face == 0:
+            width, height = 22, 50
+            x, y = charx, chary - charheight + 10
+        elif face == 90:
+            width, height = 50, 22
+            x, y = charx - charwidth + 10, chary
+        elif face == 180:
+            width, height = 22, 50
+            x, y = charx, chary + charheight - 10
+        elif face == 270:
+            width, height = 50, 22
+            x, y = charx + charwidth - 10, chary   
+        isactive = True
+        canuse = False
+
+    return x, y, width, height, face, isactive, canuse
 
 #Run ability function
-def run_ability(ability, ammo, isactive, x, y, face, cooldownstarted, starttime, passedtime):
+def run_ability(charx, chary, ability, isactive, canuse, x, y, face, cooldownstarted, starttime, passedtime, increment):
     if ability == 1 and isactive == True:
         if face == 0 and y > -64:
             y -= 10
@@ -163,16 +188,37 @@ def run_ability(ability, ammo, isactive, x, y, face, cooldownstarted, starttime,
         elif face == 90 and x > -64:
             x -= 10
         else:
-            cooldownstarted, starttime, passedtime = ability_cooldown(cooldownstarted, starttime, passedtime, isactive, ammo)
-            if passedtime >= 1000:
-                passedtime = 0
-                cooldownstarted = False
-                isactive = False
-                ammo += 1
-    return x, y, isactive, ammo, cooldownstarted, starttime, passedtime
+            isactive = False
+    if ability == 2 and isactive == True:
+        if face == 0:
+            width, height = 22, 50
+            x, y = charx, chary - charheight + 10
+        elif face == 90:
+            width, height = 50, 22
+            x, y = charx - charwidth + 10, chary
+        elif face == 180:
+            width, height = 22, 50
+            x, y = charx, chary + charheight - 10
+        elif face == 270:
+            width, height = 50, 22
+            x, y = charx + charwidth - 10, chary
+        cooldownstarted, starttime, passedtime = ability_cooldown(cooldownstarted, starttime, passedtime, isactive)
+        if passedtime >= 250:
+            passedtime = 0
+            cooldownstarted = False
+            isactive = False
+            x, y = -100, 0
+
+    if isactive == False and canuse == False:
+        cooldownstarted, starttime, passedtime = ability_cooldown(cooldownstarted, starttime, passedtime, isactive)
+        if passedtime >= 1000:
+            passedtime = 0
+            cooldownstarted = False
+            canuse = True
+    return x, y, face, isactive, canuse, cooldownstarted, starttime, passedtime, increment
 
 #Gets the cooldown after an ability has been used
-def ability_cooldown(cooldownstarted, starttime, passedtime, isactive, ammo):
+def ability_cooldown(cooldownstarted, starttime, passedtime, isactive):
     if cooldownstarted == False:
         cooldownstarted = True
         starttime = pygame.time.get_ticks()
@@ -263,27 +309,27 @@ def enemy_player_collision(enemyx, enemyy, enemywidth, enemyheight, charx, chary
                     return charx, chary
     return charx, chary
 
-#Run function to detect collision between enemy and arrow
-def enemy_arrow_collision(enemyx, enemyy, enemywidth, enemyheight, arrowx, arrowy, arrowwidth, arrowheight, isactive, ammo, cooldownstarted, starttime, passedtime, collisionoccured):
+#Run function to detect collision between enemy and ability
+def enemy_ability_collision(enemyx, enemyy, enemywidth, enemyheight, abilityx, abilityy, abilitywidth, abilityheight, isactive, canuse, cooldownstarted, starttime, passedtime, collisionoccured):
     for enemyxpos in range(int(enemyx), int(enemyx + enemywidth)):
-        if arrowx + arrowwidth >= enemyxpos >= arrowx:
+        if abilityx + abilitywidth >= enemyxpos >= abilityx:
             for enemyypos in range(int(enemyy), int(enemyy + enemyheight)):
-                if arrowy + arrowheight >= enemyypos >= arrowy:
+                if abilityy + abilityheight >= enemyypos >= abilityy:
                     collisionoccured = True
                     enemyx, enemyy = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
-                    arrowx, arrowy = -64, -64 
+                    abilityx, abilityy = -64, -64 
                     isactive = False
 
     if collisionoccured == True:
-        cooldownstarted, starttime, passedtime = ability_cooldown(cooldownstarted, starttime, passedtime, isactive, ammo)
+        cooldownstarted, starttime, passedtime = ability_cooldown(cooldownstarted, starttime, passedtime, isactive)
         if passedtime >= 1000:
             passedtime = 0
             cooldownstarted = False
-            ammo += 1
             collisionoccured = False
-            return enemyx, enemyy, arrowx, arrowy, isactive, ammo, cooldownstarted, starttime, passedtime, collisionoccured
+            canuse = True
+            return enemyx, enemyy, abilityx, abilityy, isactive, canuse, cooldownstarted, starttime, passedtime, collisionoccured
 
-    return enemyx, enemyy, arrowx, arrowy, isactive, ammo, cooldownstarted, starttime, passedtime, collisionoccured
+    return enemyx, enemyy, abilityx, abilityy, isactive, canuse, cooldownstarted, starttime, passedtime, collisionoccured
 
 #Run function to detect collision between enemy and ball
 def player_ball_collision(ballx, bally, charx, chary, charwidth, charheight, isactive, ammo):
@@ -303,9 +349,9 @@ def reset_menu():
     import main
     import playMenu
     from playMenu import selected
-    from main import player_count, player_char
+    from main import player_count, charability
 
-    main.player_count, main.player_char = 0, [0,0]
+    main.player_count, main.charability = 0, [0,0]
     playMenu.selected = [0,0]
     
       
@@ -323,22 +369,18 @@ while rungame:
     #Main menu
     if window == 0:
         menu()
-        pygame.display.update()
 
     #Control menu
     elif window == 1:
         controls()
-        pygame.display.update()
 
     #Instruction menu
     elif window == 2:
         instructions()
-        pygame.display.update()
 
     #Character select menu
     elif window == 3:
         char_selection()
-        pygame.display.update()
 
     #Main game
     elif window == 4:
@@ -350,12 +392,20 @@ while rungame:
             
         #Drawing Arrows
         if charability[0] == 1:
-            arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isactive[0], ammo[0] = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], ammo[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isactive[0])
-            arrowx[0], arrowy[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0] = run_ability(charability[0], ammo[0], isactive[0], arrowx[0], arrowy[0], arrowface[0], cooldownstarted[0], starttime[0], passedtime[0])
+            arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isactive[0], canuse[0] = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isactive[0], canuse[0])
+            arrowx[0], arrowy[0], arrowface[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], increment[0] = run_ability(charx[0], chary[0], charability[0], isactive[0], canuse[0], arrowx[0], arrowy[0], arrowface[0], cooldownstarted[0], starttime[0], passedtime[0], increment[0])
         if multiplayer == True and charability[1] == 1:
-            arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isactive[1], ammo[1] = use_ability(char[1], charx[1], chary[1], charwidth, charheight, charface[1], charability[1], ammo[1], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isactive[1])
-            arrowx[1], arrowy[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1] = run_ability(charability[1], ammo[1], isactive[1], arrowx[1], arrowy[1], arrowface[1], cooldownstarted[1], starttime[1], passedtime[1])
+            arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isactive[1], canuse[1] = use_ability(char[1], charx[1], chary[1], charwidth, charheight, charface[1], charability[1], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isactive[1], canuse[1])
+            arrowx[1], arrowy[1], arrowface[0], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], increment[1] = run_ability(charx[1], chary[1], charability[1], isactive[1], canuse[1], arrowx[1], arrowy[1], arrowface[1], cooldownstarted[1], starttime[1], passedtime[1], increment[1])
 
+        #Drawing Swords
+        if charability[0] == 2:
+            swordx[0], swordy[0], swordwidth[0], swordheight[0], swordface[0], isactive[0], canuse[0] = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], swordx[0], swordy[0], swordwidth[0], swordheight[0], swordface[0], isactive[0], canuse[0]) 
+            swordx[0], swordy[0], swordface[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], increment[0] = run_ability(charx[0], chary[0], charability[0], isactive[0], canuse[0], swordx[0], swordy[0], swordface[0], cooldownstarted[0], starttime[0], passedtime[0], increment[0])
+        if multiplayer == True and charability[1] == 2:
+            swordx[1], swordy[1], swordwidth[1], swordheight[1], swordface[1], isactive[1], canuse[1] = use_ability(char[1], charx[1], chary[1], charwidth, charheight, charface[1], charability[1], swordx[1], swordy[1], swordwidth[1], swordheight[1], swordface[1], isactive[1], canuse[1]) 
+            swordx[1], swordy[1], swordface[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], increment[1] = run_ability(charx[1], chary[1], charability[1], isactive[1], canuse[1], swordx[1], swordy[1], swordface[1], cooldownstarted[1], starttime[1], passedtime[1], increment[1])
+          
         #Drawing Enemies
         enemy1x[0], enemy1y[0], enemy1face[0] = move_enemy(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], enemy1speed[0], enemy1face[0])
         enemy2x[0], enemy2y[0], enemy2face[0] = move_enemy(enemy2x[0], enemy2y[0], enemy2width[0], enemy1height[0], enemy2speed[0], enemy2face[0])
@@ -373,19 +423,31 @@ while rungame:
 
         #Enemy collision with arrow
         if charability[0] == 1:
-            enemy1x[0], enemy1y[0], arrowx[0], arrowy[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0], collisionoccured[0] = enemy_arrow_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0], collisionoccured[0])
+            enemy1x[0], enemy1y[0], arrowx[0], arrowy[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], arrowcollisionoccured[0] = enemy_ability_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], arrowcollisionoccured[0])
         if charability[1] == 1 and multiplayer == True:
-            enemy1x[0], enemy1y[0], arrowx[1], arrowy[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1], collisionoccured[1] = enemy_arrow_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1], collisionoccured[1])
+            enemy1x[0], enemy1y[0], arrowx[1], arrowy[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], arrowcollisionoccured[1] = enemy_ability_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], arrowcollisionoccured[1])
         if charability[0] == 1:
-            enemy2x[0], enemy2y[0], arrowx[0], arrowy[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0], collisionoccured[0] = enemy_arrow_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], isactive[0], ammo[0], cooldownstarted[0], starttime[0], passedtime[0], collisionoccured[0])
+            enemy2x[0], enemy2y[0], arrowx[0], arrowy[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], arrowcollisionoccured[0] = enemy_ability_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], arrowcollisionoccured[0])
         if charability[1] == 1 and multiplayer == True:
-            enemy2x[0], enemy2y[0], arrowx[1], arrowy[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1], collisionoccured[1] = enemy_arrow_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], isactive[1], ammo[1], cooldownstarted[1], starttime[1], passedtime[1], collisionoccured[1])
-            
+            enemy2x[0], enemy2y[0], arrowx[1], arrowy[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], arrowcollisionoccured[1] = enemy_ability_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], arrowcollisionoccured[1])
+        
+        #Enemy collision with sword
+        if charability[0] == 2:
+            enemy1x[0], enemy1y[0], swordx[0], swordy[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], swordcollisionoccured[0] = enemy_ability_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], swordx[0], swordy[0], swordwidth[0], swordheight[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], swordcollisionoccured[0])
+        if charability[1] == 2 and multiplayer == True:
+            enemy1x[0], enemy1y[0], swordx[1], swordy[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], swordcollisionoccured[1] = enemy_ability_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], swordx[1], swordy[1], swordwidth[1], swordheight[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], swordcollisionoccured[1])
+        if charability[0] == 2:
+            enemy2x[0], enemy2y[0], swordx[0], swordy[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], swordcollisionoccured[0] = enemy_ability_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], swordx[0], swordy[0], swordwidth[0], swordheight[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], swordcollisionoccured[0])
+        if charability[1] == 2 and multiplayer == True:
+            enemy2x[0], enemy2y[0], swordx[1], swordy[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], swordcollisionoccured[1] = enemy_ability_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], swordx[1], swordy[1], swordwidth[1], swordheight[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], swordcollisionoccured[1])
+                       
         #Enemy spike ball collision with player
         enemyballx[0], enemybally[0], charx[0], chary[0], ballisshooting[0], ballammo[0] = player_ball_collision(enemyballx[0], enemybally[0], charx[0], chary[0], charwidth, charheight, ballisshooting[0], ballammo[0])
         if multiplayer:
             enemyballx[0], enemybally[0], charx[1], chary[1], ballisshooting[0], ballammo[0] = player_ball_collision(enemyballx[0], enemybally[0], charx[1], chary[1], charwidth, charheight, ballisshooting[0], ballammo[0])
 
         draw_screen()
+
+    pygame.display.update()
     
 pygame.quit()
