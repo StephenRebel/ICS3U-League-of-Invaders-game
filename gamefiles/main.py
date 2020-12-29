@@ -66,6 +66,9 @@ def draw_arrow(img, x, y, face):
 
 #Draw the screen
 def draw_screen():
+    import main
+    from main import window
+
     screen.blit(bg_scale, (0, 0))
 
     #Character
@@ -84,6 +87,29 @@ def draw_screen():
     screen.blit(enemy2img, (enemy2x[0], enemy2y[0]))
 
     screen.blit(ballimg, (enemyballx[0], enemybally[0]))
+
+    #Allows for interaction with the mouse
+    mouse = pygame.mouse.get_pos()
+    pressed = pygame.mouse.get_pressed()
+
+    #Aloow for interactions with the pause button
+    if 1233 <= mouse[0] <= 1270 and 8 <= mouse[1] <= 43 and pressed[0] == True:
+        main.window = 5
+        pygame.time.delay(100)
+    elif 1233 <= mouse[0] <= 1270 and 8 <= mouse[1] <= 43:
+        pygame.draw.rect(screen, DARK_GR, (1235, 10, 12, 31), 2, 15)
+        pygame.draw.rect(screen, DARK_GR, (1237, 12, 8, 27))
+        pygame.draw.rect(screen, DARK_GR, (1258, 10, 12, 31), 2, 15)
+        pygame.draw.rect(screen, DARK_GR, (1260, 12, 8, 27))
+        pygame.draw.rect(screen, BLACK, (1234, 8, 14, 35), 2, 20)
+        pygame.draw.rect(screen, BLACK, (1257, 8, 14, 35), 2, 20)
+    else:
+        pygame.draw.rect(screen, LIGHT_GR, (1235, 10, 12, 31), 2, 15)
+        pygame.draw.rect(screen, LIGHT_GR, (1237, 12, 8, 27))
+        pygame.draw.rect(screen, LIGHT_GR, (1258, 10, 12, 31), 2, 15)
+        pygame.draw.rect(screen, LIGHT_GR, (1260, 12, 8, 27))
+        pygame.draw.rect(screen, BLACK, (1234, 8, 14, 35), 2, 20)
+        pygame.draw.rect(screen, BLACK, (1257, 8, 14, 35), 2, 20)
 
     pygame.display.update()
 
