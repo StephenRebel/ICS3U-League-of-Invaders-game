@@ -69,11 +69,37 @@ def draw_sword(img, x, y, face):
     new_sword = pygame.transform.rotate(img, face)
     screen.blit(new_sword, (x, y))
 
-#Draw the screen
-def draw_screen():
+#Draw pause button
+def pause_button():
+    #Importing main window variable
     import main
     from main import window
 
+    #Allows for interaction with the mouse
+    mouse = pygame.mouse.get_pos()
+    pressed = pygame.mouse.get_pressed()
+
+    #Allow for interactions with the pause button
+    if 1233 <= mouse[0] <= 1270 and 8 <= mouse[1] <= 43 and pressed[0] == True:
+        main.window = 5
+        pygame.time.delay(100)
+    elif 1233 <= mouse[0] <= 1270 and 8 <= mouse[1] <= 43:
+        pygame.draw.rect(screen, DARK_GR, (1235, 10, 12, 31), 2, 15)
+        pygame.draw.rect(screen, DARK_GR, (1237, 12, 8, 27))
+        pygame.draw.rect(screen, DARK_GR, (1258, 10, 12, 31), 2, 15)
+        pygame.draw.rect(screen, DARK_GR, (1260, 12, 8, 27))
+        pygame.draw.rect(screen, BLACK, (1234, 8, 14, 35), 2, 20)
+        pygame.draw.rect(screen, BLACK, (1257, 8, 14, 35), 2, 20)
+    else:
+        pygame.draw.rect(screen, LIGHT_GR, (1235, 10, 12, 31), 2, 15)
+        pygame.draw.rect(screen, LIGHT_GR, (1237, 12, 8, 27))
+        pygame.draw.rect(screen, LIGHT_GR, (1258, 10, 12, 31), 2, 15)
+        pygame.draw.rect(screen, LIGHT_GR, (1260, 12, 8, 27))
+        pygame.draw.rect(screen, BLACK, (1234, 8, 14, 35), 2, 20)
+        pygame.draw.rect(screen, BLACK, (1257, 8, 14, 35), 2, 20)
+
+#Draw the screen
+def draw_screen():
     screen.blit(bg_scale, (0, 0))
 
     #Character
@@ -97,6 +123,8 @@ def draw_screen():
     screen.blit(enemy2img, (enemy2x[0], enemy2y[0]))
 
     screen.blit(ballimg, (enemyballx[0], enemybally[0]))
+
+    pause_button()
 
 #Move character function
 def move_char(char, x, y, width, height, face):
@@ -454,7 +482,6 @@ while rungame:
 
     elif window == 5:
         pause()
-        pygame.display.update()
 
     pygame.display.update()
     
