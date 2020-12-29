@@ -6,6 +6,7 @@ from startMenu import menu
 from controlsMenu import controls
 from instructionsMenu import instructions
 from playMenu import char_selection
+from pauseMenu import pause
 
 #Basic game setup
 pygame.display.set_caption("League Of Invaders")
@@ -323,7 +324,7 @@ while rungame:
     #Main menu
     if window == 0:
         menu()
-        pygame.display.update()
+        pygame.display.update()  
 
     #Control menu
     elif window == 1:
@@ -387,5 +388,9 @@ while rungame:
             enemyballx[0], enemybally[0], charx[1], chary[1], ballisshooting[0], ballammo[0] = player_ball_collision(enemyballx[0], enemybally[0], charx[1], chary[1], charwidth, charheight, ballisshooting[0], ballammo[0])
 
         draw_screen()
-    
+
+    elif window == 5:
+        pause()
+        pygame.display.update()
+
 pygame.quit()
