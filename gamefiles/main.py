@@ -6,6 +6,7 @@ from startMenu import menu
 from controlsMenu import controls
 from instructionsMenu import instructions
 from playMenu import char_selection
+from pauseMenu import pause
 
 #Basic game setup
 pygame.display.set_caption("League Of Invaders")
@@ -70,6 +71,9 @@ def draw_sword(img, x, y, face):
 
 #Draw the screen
 def draw_screen():
+    import main
+    from main import window
+
     screen.blit(bg_scale, (0, 0))
 
     #Character
@@ -447,6 +451,10 @@ while rungame:
             enemyballx[0], enemybally[0], charx[1], chary[1], ballisshooting[0], ballammo[0] = player_ball_collision(enemyballx[0], enemybally[0], charx[1], chary[1], charwidth, charheight, ballisshooting[0], ballammo[0])
 
         draw_screen()
+
+    elif window == 5:
+        pause()
+        pygame.display.update()
 
     pygame.display.update()
     
