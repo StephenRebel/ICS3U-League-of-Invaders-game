@@ -429,7 +429,7 @@ def reset_menu():
 rungame = True
 while rungame:
 
-    pygame.time.delay(0)
+    pygame.time.delay(10)
     
     #Close game when quit
     for event in pygame.event.get():
