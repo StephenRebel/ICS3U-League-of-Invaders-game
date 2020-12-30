@@ -116,6 +116,10 @@ def char_selection():
     #Allows user to select character for singleplayer
     elif player_count == 1:
         screen.blit(gray_out_playerSelect, (100, 380))
+        #Show that the singleplayer button is selected
+        pygame.draw.rect(screen, DARK_GR, (830, 75, 400, 100))
+        pygame.draw.rect(screen, GOLD, (825, 70, 410, 110), 5, 8)
+        screen.blit(text6, (840, 90))
 
         #Player 1 character 1
         if 133 <= mouse[0] <= 197 and 200 <= mouse[1] <= 264 and pressed[0] == True:
@@ -211,6 +215,11 @@ def char_selection():
 
     #Allows users to select characters for multiplayer
     elif player_count == 2:
+        #Show that the multiplayer option is selected
+        pygame.draw.rect(screen, DARK_GR, (830, 225, 400, 100))
+        pygame.draw.rect(screen, GOLD, (825, 220, 410, 110), 5, 8)
+        screen.blit(text8, (850, 240))
+
         #Player 1 character 1
         if 133 <= mouse[0] <= 197 and 200 <= mouse[1] <= 264 and pressed[0] == True:
             pygame.draw.rect(screen, DARK_GREEN, (133, 200, 64, 64))
