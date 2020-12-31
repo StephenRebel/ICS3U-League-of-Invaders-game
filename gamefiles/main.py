@@ -24,7 +24,7 @@ enemy1img = pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha()
 enemy2img = pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha()
 enemy3img = pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha()
 ballimg = pygame.image.load("gamefiles/images/spike_ball.png").convert_alpha()
-boltimg = [pygame.image.load("gamefiles/images/fire_ball.png").convert_alpha(), pygame.image.load("gamefiles/images/ice_spikes.png").convert_alpha(), pygame.image.load("gamefiles/images/lightning.png").convert_alpha()]
+boltimg = [pygame.image.load("gamefiles/images/fire_ball.png").convert_alpha(), pygame.image.load("gamefiles/images/ice_spikes.png").convert_alpha(), pygame.image.load("gamefiles/images/green_rock.png").convert_alpha()]
 heartimg = pygame.image.load("gamefiles/images/heart.png").convert_alpha()
 emptyheartimg = pygame.image.load("gamefiles/images/heart_empty.png").convert_alpha()
 
@@ -33,7 +33,7 @@ multiplayer = False
 char, charx, chary, charwidth, charheight, charface, charability, charhealth = [1, 2], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], 64, 64, [0, 0], [0, 0], [3, 3]
 arrowx, arrowy, arrowwidth, arrowheight, arrowface, arrowcollisionoccured = [-100, -100], [0, 0], [10, 10], [62, 62], [0, 0], [False, False]
 swordx, swordy, swordwidth, swordheight, swordface = [-100, -100], [0, 0], [22, 22], [50, 50], [0, 0]
-boltx, bolty, boltwidth, boltheight, boltface, boltcollisionoccured = [-100, - 100], [0, 0], [64, 64], [64, 64], [0, 0], [False, False]
+boltx, bolty, boltwidth, boltheight, boltface, boltcollisionoccured, staffx, staffy, staffface = [-100, - 100], [0, 0], [64, 64], [64, 64], [0, 0], [False, False], [-100, -100], [-100, -100], [0, 0]
 swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
 starttime, cooldownstarted, passedtime = [0, 0], [False, False], [0, 0]
 isactive, canuse = [False, False], [True, True]
@@ -44,7 +44,7 @@ enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = [-100],
 explosionx, explosiony, explosionradius, explosioncolor = [-100], [-100], [64], [[255, 255, 255]]
 ballammo, ballisactive = [1], [False]
 explosionammo, explosionisactive, cantakedamage = [1], [False], [False]
-img_num = 0
+img_num = [0, 0]
 
 #Menu setup
 window = 0
@@ -93,35 +93,18 @@ def draw_sword(img, x, y, face):
     screen.blit(new_sword, (newx, newy))
 
 #Draw mage bolts
-def draw_bolt(img, x, y, face, img_num):
-    new_bolt = pygame.transform.rotate(img, face)
-    newx = x
-    newy = y
+def draw_bolt(img, x, y, face, img_num, staff, staffx, staffy, staffface):
+    new_staff = pygame.transform.rotate(staff, staffface)
     if face == 0:
-        if img_num == 3:
-            newx = x - 21
-        else:
-            newx = x - 32
-        newy = y - 100
+        y -= 100
     elif face == 90:
-        if img_num == 3:
-            newy = y - 21
-        else:
-            newy = y - 32
-        newx = x + 100
+        x -= 100
     elif face == 180:
-        if img_num == 3:
-            newx = x - 21
-        else:
-            newx = x -32
-        newy = y - 100
+        y += 100
     elif face == 270:
-        if img_num == 3:
-            newy = y + 21
-        else:
-            newy = y + 32
-        newx = x + 100
-    screen.blit(new_bolt, (newx, newy))
+        x += 100
+    screen.blit(img, (x, y))
+    screen.blit(new_staff, (staffx, staffy))
 
 #Draw pause button
 def pause_button():
@@ -220,9 +203,9 @@ def draw_screen():
 
     #Mage bolt
     if charability[0] == 3:
-      draw_bolt(boltimg[img_num], boltx[0], bolty[0], boltface[0], img_num)
+        draw_bolt(boltimg[img_num[0]], boltx[0], bolty[0], boltface[0], img_num[0], staffimg, staffx[0], staffy[0], staffface[0])
     if multiplayer == True and charability[1] == 3:
-        draw_bolt(boltimg[img_num], boltx[1], bolty[1], boltface[1], img_num)
+        draw_bolt(boltimg[img_num[1]], boltx[1], bolty[1], boltface[1], img_num[1], staffimg, staffx[1], staffy[1], staffface[1])
 
     #Enemies
     screen.blit(enemy1img, (enemy1x[0], enemy1y[0]))
@@ -338,19 +321,19 @@ def use_ability(char, charx, chary, charwidth, charheight, charface, ability, x,
         img_num = random.randrange(0,3)
         face = charface
         if face == 0:
-            x, y = charx , chary - charheight - 100
+            x, y = charx , chary - charheight
         elif face == 90:
-            x, y = charx - charwidth + 100, chary
+            x, y = charx - charwidth, chary
         elif face == 180:
-            x, y = charx, chary + charheight + 100
+            x, y = charx, chary + charheight
         elif face == 270:
-            x, y = charx + charwidth - 100, chary
+            x, y = charx + charwidth, chary
         isactive = True
         canuse = False
     return x, y, width, height, face, isactive, canuse, img_num
 
 #Run ability function
-def run_ability(charx, chary, ability, isactive, canuse, x, y, face, cooldownstarted, starttime, passedtime, collisionoccured, swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime):
+def run_ability(charx, chary, ability, isactive, canuse, x, y, face, cooldownstarted, starttime, passedtime, collisionoccured, swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime, staffx, staffy):
     #Arrow ability
     if ability == 1 and isactive == True:
         if face == 0 and y > -64:
@@ -388,12 +371,23 @@ def run_ability(charx, chary, ability, isactive, canuse, x, y, face, cooldownsta
 
     #Mage bolt ability
     if ability == 3 and isactive == True:
+        staffface = face
+        if face == 0:
+            staffx, staffy = charx , chary - charheight
+        elif face == 90:
+            staffx, staffy = charx - charwidth, chary
+        elif face == 180:
+            staffx, staffy = charx, chary + charheight
+        elif face == 270:
+            staffx, staffy = charx + charwidth, chary
+        #Makes the bolt disapear after 1 second
         boltcooldownstarted, boltstarttime, boltpassedtime = ability_cooldown(boltcooldownstarted, boltstarttime, boltpassedtime)
         if boltpassedtime >= 1000:
             boltpassedtime = 0
             boltcooldownstarted = False
             isactive = False
-            x, y = -100, 0
+            x, y = -100, -100
+            staffx, staffy = -100, -100
 
     #Starts the cooldown after ability is done
     if isactive == False and canuse == False and collisionoccured == False:
@@ -402,7 +396,7 @@ def run_ability(charx, chary, ability, isactive, canuse, x, y, face, cooldownsta
             passedtime = 0
             cooldownstarted = False
             canuse = True
-    return x, y, face, isactive, canuse, cooldownstarted, starttime, passedtime, swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime
+    return x, y, face, isactive, canuse, cooldownstarted, starttime, passedtime, swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime, staffx, staffy
 
 #Gets the cooldown after an ability has been used
 def ability_cooldown(cooldownstarted, starttime, passedtime):
@@ -627,27 +621,27 @@ while rungame:
             
         #Drawing Arrows
         if charability[0] == 1:
-            arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isactive[0], canuse[0], img_num = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isactive[0], canuse[0], img_num)
-            arrowx[0], arrowy[0], arrowface[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], swordcooldownstarted[0], swordstarttime[0], swordpassedtime[0], boltcooldownstarted[0], boltstarttime[0], boltpassedtime[0] = run_ability(charx[0], chary[0], charability[0], isactive[0], canuse[0], arrowx[0], arrowy[0], arrowface[0], cooldownstarted[0], starttime[0], passedtime[0], arrowcollisionoccured[0], swordcooldownstarted[0], swordstarttime[0], swordpassedtime[0], boltcooldownstarted[0], boltstarttime[0], boltpassedtime[0])
+            arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isactive[0], canuse[0], img_num[0] = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], arrowface[0], isactive[0], canuse[0], img_num[0])
+            arrowx[0], arrowy[0], arrowface[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], swordcooldownstarted[0], swordstarttime[0], swordpassedtime[0], boltcooldownstarted[0], boltstarttime[0], boltpassedtime[0], staffx[0], staffy[0] = run_ability(charx[0], chary[0], charability[0], isactive[0], canuse[0], arrowx[0], arrowy[0], arrowface[0], cooldownstarted[0], starttime[0], passedtime[0], arrowcollisionoccured[0], swordcooldownstarted[0], swordstarttime[0], swordpassedtime[0], boltcooldownstarted[0], boltstarttime[0], boltpassedtime[0], staffx[0], staffy[0])
         if multiplayer == True and charability[1] == 1:
-            arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isactive[1], canuse[1], img_num = use_ability(char[1], charx[1], chary[1], charwidth, charheight, charface[1], charability[1], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isactive[1], canuse[1], img_num)
-            arrowx[1], arrowy[1], arrowface[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], swordcooldownstarted[1], swordstarttime[1], swordpassedtime[1], boltcooldownstarted[1], boltstarttime[1], boltpassedtime[1] = run_ability(charx[1], chary[1], charability[1], isactive[1], canuse[1], arrowx[1], arrowy[1], arrowface[1], cooldownstarted[1], starttime[1], passedtime[1], arrowcollisionoccured[1], swordcooldownstarted[1], swordstarttime[1], swordpassedtime[1], boltcooldownstarted[1], boltstarttime[1], boltpassedtime[1])
+            arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isactive[1], canuse[1], img_num[1] = use_ability(char[1], charx[1], chary[1], charwidth, charheight, charface[1], charability[1], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], arrowface[1], isactive[1], canuse[1], img_num[1])
+            arrowx[1], arrowy[1], arrowface[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], swordcooldownstarted[1], swordstarttime[1], swordpassedtime[1], boltcooldownstarted[1], boltstarttime[1], boltpassedtime[1], staffx[1], staffy[1] = run_ability(charx[1], chary[1], charability[1], isactive[1], canuse[1], arrowx[1], arrowy[1], arrowface[1], cooldownstarted[1], starttime[1], passedtime[1], arrowcollisionoccured[1], swordcooldownstarted[1], swordstarttime[1], swordpassedtime[1], boltcooldownstarted[1], boltstarttime[1], boltpassedtime[1], staffx[1], staffy[1])
 
         #Drawing Swords
         if charability[0] == 2:
-            swordx[0], swordy[0], swordwidth[0], swordheight[0], swordface[0], isactive[0], canuse[0], img_num = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], swordx[0], swordy[0], swordwidth[0], swordheight[0], swordface[0], isactive[0], canuse[0], img_num) 
-            swordx[0], swordy[0], swordface[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], swordcooldownstarted[0], swordstarttime[0], swordpassedtime[0], boltcooldownstarted[0], boltstarttime[0], boltpassedtime[0] = run_ability(charx[0], chary[0], charability[0], isactive[0], canuse[0], swordx[0], swordy[0], swordface[0], cooldownstarted[0], starttime[0], passedtime[0], arrowcollisionoccured[0], swordcooldownstarted[0], swordstarttime[0], swordpassedtime[0], boltcooldownstarted[0], boltstarttime[0], boltpassedtime[0])
+            swordx[0], swordy[0], swordwidth[0], swordheight[0], swordface[0], isactive[0], canuse[0], img_num[0] = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], swordx[0], swordy[0], swordwidth[0], swordheight[0], swordface[0], isactive[0], canuse[0], img_num[0]) 
+            swordx[0], swordy[0], swordface[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], swordcooldownstarted[0], swordstarttime[0], swordpassedtime[0], boltcooldownstarted[0], boltstarttime[0], boltpassedtime[0], staffx[0], staffy[0] = run_ability(charx[0], chary[0], charability[0], isactive[0], canuse[0], swordx[0], swordy[0], swordface[0], cooldownstarted[0], starttime[0], passedtime[0], arrowcollisionoccured[0], swordcooldownstarted[0], swordstarttime[0], swordpassedtime[0], boltcooldownstarted[0], boltstarttime[0], boltpassedtime[0], staffx[0], staffy[0])
         if multiplayer == True and charability[1] == 2:
-            swordx[1], swordy[1], swordwidth[1], swordheight[1], swordface[1], isactive[1], canuse[1], img_num = use_ability(char[1], charx[1], chary[1], charwidth, charheight, charface[1], charability[1], swordx[1], swordy[1], swordwidth[1], swordheight[1], swordface[1], isactive[1], canuse[1], img_num) 
-            swordx[1], swordy[1], swordface[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], swordcooldownstarted[1], swordstarttime[1], swordpassedtime[1], boltcooldownstarted[1], boltstarttime[1], boltpassedtime[1] = run_ability(charx[1], chary[1], charability[1], isactive[1], canuse[1], swordx[1], swordy[1], swordface[1], cooldownstarted[1], starttime[1], passedtime[1], arrowcollisionoccured[1], swordcooldownstarted[1], swordstarttime[1], swordpassedtime[1], boltcooldownstarted[1], boltstarttime[1], boltpassedtime[1])
+            swordx[1], swordy[1], swordwidth[1], swordheight[1], swordface[1], isactive[1], canuse[1], img_num[1] = use_ability(char[1], charx[1], chary[1], charwidth, charheight, charface[1], charability[1], swordx[1], swordy[1], swordwidth[1], swordheight[1], swordface[1], isactive[1], canuse[1], img_num[1]) 
+            swordx[1], swordy[1], swordface[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], swordcooldownstarted[1], swordstarttime[1], swordpassedtime[1], boltcooldownstarted[1], boltstarttime[1], boltpassedtime[1], staffx[1], staffy[1] = run_ability(charx[1], chary[1], charability[1], isactive[1], canuse[1], swordx[1], swordy[1], swordface[1], cooldownstarted[1], starttime[1], passedtime[1], arrowcollisionoccured[1], swordcooldownstarted[1], swordstarttime[1], swordpassedtime[1], boltcooldownstarted[1], boltstarttime[1], boltpassedtime[1], staffx[1], staffy[1])
 
         #Drawing mage bolts
         if charability[0] == 3:
-            boltx[0], bolty[0], boltwidth[0], boltheight[0], boltface[0], isactive[0], canuse[0], img_num = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], boltx[0], bolty[0], boltwidth[0], boltheight[0], boltface[0], isactive[0], canuse[0], img_num) 
-            boltx[0], bolty[0], boltface[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], swordcooldownstarted[0], swordstarttime[0], swordpassedtime[0], boltcooldownstarted[0], boltstarttime[0], boltpassedtime[0] = run_ability(charx[0], chary[0], charability[0], isactive[0], canuse[0], boltx[0], bolty[0], boltface[0], cooldownstarted[0], starttime[0], passedtime[0], boltcollisionoccured[0], swordcooldownstarted[0], swordstarttime[0], swordpassedtime[0], boltcooldownstarted[0], boltstarttime[0], boltpassedtime[0])
+            boltx[0], bolty[0], boltwidth[0], boltheight[0], boltface[0], isactive[0], canuse[0], img_num[0] = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], boltx[0], bolty[0], boltwidth[0], boltheight[0], boltface[0], isactive[0], canuse[0], img_num[0]) 
+            boltx[0], bolty[0], staffface[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], swordcooldownstarted[0], swordstarttime[0], swordpassedtime[0], boltcooldownstarted[0], boltstarttime[0], boltpassedtime[0], staffx[0], staffy[0] = run_ability(charx[0], chary[0], charability[0], isactive[0], canuse[0], boltx[0], bolty[0], charface[0], cooldownstarted[0], starttime[0], passedtime[0], boltcollisionoccured[0], swordcooldownstarted[0], swordstarttime[0], swordpassedtime[0], boltcooldownstarted[0], boltstarttime[0], boltpassedtime[0], staffx[0], staffy[0])
         if multiplayer == True and charability[1] == 3:
-            boltx[1], bolty[1], boltwidth[1], boltheight[1], boltface[1], isactive[1], canuse[1], img_num = use_ability(char[1], charx[1], chary[1], charwidth, charheight, charface[1], charability[1], boltx[1], bolty[1], boltwidth[1], boltheight[1], boltface[1], isactive[1], canuse[1], img_num) 
-            boltx[1], bolty[1], boltface[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], swordcooldownstarted[1], swordstarttime[1], swordpassedtime[1], boltcooldownstarted[1], boltstarttime[1], boltpassedtime[1] = run_ability(charx[1], chary[1], charability[1], isactive[1], canuse[1], boltx[1], bolty[1], boltface[1], cooldownstarted[1], starttime[1], passedtime[1], boltcollisionoccured[1], swordcooldownstarted[1], swordstarttime[1], swordpassedtime[1], boltcooldownstarted[1], boltstarttime[1], boltpassedtime[1])
+            boltx[1], bolty[1], boltwidth[1], boltheight[1], boltface[1], isactive[1], canuse[1], img_num[1] = use_ability(char[1], charx[1], chary[1], charwidth, charheight, charface[1], charability[1], boltx[1], bolty[1], boltwidth[1], boltheight[1], boltface[1], isactive[1], canuse[1], img_num[1]) 
+            boltx[1], bolty[1], staffface[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], swordcooldownstarted[1], swordstarttime[1], swordpassedtime[1], boltcooldownstarted[1], boltstarttime[1], boltpassedtime[1], staffx[1], staffy[1] = run_ability(charx[1], chary[1], charability[1], isactive[1], canuse[1], boltx[1], bolty[1], charface[1], cooldownstarted[1], starttime[1], passedtime[1], boltcollisionoccured[1], swordcooldownstarted[1], swordstarttime[1], swordpassedtime[1], boltcooldownstarted[1], boltstarttime[1], boltpassedtime[1], staffx[1], staffy[1])
 
         #Drawing Enemies
         enemy1x[0], enemy1y[0], enemy1face[0] = move_enemy(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], enemy1speed[0], enemy1face[0])
