@@ -13,19 +13,20 @@ pygame.display.set_caption("League Of Invaders")
 clock = pygame.time.Clock()
 size = (1280, 720)
 screen = pygame.display.set_mode(size)
-bg = pygame.image.load("gamefiles/images/dirt_bg.jpg")
+bg = pygame.image.load("gamefiles/images/dirt_bg.jpg").convert_alpha()
 bg_scale = pygame.transform.scale(bg, (1280, 720))
-char1img = pygame.image.load("gamefiles/images/green_char.png")
-char2img = pygame.image.load("gamefiles/images/blue_char.png")
-arrowimg = pygame.image.load("gamefiles/images/arrow.png")
-swordimg = pygame.image.load("gamefiles/images/sword.png")
-staffimg = pygame.image.load("gamefiles/images/staff.png")
-enemy1img = pygame.image.load("gamefiles/images/red_enemy.png")
-enemy2img = pygame.image.load("gamefiles/images/orange_enemy.png")
-ballimg = pygame.image.load("gamefiles/images/spike_ball.png")
-boltimg = [pygame.image.load("gamefiles/images/fire_ball.png"), pygame.image.load("gamefiles/images/ice_spikes.png"), pygame.image.load("gamefiles/images/lightning.png")]
-heartimg = pygame.image.load("gamefiles/images/heart.png")
-emptyheartimg = pygame.image.load("gamefiles/images/heart_empty.png")
+char1img = pygame.image.load("gamefiles/images/green_char.png").convert_alpha()
+char2img = pygame.image.load("gamefiles/images/blue_char.png").convert_alpha()
+arrowimg = pygame.image.load("gamefiles/images/arrow.png").convert_alpha()
+swordimg = pygame.image.load("gamefiles/images/sword.png").convert_alpha()
+staffimg = pygame.image.load("gamefiles/images/staff.png").convert_alpha()
+enemy1img = pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha()
+enemy2img = pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha()
+enemy3img = pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha()
+ballimg = pygame.image.load("gamefiles/images/spike_ball.png").convert_alpha()
+boltimg = [pygame.image.load("gamefiles/images/fire_ball.png").convert_alpha(), pygame.image.load("gamefiles/images/ice_spikes.png").convert_alpha(), pygame.image.load("gamefiles/images/lightning.png").convert_alpha()]
+heartimg = pygame.image.load("gamefiles/images/heart.png").convert_alpha()
+emptyheartimg = pygame.image.load("gamefiles/images/heart_empty.png").convert_alpha()
 
 #Game variables
 multiplayer = False
@@ -38,8 +39,11 @@ starttime, cooldownstarted, passedtime = [0, 0], [False, False], [0, 0]
 isactive, canuse = [False, False], [True, True]
 enemy1, enemy1x, enemy1y, enemy1width, enemy1height, enemy1face, enemy1speed = [1], [300], [200], [64], [64], [""], [1]
 enemy2, enemy2x, enemy2y, enemy2width, enemy2height, enemy2face, enemy2speed = [1], [300], [300], [64], [64], [""], [0.5]
+enemy3, enemy3x, enemy3y, enemy3width, enemy3height, enemy3face, enemy3speed, isalive = [1], [300], [100], [64], [64], [""], [0], [True]
 enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = [-100], [-100], [18], [18], [0]
-ballammo, ballisshooting = [1], [False]
+explosionx, explosiony, explosionradius, explosioncolor = [-100], [-100], [64], [[255, 255, 255]]
+ballammo, ballisactive = [1], [False]
+explosionammo, explosionisactive, cantakedamage = [1], [False], [False]
 img_num = 0
 
 #Menu setup
@@ -118,7 +122,6 @@ def draw_bolt(img, x, y, face, img_num):
             newy = y + 32
         newx = x + 100
     screen.blit(new_bolt, (newx, newy))
-
 
 #Draw pause button
 def pause_button():
@@ -221,12 +224,16 @@ def draw_screen():
     if multiplayer == True and charability[1] == 3:
         draw_bolt(boltimg[img_num], boltx[1], bolty[1], boltface[1], img_num)
 
-    #Red Enemy
+    #Enemies
     screen.blit(enemy1img, (enemy1x[0], enemy1y[0]))
     screen.blit(enemy2img, (enemy2x[0], enemy2y[0]))
+    screen.blit(enemy3img, (enemy3x[0], enemy3y[0]))
 
-    #Orange Enemy
+    #Spike ball
     screen.blit(ballimg, (enemyballx[0], enemybally[0]))
+
+    #Explosion
+    pygame.draw.circle(screen, explosioncolor[0], [explosionx[0] + 32, explosiony[0] + 32], explosionradius[0] / 2)
 
     #Pause Button
     pause_button()
@@ -236,7 +243,6 @@ def draw_screen():
 
     #Hearts
     draw_hearts(heartimg, emptyheartimg)
-
 
 #Move character function
 def move_char(char, x, y, width, height, face, ability):
@@ -389,7 +395,6 @@ def run_ability(charx, chary, ability, isactive, canuse, x, y, face, cooldownsta
             isactive = False
             x, y = -100, 0
 
-
     #Starts the cooldown after ability is done
     if isactive == False and canuse == False and collisionoccured == False:
         cooldownstarted, starttime, passedtime = ability_cooldown(cooldownstarted, starttime, passedtime)
@@ -434,6 +439,25 @@ def enemy_shoot_spike_ball(enemyx, enemyy, enemyface, ballx, bally, ballwidth, b
             ballisactive = False
             ammo += 1
     return ballx, bally, ballface, ammo, ballisactive
+
+#Run shoot explosion function
+def enemy_shoot_explosion(enemyx, enemyy, explosionx, explosiony, explosionradius, explosioncolor, explosionammo, explosionisactive, cantakedamage):
+    if explosionammo > 0 and explosionisactive == False:
+        cantakedamage = False
+        explosionammo -= 1
+        explosionx, explosiony = find_closest_char(enemyx, enemyy)
+        explosionisactive = True
+    if explosionisactive == True:
+        if explosioncolor[0] > 82 and explosioncolor[1] > 72 and explosioncolor[2] > 0:
+            explosioncolor[0] -= 0.67
+            explosioncolor[1] -= 0.71
+            explosioncolor[2] -= 1
+        else:
+            explosionammo += 1
+            explosioncolor = [255, 255, 255]
+            cantakedamage = True
+            explosionisactive = False
+    return explosionx, explosiony, explosioncolor, explosionisactive, explosionammo, cantakedamage
   
 #Find closest character
 def find_closest_char(enemyx, enemyy):
@@ -494,6 +518,21 @@ def enemy_player_collision(enemyx, enemyy, enemywidth, enemyheight, charx, chary
                         charhealth = 3
                     return charx, chary, charhealth, enemyx, enemyy
     return charx, chary, charhealth, enemyx, enemyy
+
+#Run function to detect collision between explosion and player
+def explosion_player_collision(explosionx, explosiony, explosionradius, charx, chary, charhealth, cantakedamage):
+    for enemyxpos in range(int(explosionx), int(explosionx + explosionradius)):
+        if charx + charwidth >= enemyxpos >= charx:
+            for enemyypos in range(int(explosiony), int(explosiony + explosionradius)):
+                if chary + charheight >= enemyypos >= chary:
+                    explosionx, explosiony = -100, -100
+                    cantakedamage = False
+                    charhealth -= 1
+                    if charhealth == 0:
+                        charx, chary = (random.randrange(explosionradius, size[0] - explosionradius), random.randrange(explosionradius, size[1] - explosionradius))
+                        charhealth = 3
+                    return charx, chary, charhealth, cantakedamage, explosionx, explosiony
+    return charx, chary, charhealth, cantakedamage, explosionx, explosiony
 
 #Run function to detect collision between enemy and arrow
 def enemy_arrow_collision(enemyx, enemyy, enemywidth, enemyheight, arrowx, arrowy, arrowwidth, arrowheight, isactive, canuse, cooldownstarted, starttime, passedtime, collisionoccured):
@@ -606,18 +645,25 @@ while rungame:
         if charability[0] == 3:
             boltx[0], bolty[0], boltwidth[0], boltheight[0], boltface[0], isactive[0], canuse[0], img_num = use_ability(char[0], charx[0], chary[0], charwidth, charheight, charface[0], charability[0], boltx[0], bolty[0], boltwidth[0], boltheight[0], boltface[0], isactive[0], canuse[0], img_num) 
             boltx[0], bolty[0], boltface[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], swordcooldownstarted[0], swordstarttime[0], swordpassedtime[0], boltcooldownstarted[0], boltstarttime[0], boltpassedtime[0] = run_ability(charx[0], chary[0], charability[0], isactive[0], canuse[0], boltx[0], bolty[0], boltface[0], cooldownstarted[0], starttime[0], passedtime[0], boltcollisionoccured[0], swordcooldownstarted[0], swordstarttime[0], swordpassedtime[0], boltcooldownstarted[0], boltstarttime[0], boltpassedtime[0])
-        if multiplayer == True and charability == 3:
+        if multiplayer == True and charability[1] == 3:
             boltx[1], bolty[1], boltwidth[1], boltheight[1], boltface[1], isactive[1], canuse[1], img_num = use_ability(char[1], charx[1], chary[1], charwidth, charheight, charface[1], charability[1], boltx[1], bolty[1], boltwidth[1], boltheight[1], boltface[1], isactive[1], canuse[1], img_num) 
             boltx[1], bolty[1], boltface[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], swordcooldownstarted[1], swordstarttime[1], swordpassedtime[1], boltcooldownstarted[1], boltstarttime[1], boltpassedtime[1] = run_ability(charx[1], chary[1], charability[1], isactive[1], canuse[1], boltx[1], bolty[1], boltface[1], cooldownstarted[1], starttime[1], passedtime[1], boltcollisionoccured[1], swordcooldownstarted[1], swordstarttime[1], swordpassedtime[1], boltcooldownstarted[1], boltstarttime[1], boltpassedtime[1])
-
 
         #Drawing Enemies
         enemy1x[0], enemy1y[0], enemy1face[0] = move_enemy(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], enemy1speed[0], enemy1face[0])
         enemy2x[0], enemy2y[0], enemy2face[0] = move_enemy(enemy2x[0], enemy2y[0], enemy2width[0], enemy1height[0], enemy2speed[0], enemy2face[0])
 
         #Drawing enemy spike ball
-        enemyballx[0], enemybally[0], enemyballface[0], ballammo[0], ballisshooting[0] = enemy_shoot_spike_ball(enemy2x[0], enemy2y[0], enemy2face[0], enemyballx[0], enemybally[0], enemyballwidth[0], enemyballheight[0], enemyballface[0], ballammo[0], ballisshooting[0])
+        enemyballx[0], enemybally[0], enemyballface[0], ballammo[0], ballisactive[0] = enemy_shoot_spike_ball(enemy2x[0], enemy2y[0], enemy2face[0], enemyballx[0], enemybally[0], enemyballwidth[0], enemyballheight[0], enemyballface[0], ballammo[0], ballisactive[0])
 
+        #Drawing the explosion
+        if isalive[0] == True:
+            explosionx[0], explosiony[0], explosioncolor[0], explosionisactive[0], explosionammo[0], cantakedamage[0] = enemy_shoot_explosion(enemy3x[0], enemy3y[0], explosionx[0], explosiony[0], explosionradius[0], explosioncolor[0], explosionammo[0], explosionisactive[0], cantakedamage[0])
+
+        if cantakedamage[0] == True:
+            charx[0], chary[0], charhealth[0], cantakedamage[0], explosionx[0], explosiony[0] = explosion_player_collision(explosionx[0], explosiony[0], explosionradius[0], charx[0], chary[0], charhealth[0], cantakedamage[0])
+            charx[1], chary[1], charhealth[1], cantakedamage[0], explosionx[0], explosiony[0] = explosion_player_collision(explosionx[0], explosiony[0], explosionradius[0], charx[1], chary[1], charhealth[1], cantakedamage[0])
+        
         #Enemy collision with player
         charx[0], chary[0], charhealth[0], enemy1x[0], enemy1y[0] = enemy_player_collision(enemy1x[0], enemy1y[0], enemy1width[0], enemy1height[0], charx[0], chary[0], charhealth[0])  
         if multiplayer:
@@ -625,6 +671,9 @@ while rungame:
         charx[0], chary[0], charhealth[0], enemy2x[0], enemy2y[0] = enemy_player_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], charx[0], chary[0], charhealth[0])  
         if multiplayer:
             charx[1], chary[1], charhealth[1], enemy2x[0], enemy2y[0] = enemy_player_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], charx[1], chary[1], charhealth[1])  
+        charx[0], chary[0], charhealth[0], enemy3x[0], enemy3y[0] = enemy_player_collision(enemy3x[0], enemy3y[0], enemy3width[0], enemy3height[0], charx[0], chary[0], charhealth[0])  
+        if multiplayer:
+            charx[1], chary[1], charhealth[1], enemy3x[0], enemy3y[0] = enemy_player_collision(enemy3x[0], enemy3y[0], enemy3width[0], enemy3height[0], charx[1], chary[1], charhealth[1])  
 
         #Enemy collision with arrow
         if charability[0] == 1:
@@ -635,6 +684,10 @@ while rungame:
             enemy2x[0], enemy2y[0], arrowx[0], arrowy[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], arrowcollisionoccured[0] = enemy_arrow_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], arrowcollisionoccured[0])
         if charability[1] == 1 and multiplayer == True:
             enemy2x[0], enemy2y[0], arrowx[1], arrowy[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], arrowcollisionoccured[1] = enemy_arrow_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], arrowcollisionoccured[1])
+        if charability[0] == 1:
+            enemy3x[0], enemy3y[0], arrowx[0], arrowy[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], arrowcollisionoccured[0] = enemy_arrow_collision(enemy3x[0], enemy3y[0], enemy2width[0], enemy2height[0], arrowx[0], arrowy[0], arrowwidth[0], arrowheight[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0], arrowcollisionoccured[0])
+        if charability[1] == 1 and multiplayer == True:
+            enemy3x[0], enemy3y[0], arrowx[1], arrowy[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], arrowcollisionoccured[1] = enemy_arrow_collision(enemy3x[0], enemy3y[0], enemy2width[0], enemy2height[0], arrowx[1], arrowy[1], arrowwidth[1], arrowheight[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1], arrowcollisionoccured[1])
         
         #Enemy collision with sword
         if charability[0] == 2:
@@ -645,11 +698,15 @@ while rungame:
             enemy2x[0], enemy2y[0], swordx[0], swordy[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0] = enemy_sword_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], swordx[0], swordy[0], swordwidth[0], swordheight[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0])
         if charability[1] == 2 and multiplayer == True:
             enemy2x[0], enemy2y[0], swordx[1], swordy[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1] = enemy_sword_collision(enemy2x[0], enemy2y[0], enemy2width[0], enemy2height[0], swordx[1], swordy[1], swordwidth[1], swordheight[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1])
+        if charability[0] == 2:
+            enemy3x[0], enemy3y[0], swordx[0], swordy[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0] = enemy_sword_collision(enemy3x[0], enemy3y[0], enemy2width[0], enemy2height[0], swordx[0], swordy[0], swordwidth[0], swordheight[0], isactive[0], canuse[0], cooldownstarted[0], starttime[0], passedtime[0])
+        if charability[1] == 2 and multiplayer == True:
+            enemy3x[0], enemy3y[0], swordx[1], swordy[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1] = enemy_sword_collision(enemy3x[0], enemy3y[0], enemy2width[0], enemy2height[0], swordx[1], swordy[1], swordwidth[1], swordheight[1], isactive[1], canuse[1], cooldownstarted[1], starttime[1], passedtime[1])
                        
         #Enemy spike ball collision with player
-        enemyballx[0], enemybally[0], charx[0], chary[0], ballisshooting[0], ballammo[0], charhealth[0] = player_ball_collision(enemyballx[0], enemybally[0], charx[0], chary[0], charwidth, charheight, ballisshooting[0], ballammo[0], charhealth[0])
+        enemyballx[0], enemybally[0], charx[0], chary[0], ballisactive[0], ballammo[0], charhealth[0] = player_ball_collision(enemyballx[0], enemybally[0], charx[0], chary[0], charwidth, charheight, ballisactive[0], ballammo[0], charhealth[0])
         if multiplayer:
-            enemyballx[0], enemybally[0], charx[1], chary[1], ballisshooting[0], ballammo[0], charhealth[1] = player_ball_collision(enemyballx[0], enemybally[0], charx[1], chary[1], charwidth, charheight, ballisshooting[0], ballammo[0], charhealth[1])
+            enemyballx[0], enemybally[0], charx[1], chary[1], ballisactive[0], ballammo[0], charhealth[1] = player_ball_collision(enemyballx[0], enemybally[0], charx[1], chary[1], charwidth, charheight, ballisactive[0], ballammo[0], charhealth[1])
 
         #Draw all the changes
         draw_screen()
