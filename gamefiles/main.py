@@ -58,6 +58,7 @@ LIGHT_GR = (211, 211, 211)
 DARK_GR = (71, 71, 71)
 WHITE = (255, 255, 255)
 player_count = 0
+player_score = [0, 0]
 
 #Draw characters
 def draw_char(img, x, y, face):
@@ -177,6 +178,16 @@ def draw_hearts(img, empty_img):
         for i in range(0, 3 - charhealth[1]):
             screen.blit(empty_img, (1020 - 100 * i, 620))
 
+#Creates the text that will show total player score
+def draw_player_score(player_score):
+    from main import big_font, BLACK
+    #Sum all values of the list to get total score
+    total_score = sum(player_score)
+
+    score = big_font.render("Score: " + str(total_score), True, BLACK)
+
+    screen.blit(score, (530, 10))
+
 #Draw the screen
 def draw_screen():
     #Background
@@ -224,6 +235,9 @@ def draw_screen():
 
     #Hearts
     draw_hearts(heartimg, emptyheartimg)
+
+    #Total score
+    draw_player_score(player_score)
 
 #Move character function
 def move_char(char):
@@ -405,7 +419,7 @@ def run_ability(char):
             staffx[i], staffy[i] = -100, -100
 
     #Starts the cooldown after ability is done
-    from main import cooldownstarted, starttime, passedtime, arrowcollisionoccured, boltcollisionoccured
+    from main import cooldownstarted, starttime, passedtime, arrowcollisionoccured
     if isactive[i] == False and canuse[i] == False and arrowcollisionoccured[i] == False:
         cooldownstarted[i], starttime[i], passedtime[i] = ability_cooldown(cooldownstarted[i], starttime[i], passedtime[i])
         if passedtime[i] >= 1000:
@@ -576,6 +590,13 @@ def enemy_arrow_collision(char, enemytype, enemy):
                     enemyx[t][i], enemyy[t][i] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
                     arrowx[c], arrowy[c] = -64, -64 
                     isactive[c] = False
+                    if enemytype == 1:
+                        player_score[c] += 25
+                    elif enemytype == 2:
+                        player_score[c] += 40
+                    elif enemytype == 3:
+                        player_score[c] += 10
+
     if arrowcollisionoccured[c] == True:
         cooldownstarted[c], starttime[c], passedtime[c] = ability_cooldown(cooldownstarted[c], starttime[c], passedtime[c])
         if passedtime[c] >= 1000:
@@ -590,12 +611,23 @@ def enemy_sword_collision(char, enemytype, enemy):
     t = enemytype - 1
     i = enemy - 1
     c = char - 1
+    swordcollisionoccured = [False, False]
 
     for enemyxpos in range(int(enemyx[t][i]), int(enemyx[t][i] + enemywidth)):
         if swordx[c] + swordwidth[c] >= enemyxpos >= swordx[c]:
             for enemyypos in range(int(enemyy[t][i]), int(enemyy[t][i] + enemyheight)):
                 if swordy[c] + swordheight[c] >= enemyypos >= swordy[c]:
                     enemyx[t][i], enemyy[t][i] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
+                    swordcollisionoccured[c] = True
+    
+    if swordcollisionoccured[c] == True:
+        #Adding points to the individual players score based on enemy type
+        if enemytype == 1:
+            player_score[c] += 25
+        elif enemytype == 2:
+            player_score[c] += 40
+        elif enemytype == 3:
+            player_score[c] += 10
 
 #Run function to detect collision between enemy and mage bolt
 def enemy_bolt_collision(char, enemytype, enemy):
@@ -605,6 +637,7 @@ def enemy_bolt_collision(char, enemytype, enemy):
     c = char - 1
     x = [0, 0]
     y = [0, 0]
+    boltcollisionoccured = [False, False]
 
     if boltface[c] == 0:
         y[c] = -100
@@ -620,6 +653,16 @@ def enemy_bolt_collision(char, enemytype, enemy):
             for enemyypos in range(int(enemyy[t][i]), int(enemyy[t][i] + enemyheight)):
                 if (bolty[c] + y[c]) + boltheight[c] >= enemyypos >= (bolty[c] + y[c]):
                     enemyx[t][i], enemyy[t][i] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
+                    boltcollisionoccured[c] = True
+
+    if boltcollisionoccured[c] == True:
+        #Adding points to the individual players score based on enemy type
+        if enemytype == 1:
+            player_score[c] += 25
+        elif enemytype == 2:
+            player_score[c] += 40
+        elif enemytype == 3:
+            player_score[c] += 10
 
 #Run function to detect collision between enemy and ball
 def player_ball_collision(char, enemyball):
@@ -653,7 +696,8 @@ def reset_menu():
     main.charhealth = [3, 3]
     main.charface, main.arrowface, main.swordface = [0, 0], [0, 0], [0, 0]
     main.enemyballx, main.enemybally, main.explosionx, main.explosiony = [-100], [-100], [-100], [-100]
-    playMenu.selected = [0,0]
+    playMenu.selected = [0, 0]
+    main.player_score = [0, 0]
     
 #Main game loop
 rungame = True
