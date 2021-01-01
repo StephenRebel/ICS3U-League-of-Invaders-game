@@ -597,6 +597,30 @@ def enemy_sword_collision(char, enemytype, enemy):
                 if swordy[c] + swordheight[c] >= enemyypos >= swordy[c]:
                     enemyx[t][i], enemyy[t][i] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
 
+#Run function to detect collision between enemy and mage bolt
+def enemy_bolt_collision(char, enemytype, enemy):
+    from main import enemyx, enemyy, enemywidth, enemyheight, boltx, bolty, boltwidth, boltheight, isactive, canuse, cooldownstarted, starttime, passedtime, boltface, multiplayer
+    t = enemytype - 1
+    i = enemy - 1
+    c = char - 1
+    x = [0, 0]
+    y = [0, 0]
+
+    if boltface[c] == 0:
+        y[c] = -100
+    elif boltface[c] == 90:
+        x[c] = -100
+    elif boltface[c] == 180:
+        y[c] = 100
+    elif boltface[c] == 270:
+        x[c] = 100
+
+    for enemyxpos in range(int(enemyx[t][i]), int(enemyx[t][i] + enemywidth)):
+        if (boltx[c] + x[c]) + boltwidth[c] >= enemyxpos >= (boltx[c] + x[c]):
+            for enemyypos in range(int(enemyy[t][i]), int(enemyy[t][i] + enemyheight)):
+                if (bolty[c] + y[c]) + boltheight[c] >= enemyypos >= (bolty[c] + y[c]):
+                    enemyx[t][i], enemyy[t][i] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
+
 #Run function to detect collision between enemy and ball
 def player_ball_collision(char, enemyball):
     from main import enemyballx, enemybally, charx, chary, charhealth, charwidth, charheight, ballisactive, ballammo
@@ -730,7 +754,16 @@ while rungame:
         if charability[1] == 2 and multiplayer == True:
             enemy_sword_collision(char[1], enemytype[0], enemy[0][0])  
             enemy_sword_collision(char[1], enemytype[1], enemy[1][0])   
-            enemy_sword_collision(char[1], enemytype[2], enemy[2][0])    
+            enemy_sword_collision(char[1], enemytype[2], enemy[2][0])
+        #Enemy collision with mage bolt
+        if charability[0] == 3:
+            enemy_bolt_collision(char[0], enemytype[0], enemy[0][0])
+            enemy_bolt_collision(char[0], enemytype[1], enemy[1][0])
+            enemy_bolt_collision(char[0], enemytype[2], enemy[2][0])
+        if charability[1] == 3 and multiplayer == True:
+            enemy_bolt_collision(char[1], enemytype[0], enemy[0][0])
+            enemy_bolt_collision(char[1], enemytype[1], enemy[1][0])
+            enemy_bolt_collision(char[1], enemytype[2], enemy[2][0])    
 
         #Enemy spike ball collision with player
         player_ball_collision(char[0], enemyball[0])
