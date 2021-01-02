@@ -3,7 +3,7 @@ selected = [0, 0]
 def char_selection():
     #Importing all necessary libraries and variables from main
     import main
-    from main import pygame, title_font, big_font, med_font, background, window, BLACK, RED, DARK_GR, LIGHT_GR, screen, arrowimg, staffimg, swordimg, grayed_out, player_count, charability, reset_menu
+    from main import pygame, title_font, big_font, med_font, background, window, BLACK, RED, DARK_GR, LIGHT_GR, screen, arrowimg, staffimg, swordimg, grayed_out, player_count, charability, reset_menu, menuselectsound
     pygame.init()
 
     #Added variables needed for this menu
@@ -64,6 +64,7 @@ def char_selection():
         main.window = 0
         reset_menu()
         pygame.time.delay(100)
+        menuselectsound.play()
     elif 8 <= mouse[0] <= 108 and 8 <= mouse[1] <= 58:
         pygame.draw.rect(screen, DARK_GR, (8, 8, 100, 50))
         pygame.draw.rect(screen, RED, (5, 5, 106, 56), 3, 5)
@@ -81,6 +82,7 @@ def char_selection():
         pygame.draw.rect(screen, RED, (825, 70, 410, 110), 5, 8)
         screen.blit(text6, (840, 90))
         pygame.time.delay(100)
+        menuselectsound.play()
     elif 830 <= mouse[0] <= 1230 and 75 <= mouse[1] <= 175:
         pygame.draw.rect(screen, DARK_GR, (830, 75, 400, 100))
         pygame.draw.rect(screen, RED, (825, 70, 410, 110), 5, 8)
@@ -98,6 +100,7 @@ def char_selection():
         pygame.draw.rect(screen, RED, (825, 220, 410, 110), 5, 8)
         screen.blit(text8, (850, 240))
         pygame.time.delay(100)
+        menuselectsound.play()
     elif 830 <= mouse[0] <= 1230 and 225 <= mouse[1] <= 325:
         pygame.draw.rect(screen, DARK_GR, (830, 225, 400, 100))
         pygame.draw.rect(screen, RED, (825, 220, 410, 110), 5, 8)
@@ -133,6 +136,7 @@ def char_selection():
                 pygame.draw.rect(screen, GOLD, (130, 197, 70, 70), 5)
                 main.charability[0] = 1
                 pygame.time.delay(100)
+                menuselectsound.play()
         elif selected[0] == 1:
             pygame.draw.rect(screen, DARK_GREEN, (133, 200, 64, 64))
             screen.blit(arrowimg, (133, 200))
@@ -158,6 +162,7 @@ def char_selection():
                 pygame.draw.rect(screen, GOLD, (205, 197, 70, 70), 5)
                 main.charability[0] = 2
                 pygame.time.delay(100)
+                menuselectsound.play()
         elif selected[0] == 2:
             pygame.draw.rect(screen, DARK_GREEN, (208, 200, 64, 64))
             screen.blit(swordimg, (208, 200))
@@ -183,6 +188,7 @@ def char_selection():
                 pygame.draw.rect(screen, GOLD, (280, 197, 70, 70), 5)
                 main.charability[0] = 3
                 pygame.time.delay(100)
+                menuselectsound.play()
         elif selected[0] == 3:
             pygame.draw.rect(screen, DARK_GREEN, (283, 200, 64, 64))
             screen.blit(staffimg, (283, 200))
@@ -203,6 +209,7 @@ def char_selection():
             if 730 <= mouse[0] <= 1230 and 470 <= mouse[1] <= 645 and pressed[0] == True:
                 main.window = 4
                 pygame.time.delay(100)
+                menuselectsound.play()
             elif 730 <= mouse[0] <= 1230 and 470 <= mouse[1] <= 645:
                 pygame.draw.rect(screen, DARK_GR, (730, 470, 500, 175))
                 screen.blit(text2, (795, 485))
@@ -232,6 +239,7 @@ def char_selection():
                 pygame.draw.rect(screen, GOLD, (130, 197, 70, 70), 5)
                 main.charability[0] = 1
                 pygame.time.delay(100)
+                menuselectsound.play()
         elif selected[0] == 1:
             pygame.draw.rect(screen, DARK_GREEN, (133, 200, 64, 64))
             screen.blit(arrowimg, (133, 200))
@@ -257,6 +265,7 @@ def char_selection():
                 pygame.draw.rect(screen, GOLD, (205, 197, 70, 70), 5)
                 main.charability[0] = 2
                 pygame.time.delay(100)
+                menuselectsound.play()
         elif selected[0] == 2:
             pygame.draw.rect(screen, DARK_GREEN, (208, 200, 64, 64))
             screen.blit(swordimg, (208, 200))
@@ -282,6 +291,7 @@ def char_selection():
                 pygame.draw.rect(screen, GOLD, (280, 197, 70, 70), 5)
                 main.charability[0] = 3
                 pygame.time.delay(100)
+                menuselectsound.play()
         elif selected[0] == 3:
             pygame.draw.rect(screen, DARK_GREEN, (283, 200, 64, 64))
             screen.blit(staffimg, (283, 200))
@@ -307,6 +317,7 @@ def char_selection():
                 pygame.draw.rect(screen, GOLD, (130, 512, 70, 70), 5)
                 main.charability[1] = 1
                 pygame.time.delay(100)
+                menuselectsound.play()
         elif selected[1] == 1:
             pygame.draw.rect(screen, DARK_GREEN, (133, 515, 64, 64))
             screen.blit(arrowimg, (133, 515))
@@ -332,6 +343,7 @@ def char_selection():
                 pygame.draw.rect(screen, GOLD, (205, 512, 70, 70), 5)
                 main.charability[1] = 2
                 pygame.time.delay(100)
+                menuselectsound.play()
         elif selected[1] == 2:
             pygame.draw.rect(screen, DARK_GREEN, (208, 515, 64, 64))
             screen.blit(swordimg, (208, 515))
@@ -357,6 +369,7 @@ def char_selection():
                 pygame.draw.rect(screen, GOLD, (280, 512, 70, 70), 5)
                 main.charability[1] = 3
                 pygame.time.delay(100)
+                menuselectsound.play()
         elif selected[1] == 3:
             pygame.draw.rect(screen, DARK_GREEN, (283, 515, 64, 64))
             screen.blit(staffimg, (283, 515))
@@ -377,6 +390,7 @@ def char_selection():
             if 730 <= mouse[0] <= 1230 and 470 <= mouse[1] <= 645 and pressed[0] == True:
                 main.window = 4
                 pygame.time.delay(100)
+                menuselectsound.play()
             elif 730 <= mouse[0] <= 1230 and 470 <= mouse[1] <= 645:
                 pygame.draw.rect(screen, DARK_GR, (730, 470, 500, 175))
                 screen.blit(text2, (795, 485))

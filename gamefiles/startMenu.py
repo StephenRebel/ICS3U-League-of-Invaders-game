@@ -2,7 +2,7 @@
 def menu():
     #Importing the necessary libraries and varibales from the main
     import main
-    from main import pygame, window, big_font, med_font, background, BLACK, RED, DARK_GR, LIGHT_GR, screen, size
+    from main import pygame, window, big_font, med_font, background, BLACK, RED, DARK_GR, LIGHT_GR, screen, size, menuselectsound
     pygame.init()
 
     #Handles a quit event
@@ -33,6 +33,7 @@ def menu():
     if 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675 and pressed[0] == True:
         main.window = 3
         pygame.time.delay(100)
+        menuselectsound.play()
     elif 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675:
         pygame.draw.rect(screen, DARK_GR, ((size[0]/2) - 194, 561, 389, 114))
         screen.blit(text2, (575, 585))
@@ -45,6 +46,7 @@ def menu():
     if 78 <= mouse[0] <= 372 and 578 <= mouse[1] <= 657 and pressed[0] == True:
         main.window = 1
         pygame.time.delay(100)
+        menuselectsound.play()
     elif 78 <= mouse[0] <= 372 and 578 <= mouse[1] <= 657:
         pygame.draw.rect(screen, DARK_GR, (78, 578, 294, 79))
         screen.blit(text4, (133, 595))
@@ -57,6 +59,7 @@ def menu():
     if 908 <= mouse[0] <= 1202 and 578 <= mouse[1] <= 657 and pressed[0] == True:
         main.window = 2
         pygame.time.delay(100)
+        menuselectsound.play()
     elif 908 <= mouse[0] <= 1202 and 578 <= mouse[1] <= 657:
         pygame.draw.rect(screen, DARK_GR, (908, 578, 294, 79))
         screen.blit(text6, (930, 595))

@@ -50,8 +50,14 @@ title_font = pygame.font.SysFont("Cambria", 65)
 big_font = pygame.font.SysFont("Cambria", 54)
 med_font = pygame.font.SysFont("Cambria", 36)
 sml_font = pygame.font.SysFont("Cambria", 24)
-background = pygame.image.load("gamefiles/images/game_background.jpg")
-grayed_out = pygame.image.load("gamefiles/images/gray_out.png")
+background = pygame.image.load("gamefiles/images/game_background.jpg").convert_alpha()
+grayed_out = pygame.image.load("gamefiles/images/gray_out.png").convert_alpha()
+menuselectsound = pygame.mixer.Sound("gamefiles/sounds/menu_select_sound.wav")
+sworduse = pygame.mixer.Sound("gamefiles/sounds/sword_use.wav")
+bowuse = pygame.mixer.Sound("gamefiles/sounds/bow_use.wav")
+staffuse = pygame.mixer.Sound("gamefiles/sounds/staff_use.wav")
+enemyhit = pygame.mixer.Sound("gamefiles/sounds/enemy_hit.wav")
+playerhit = pygame.mixer.Sound("gamefiles/sounds/player_hit.wav")
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 LIGHT_GR = (211, 211, 211)
@@ -93,14 +99,6 @@ def draw_sword(img, x, y, face):
 #Draw mage bolts
 def draw_bolt(img, x, y, face, img_num, staff, staffx, staffy, staffface):
     new_staff = pygame.transform.rotate(staff, staffface)
-    if face == 0:
-        y -= 100
-    elif face == 90:
-        x -= 100
-    elif face == 180:
-        y += 100
-    elif face == 270:
-        x += 100
     screen.blit(img, (x, y))
     screen.blit(new_staff, (staffx, staffy))
 
@@ -292,6 +290,7 @@ def use_ability(char):
     #Arrow ability    
     if charability[i] == 1 and key_type[0] and isactive[i] == False and canuse[i] == True:
         from main import arrowx, arrowy, arrowwidth, arrowheight, arrowface
+        bowuse.play()
         arrowface[i] = charface[i]
         if arrowface[i] == 0 or arrowface[i] == 180:
             arrowwidth[i], arrowheight[i] = 8, 64
@@ -305,6 +304,7 @@ def use_ability(char):
     #Sword ability
     elif charability[i] == 2 and key_type[0] and isactive[i] == False and canuse[i] == True:
         from main import swordx, swordy, swordwidth, swordheight, swordface
+        sworduse.play()
         swordface[i] = charface[i]
         if swordface[i] == 0:
             swordwidth[i], swordheight[i] = 22, 50
@@ -324,16 +324,17 @@ def use_ability(char):
     #Mage bolt ability
     elif charability[i] == 3 and key_type[0] and isactive[i] == False and canuse[i] == True:
         from main import boltx, bolty, boltface, img_num
+        staffuse.play()
         img_num[i] = random.randrange(0,3)
         boltface[i] = charface[i]
         if boltface[i] == 0:
-            boltx[i], bolty[i] = charx[i], chary[i] - charheight
+            boltx[i], bolty[i] = charx[i], chary[i] - charheight - 128
         elif boltface[i] == 90:
-            boltx[i], bolty[i] = charx[i] - charwidth, chary[i]
+            boltx[i], bolty[i] = charx[i] - charwidth - 128, chary[i]
         elif boltface[i] == 180:
-            boltx[i], bolty[i] = charx[i], chary[i] + charheight
+            boltx[i], bolty[i] = charx[i], chary[i] + charheight + 128
         elif boltface[i] == 270:
-            boltx[i], bolty[i] = charx[i] + charwidth, chary[i]
+            boltx[i], bolty[i] = charx[i] + charwidth + 128, chary[i]
         isactive[i] = True
         canuse[i] = False
 
@@ -536,6 +537,7 @@ def enemy_player_collision(char, enemytype, enemy):
         if charx[c] + charwidth >= enemyxpos >= charx[c]:
             for enemyypos in range(int(enemyy[t][i]), int(enemyy[t][i] + enemyheight)):
                 if chary[c] + charheight >= enemyypos >= chary[c]:
+                    playerhit.play()
                     enemyx[t][i], enemyy[t][i] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))    
                     charhealth[c] -= 1
                     if charhealth[c] == 0:
@@ -554,6 +556,7 @@ def explosion_player_collision(explosion, char):
         if charx[i] + charwidth >= enemyxpos >= charx[i]:
             for enemyypos in range(int(explosiony[e]), int(explosiony[e] + explosionradius)):
                 if chary[i] + charheight >= enemyypos >= chary[i]:
+                    playerhit.play()
                     charhealth[i] -= 1
                     if charhealth[i] == 0:
                         charx[i], chary[i] = (random.randrange(explosionradius, size[0] - explosionradius), random.randrange(explosionradius, size[1] - explosionradius))
@@ -572,6 +575,7 @@ def enemy_arrow_collision(char, enemytype, enemy):
         if arrowx[c] + arrowwidth[c] >= enemyxpos >= arrowx[c]:
             for enemyypos in range(int(enemyy[t][i]), int(enemyy[t][i] + enemyheight)):
                 if arrowy[c] + arrowheight[c] >= enemyypos >= arrowy[c]:
+                    enemyhit.play()
                     collisionoccured = True
                     enemyx[t][i], enemyy[t][i] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
                     arrowx[c], arrowy[c] = -64, -64 
@@ -595,6 +599,7 @@ def enemy_sword_collision(char, enemytype, enemy):
         if swordx[c] + swordwidth[c] >= enemyxpos >= swordx[c]:
             for enemyypos in range(int(enemyy[t][i]), int(enemyy[t][i] + enemyheight)):
                 if swordy[c] + swordheight[c] >= enemyypos >= swordy[c]:
+                    enemyhit.play()
                     enemyx[t][i], enemyy[t][i] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
 
 #Run function to detect collision between enemy and mage bolt
@@ -603,22 +608,12 @@ def enemy_bolt_collision(char, enemytype, enemy):
     t = enemytype - 1
     i = enemy - 1
     c = char - 1
-    x = [0, 0]
-    y = [0, 0]
-
-    if boltface[c] == 0:
-        y[c] = -100
-    elif boltface[c] == 90:
-        x[c] = -100
-    elif boltface[c] == 180:
-        y[c] = 100
-    elif boltface[c] == 270:
-        x[c] = 100
 
     for enemyxpos in range(int(enemyx[t][i]), int(enemyx[t][i] + enemywidth)):
-        if (boltx[c] + x[c]) + boltwidth[c] >= enemyxpos >= (boltx[c] + x[c]):
+        if (boltx[c]) + boltwidth[c] >= enemyxpos >= (boltx[c]):
             for enemyypos in range(int(enemyy[t][i]), int(enemyy[t][i] + enemyheight)):
-                if (bolty[c] + y[c]) + boltheight[c] >= enemyypos >= (bolty[c] + y[c]):
+                if (bolty[c]) + boltheight[c] >= enemyypos >= (bolty[c]):
+                    enemyhit.play()
                     enemyx[t][i], enemyy[t][i] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
 
 #Run function to detect collision between enemy and ball
@@ -631,6 +626,7 @@ def player_ball_collision(char, enemyball):
         if charx[c] + charwidth >= ballxpos >= charx[c]:
             for ballypos in range(int(enemybally[b] + 18), int(enemybally[b] + 48)):
                 if chary[c] + charheight >= ballypos >= chary[c]:
+                    playerhit.play()
                     enemyballx[b], enemybally[b] = -64, -64 
                     ballisactive[b] = False
                     ballammo[b] += 1

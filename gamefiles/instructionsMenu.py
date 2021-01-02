@@ -2,7 +2,7 @@
 def instructions():
     #Importing the necessary libraries and varibales from the main
     import main
-    from main import pygame, window, big_font, med_font, title_font, background, BLACK, RED, DARK_GR, LIGHT_GR, WHITE, screen, size
+    from main import pygame, window, big_font, med_font, title_font, background, BLACK, RED, DARK_GR, LIGHT_GR, WHITE, screen, size, menuselectsound
     pygame.init()
 
     #Handles a quit event
@@ -41,6 +41,7 @@ def instructions():
     if 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675 and pressed[0] == True:
         main.window = 0
         pygame.time.delay(100)
+        menuselectsound.play()
     elif 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675:
         pygame.draw.rect(screen, DARK_GR, ((size[0]/2) - 194, 561, 389, 114))
         screen.blit(text9, (493, 585))
