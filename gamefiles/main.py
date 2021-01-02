@@ -7,6 +7,7 @@ from controlsMenu import controls
 from instructionsMenu import instructions
 from playMenu import char_selection
 from pauseMenu import pause
+from endMenu import end_menu
 
 #Basic game setup
 pygame.display.set_caption("League Of Invaders")
@@ -64,7 +65,7 @@ LIGHT_GR = (211, 211, 211)
 DARK_GR = (71, 71, 71)
 WHITE = (255, 255, 255)
 player_count = 0
-player_score = [0, 0]
+player_score, enemies_killed, abilities_used, time_played, distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
 
 #Draw characters
 def draw_char(img, x, y, face):
@@ -289,6 +290,7 @@ def move_char(char):
             chary[i] = size[1] - charheight
         else:
             chary[i] += 2 + extraspeed
+    distance_travelled[i] += 1
 
 #Use ability function
 def use_ability(char):
@@ -306,6 +308,7 @@ def use_ability(char):
     if charability[i] == 1 and key_type[0] and isactive[i] == False and canuse[i] == True:
         from main import arrowx, arrowy, arrowwidth, arrowheight, arrowface
         bowuse.play()
+        abilities_used[i] += 1
         arrowface[i] = charface[i]
         if arrowface[i] == 0 or arrowface[i] == 180:
             arrowwidth[i], arrowheight[i] = 8, 64
@@ -320,6 +323,7 @@ def use_ability(char):
     elif charability[i] == 2 and key_type[0] and isactive[i] == False and canuse[i] == True:
         from main import swordx, swordy, swordwidth, swordheight, swordface
         sworduse.play()
+        abilities_used[i] += 1
         swordface[i] = charface[i]
         if swordface[i] == 0:
             swordwidth[i], swordheight[i] = 22, 50
@@ -340,6 +344,7 @@ def use_ability(char):
     elif charability[i] == 3 and key_type[0] and isactive[i] == False and canuse[i] == True:
         from main import boltx, bolty, boltface, img_num
         staffuse.play()
+        abilities_used[i] += 1
         img_num[i] = random.randrange(0,3)
         boltface[i] = charface[i]
         if boltface[i] == 0:
@@ -601,6 +606,7 @@ def enemy_arrow_collision(char, enemytype, enemy):
                         player_score[c] += 40
                     elif enemytype == 3:
                         player_score[c] += 10
+                    enemies_killed[c] += 1
 
     if arrowcollisionoccured[c] == True:
         cooldownstarted[c], starttime[c], passedtime[c] = ability_cooldown(cooldownstarted[c], starttime[c], passedtime[c])
@@ -634,6 +640,7 @@ def enemy_sword_collision(char, enemytype, enemy):
             player_score[c] += 40
         elif enemytype == 3:
             player_score[c] += 10
+        enemies_killed[c] += 1
 
 #Run function to detect collision between enemy and mage bolt
 def enemy_bolt_collision(char, enemytype, enemy):
@@ -659,6 +666,7 @@ def enemy_bolt_collision(char, enemytype, enemy):
             player_score[c] += 40
         elif enemytype == 3:
             player_score[c] += 10
+        enemies_killed[c] += 1
 
 #Run function to detect collision between enemy and ball
 def player_ball_collision(char, enemyball):
@@ -686,7 +694,7 @@ def reset_menu():
     import main
     import playMenu
     from playMenu import selected
-    from main import player_count, charability, charx, chary, charhealth, arrowx, arrowy, swordx, swordy, enemyx, enemyy, charface, arrowface, swordface, enemyballx, enemybally, explosionx, explosiony
+    from main import player_count, charability, charx, chary, charhealth, arrowx, arrowy, swordx, swordy, enemyx, enemyy, charface, arrowface, swordface, enemyballx, enemybally, explosionx, explosiony, enemies_killed, abilities_used, time_played, distance_travelled
 
     main.player_count, main.charability, main.charx, main.chary, main.arrowx, main.arrowy, main.swordx, main.swordy = 0, [0,0], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [-100, -100], [0, 0], [-100, -100], [0, 0]
     main.enemyx, main.enemyy = [[300], [300], [300]], [[200], [300], [100]]
@@ -694,7 +702,7 @@ def reset_menu():
     main.charface, main.arrowface, main.swordface = [0, 0], [0, 0], [0, 0]
     main.enemyballx, main.enemybally, main.explosionx, main.explosiony = [-100], [-100], [-100], [-100]
     playMenu.selected = [0, 0]
-    main.player_score = [0, 0]
+    main.player_score, main.enemies_killed, main.abilities_used, main.time_played, main.distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
     
 #Main game loop
 rungame = True
@@ -725,6 +733,8 @@ while rungame:
 
     #Main game
     elif window == 4:
+        #loose game timer
+        time_played += round(0.01)
         #Drawing characters
         move_char(char[0])
         if multiplayer == True:

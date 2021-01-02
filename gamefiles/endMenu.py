@@ -1,7 +1,7 @@
 #Menu to display the end of the game and show some interesting stats
 def end_menu():
     import main 
-    from main import pygame, window, title_font, big_font, sml_font, BLACK, RED, DARK_GR, LIGHT_GR, background, player_score, screen
+    from main import pygame, window, title_font, big_font, sml_font, BLACK, RED, DARK_GR, LIGHT_GR, background, screen, player_score, enemies_killed, abilities_used, time_played, distance_travelled, menuselectsound
     pygame.init()
 
     #Allows for a quit event
@@ -16,6 +16,7 @@ def end_menu():
     #Setpup the screen
     screen.blit(background, (0, 0))
 
+    #Initiate all the texts
     text1 = big_font.render("MAIN MENU", True, BLACK)
     text2 = big_font.render("MAIN MENU", True, RED)
     text3 = title_font.render("GAME OVER", True, BLACK)
@@ -32,6 +33,21 @@ def end_menu():
     text14 = sml_font.render("P1 distance travelled:", True, BLACK)
     text15 = sml_font.render("P2 distance travelled:", True, BLACK)
 
+    #Initiate all the stats
+    stat1 = sml_font.render(str(sum(player_score)), True, BLACK)
+    stat2 = sml_font.render(str(player_score[0]), True, BLACK)
+    stat3 = sml_font.render(str(player_score[1]), True, BLACK)
+    stat4 = sml_font.render(str(sum(enemies_killed)), True, BLACK)
+    stat5 = sml_font.render(str(enemies_killed[0]), True, BLACK)
+    stat6 = sml_font.render(str(enemies_killed[1]), True, BLACK)
+    stat7 = sml_font.render(str(sum(abilities_used)), True, BLACK)
+    stat8 = sml_font.render(str(abilities_used[0]), True, BLACK)
+    stat9 = sml_font.render(str(abilities_used[1]), True, BLACK)
+    stat10 = sml_font.render(str(time_played), True, BLACK)
+    stat11 = sml_font.render(str(distance_travelled[0]), True, BLACK)
+    stat12 = sml_font.render(str(distance_travelled[1]), True, BLACK)
+
+    #Output all stats and text to the screen
     pygame.draw.rect(screen, LIGHT_GR, (50, 25, 500, 670), 50, 75)
     pygame.draw.rect(screen, LIGHT_GR, (100, 75, 400, 570))
     pygame.draw.rect(screen, BLACK, (45, 20, 510, 680), 8, 80)
@@ -49,10 +65,23 @@ def end_menu():
     screen.blit(text13, (80, 520))
     screen.blit(text14, (80, 580))
     screen.blit(text15, (80, 610))
+    screen.blit(stat1, (430, 160))
+    screen.blit(stat2, (430, 190))
+    screen.blit(stat3, (430, 220))
+    screen.blit(stat4, (430, 280))
+    screen.blit(stat5, (430, 310))
+    screen.blit(stat6, (430, 340))
+    screen.blit(stat7, (430, 400))
+    screen.blit(stat8, (430, 430))
+    screen.blit(stat9, (430, 460))
+    screen.blit(stat10, (430, 520))
+    screen.blit(stat11, (430, 580))
+    screen.blit(stat12, (430, 610))
 
     #Main menu button to return and play again if wanted
     pygame.draw.rect(screen, BLACK, (800, 540, 410, 135), 5, 8)
     if 805 <= mouse[0] <= 1205 and 545 <= mouse[1] <= 670 and pressed[0] == True:
+        menuselectsound.play()
         main.window = 0
         pygame.time.delay(100)
     elif 805 <= mouse[0] <= 1205 and 545 <= mouse[1] <= 670:
