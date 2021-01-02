@@ -545,7 +545,8 @@ def move_enemy(enemytype, enemy):
 
 #Run function to detect collision between enemy and player
 def enemy_player_collision(char, enemytype, enemy):
-    from main import enemyx, enemyy, enemywidth, enemyheight, charx, chary, charhealth
+    import main
+    from main import enemyx, enemyy, enemywidth, enemyheight, charx, chary, charhealth, window
     c = 0
     if char == 1:
         c = 0
@@ -560,7 +561,9 @@ def enemy_player_collision(char, enemytype, enemy):
                     playerhit.play()
                     enemyx[t][i], enemyy[t][i] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))    
                     charhealth[c] -= 1
-                    if charhealth[c] == 0:
+                    if charhealth[c] == 0 and multiplayer == False:
+                        main.window = 6
+                    elif charhealth[c] == 0 and multiplayer == True:
                         charx[c], chary[c] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
                         charhealth[c] = 3
                     break
@@ -568,7 +571,8 @@ def enemy_player_collision(char, enemytype, enemy):
 
 #Run function to detect collision between explosion and player
 def explosion_player_collision(explosion, char):
-    from main import explosionx, explosiony, explosionradius, charx, chary, charhealth, cantakedamage
+    import main
+    from main import explosionx, explosiony, explosionradius, charx, chary, charhealth, cantakedamage, window
     e = explosion - 1
     i = char - 1
 
@@ -578,8 +582,10 @@ def explosion_player_collision(explosion, char):
                 if chary[i] + charheight >= enemyypos >= chary[i]:
                     playerhit.play()
                     charhealth[i] -= 1
-                    if charhealth[i] == 0:
-                        charx[i], chary[i] = (random.randrange(explosionradius, size[0] - explosionradius), random.randrange(explosionradius, size[1] - explosionradius))
+                    if charhealth[i] == 0 and multiplayer == False:
+                        main.window = 6
+                    elif charhealth[i] == 0 and multiplayer == True:
+                        charx[i], chary[i] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
                         charhealth[i] = 3
                     break
             break
@@ -670,7 +676,8 @@ def enemy_bolt_collision(char, enemytype, enemy):
 
 #Run function to detect collision between enemy and ball
 def player_ball_collision(char, enemyball):
-    from main import enemyballx, enemybally, charx, chary, charhealth, charwidth, charheight, ballisactive, ballammo
+    import main
+    from main import enemyballx, enemybally, charx, chary, charhealth, charwidth, charheight, ballisactive, ballammo, window
     b = enemyball - 1
     c = char - 1
 
@@ -683,8 +690,10 @@ def player_ball_collision(char, enemyball):
                     ballisactive[b] = False
                     ballammo[b] += 1
                     charhealth[c] -= 1
-                    if charhealth[c] == 0:
-                        charx[c], chary[c] = (random.randrange(charwidth, size[0] - charwidth), random.randrange(charheight, size[1] - charheight))
+                    if charhealth[c] == 0 and multiplayer == False:
+                        main.window = 6
+                    elif charhealth[c] == 0 and multiplayer == True:
+                        charx[c], chary[c] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
                         charhealth[c] = 3
                     break
             break
@@ -734,7 +743,7 @@ while rungame:
     #Main game
     elif window == 4:
         #loose game timer
-        time_played += round(0.01)
+        time_played += 0.01
         #Drawing characters
         move_char(char[0])
         if multiplayer == True:
@@ -827,6 +836,9 @@ while rungame:
     #Pause window
     elif window == 5:
         pause()
+
+    elif window == 6:
+        end_menu()
 
     pygame.display.update()
     
