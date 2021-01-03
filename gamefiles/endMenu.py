@@ -43,7 +43,7 @@ def end_menu():
     stat7 = sml_font.render(str(sum(abilities_used)), True, BLACK)
     stat8 = sml_font.render(str(abilities_used[0]), True, BLACK)
     stat9 = sml_font.render(str(abilities_used[1]), True, BLACK)
-    stat10 = sml_font.render(str(gametime), True, BLACK)
+    stat10 = sml_font.render(str(gametime) + " secs", True, BLACK)
     stat11 = sml_font.render(str(round(distance_travelled[0], 2)), True, BLACK)
     stat12 = sml_font.render(str(round(distance_travelled[1], 2)), True, BLACK)
 
@@ -82,6 +82,7 @@ def end_menu():
     pygame.draw.rect(screen, BLACK, (800, 540, 410, 135), 5, 8)
     if 805 <= mouse[0] <= 1205 and 545 <= mouse[1] <= 670 and pressed[0] == True:
         menuselectsound.play()
+        reset_menu()
         main.window = 0
         reset_menu()
         pygame.time.delay(100)

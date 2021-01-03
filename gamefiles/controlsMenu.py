@@ -32,11 +32,11 @@ def controls():
     text5 = small_font.render("the mouse and the left click button.", True, WHITE)
     text6 = small_font.render("Movement and direction will be made using", True, WHITE)
     text7 = small_font.render("the WASD and arrow keys. Player 1 will use", True, WHITE)
-    text8 = small_font.render("WASD. Player 2 will use the arrow keys during", True, WHITE)
-    text9 = small_font.render("multiplayer mode.", True, WHITE)
-    text10 = small_font.render("Player 1 will use the 'e' key as their action", True, WHITE)
+    text8 = small_font.render("the arrow keys. Player 2 will use WASD", True, WHITE)
+    text9 = small_font.render("during multiplayer mode.", True, WHITE)
+    text10 = small_font.render("Player 1 will use the space bar key as their action", True, WHITE)
     text11 = small_font.render("button, this will cause their character to attack.", True, WHITE)
-    text12 = small_font.render("Player 2 will use the space bar as their action", True, WHITE)
+    text12 = small_font.render("Player 2 will use the 'e' key as their action", True, WHITE)
     text13 = small_font.render("button, and will cause their attack with this.", True, WHITE)
 
     #Adding the text to the menu in specific locations

@@ -564,7 +564,7 @@ def enemy_player_collision(char, enemytype):
             break
 
 #Run function to detect collision between enemy and ball
-def player_ball_collision(char, enemyball):
+def player_ball_collision(char):
     import main
     c = char - 1
 
@@ -810,9 +810,9 @@ while rungame:
             enemy_bolt_collision(char[1], enemytype[2])    
             
         #Enemy spike ball collision with player
-        player_ball_collision(char[0], enemyball)
+        player_ball_collision(char[0])
         if multiplayer:
-            player_ball_collision(char[1], enemyball)
+            player_ball_collision(char[1])
 
         if multiplayer == False:
             if charhealth[0] <= 0:
