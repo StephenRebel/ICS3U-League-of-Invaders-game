@@ -24,6 +24,7 @@ staffimg = pygame.image.load("gamefiles/images/staff.png").convert_alpha()
 enemy1img = pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha()
 enemy2img = pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha()
 enemy3img = pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha()
+enemy4img = pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha()
 ballimg = pygame.image.load("gamefiles/images/spike_ball.png").convert_alpha()
 boltimg = [pygame.image.load("gamefiles/images/fire_ball.png").convert_alpha(), pygame.image.load("gamefiles/images/ice_spikes.png").convert_alpha(), pygame.image.load("gamefiles/images/green_rock.png").convert_alpha()]
 heartimg = pygame.image.load("gamefiles/images/heart.png").convert_alpha()
@@ -38,7 +39,7 @@ boltx, bolty, boltwidth, boltheight, boltface, staffx, staffy, staffface = [-100
 swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
 starttime, cooldownstarted, passedtime = [0, 0], [False, False], [0, 0]
 isactive, canuse = [False, False], [True, True]
-enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive = [0, 1, 2], [-100, -100, -100], [-100, -100, -100], 64, 64, ["", "", ""], [1, 0.5], [False, False, False]
+enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints = [0, 1, 2, 3], [-100, -100, -100, -100], [-100, -100, -100, -100], 64, 64, ["", "", "", ""], [1, 0.25, 0, 0.5], [False, False, False, False], [25, 40, 20, 10]
 enemyball, enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = 1, -100, -100, 18, 18, 0
 explosion, explosionx, explosiony, explosionradius, explosioncolor = 1, -100, -100, 64, [255, 255, 255]
 ballammo, ballisactive = 1, False
@@ -220,6 +221,7 @@ def draw_screen():
     screen.blit(enemy1img, (enemyx[0], enemyy[0]))
     screen.blit(enemy2img, (enemyx[1], enemyy[1]))
     screen.blit(enemy3img, (enemyx[2], enemyy[2]))
+    screen.blit(enemy4img, (enemyx[3], enemyy[3]))
 
     #Spike ball
     screen.blit(ballimg, (enemyballx, enemybally))
@@ -545,14 +547,8 @@ def spawn_enemy(enemytype):
 def give_points(char, enemytype):
     import main
 
-    if main.isalive[enemytype] == False:
-        if enemytype == 0:
-            main.player_score[char] += 25
-        elif enemytype == 1:
-            main.player_score[char] += 40
-        elif enemytype == 2:
-            main.player_score[char] += 10
-        main.enemies_killed[char] += 1
+    main.player_score[char] += enemypoints[enemytype]
+    main.enemies_killed[char] += 1
 
 #Run function to detect collision between enemy and player
 def enemy_player_collision(char, enemytype):
@@ -662,12 +658,12 @@ def reset_menu():
     import playMenu
 
     main.player_count, main.charability, main.charx, main.chary, main.arrowx, main.arrowy, main.swordx, main.swordy, main.boltx, main.bolty, main.staffx, main.staffy = 0, [0,0], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [-100, -100], [0, 0], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100]
-    main.enemyx, main.enemyy, main.isalive = [-100, -100, -100], [-100, -100, -100], [False, False, False]
+    main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100], [-100, -100, -100, -100], [False, False, False, False]
     main.charhealth = [3, 3]
     main.charface, main.arrowface, main.swordface = [0, 0], [0, 0], [0, 0]
     main.enemyballx, main.enemybally, main.explosionx, main.explosiony, main.ballisactive, main.ballammo, main.explosionammo, main.explosionisactive, main.cantakedamage, main.explosioncolor = -100, -100, -100, -100, False, 1, 1, False, False, [255, 255, 255]
     playMenu.selected = [0, 0]
-    main.swordcooldownstarted, main.swordstarttime, main.swordpassedtime, main.boltcooldownstarted, main.boltstarttime, main. boltpassedtime = [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]
+    main.swordcooldownstarted, main.swordstarttime, main.swordpassedtime, main.boltcooldownstarted, main.boltstarttime, main.boltpassedtime = [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]
     main.passedtime, main.cooldownstarted, main.starttime, main.isactive, main.canuse = [0, 0], [False, False], [0, 0], [False, False], [True, True]
     main.player_score, main.enemies_killed, main.abilities_used, main.time_played, main.distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
 
@@ -713,35 +709,21 @@ while rungame:
             move_char(char[1])
             
         #Drawing Arrows
-        if charability[0] == 1:
-            use_ability(char[0])
-            run_ability(char[0])
-        if multiplayer == True and charability[1] == 1:
-            use_ability(char[1])
-            run_ability(char[1])
-        #Drawing Swords
-        if charability[0] == 2:
-            use_ability(char[0]) 
-            run_ability(char[0])
-        if multiplayer == True and charability[1] == 2:
-            use_ability(char[1]) 
-            run_ability(char[1])
-        #Drawing mage bolts
-        if charability[0] == 3:
-            use_ability(char[0]) 
-            run_ability(char[0])  
-        if multiplayer == True and charability[1] == 3:
-            use_ability(char[1]) 
-            run_ability(char[1])
+        for i in range(1, 4):
+            if charability[0] == i:
+                use_ability(char[0])
+                run_ability(char[0])
+            if multiplayer == True and charability[1] == i:
+                use_ability(char[1])
+                run_ability(char[1])
 
         #Spawning enemies
-        spawn_enemy(enemytype[0])
-        spawn_enemy(enemytype[1])
-        spawn_enemy(enemytype[2])
+        for i in range(len(enemytype)):
+            spawn_enemy(enemytype[i])
 
         #Drawing Enemies
-        move_enemy(enemytype[0])
-        move_enemy(enemytype[1])
+        for i in range(len(enemytype)):
+            move_enemy(enemytype[i])
 
         #Drawing enemy spike ball
         enemy_shoot_spike_ball()
@@ -750,15 +732,10 @@ while rungame:
         enemy_shoot_explosion()
         
         #Enemy collision with player
-        enemy_player_collision(char[0], enemytype[0])  
-        if multiplayer:
-            enemy_player_collision(char[1], enemytype[0])  
-        enemy_player_collision(char[0], enemytype[1])  
-        if multiplayer:
-            enemy_player_collision(char[1], enemytype[1])  
-        enemy_player_collision(char[0], enemytype[2])  
-        if multiplayer:
-            enemy_player_collision(char[1], enemytype[2])  
+        for i in range(len(enemytype)):
+            enemy_player_collision(char[0], enemytype[i])  
+            if multiplayer:
+                enemy_player_collision(char[1], enemytype[i])  
             
         #Enemy spike ball collision with player
         player_ball_collision(char[0])
@@ -771,33 +748,22 @@ while rungame:
             if multiplayer == True:
                 explosion_player_collision(char[1])
 
-        #Enemy collision with arrow
-        if charability[0] == 1:
-           enemy_arrow_collision(char[0], enemytype[0])
-           enemy_arrow_collision(char[0], enemytype[1])
-           enemy_arrow_collision(char[0], enemytype[2])
-        if charability[1] == 1 and multiplayer == True:
-            enemy_arrow_collision(char[1], enemytype[0])
-            enemy_arrow_collision(char[1], enemytype[1])
-            enemy_arrow_collision(char[1], enemytype[2])
-        #Enemy collision with sword
-        if charability[0] == 2:
-            enemy_sword_collision(char[0], enemytype[0])
-            enemy_sword_collision(char[0], enemytype[1])
-            enemy_sword_collision(char[0], enemytype[2])
-        if charability[1] == 2 and multiplayer == True:
-            enemy_sword_collision(char[1], enemytype[0])  
-            enemy_sword_collision(char[1], enemytype[1])   
-            enemy_sword_collision(char[1], enemytype[2])
-        #Enemy collision with mage bolt
-        if charability[0] == 3:
-            enemy_bolt_collision(char[0], enemytype[0])
-            enemy_bolt_collision(char[0], enemytype[1])
-            enemy_bolt_collision(char[0], enemytype[2])
-        if charability[1] == 3 and multiplayer == True:
-            enemy_bolt_collision(char[1], enemytype[0])
-            enemy_bolt_collision(char[1], enemytype[1])
-            enemy_bolt_collision(char[1], enemytype[2])   
+        for i in range(len(enemytype)):
+            #Enemy collision with arrow
+            if charability[0] == 1:
+                enemy_arrow_collision(char[0], enemytype[i])
+            if charability[1] == 1 and multiplayer == True:
+                enemy_arrow_collision(char[1], enemytype[i])
+            #Enemy collision with sword
+            if charability[0] == 2:
+                enemy_sword_collision(char[0], enemytype[i])
+            if charability[1] == 2 and multiplayer == True:
+                enemy_sword_collision(char[1], enemytype[i])  
+            #Enemy collision with mage bolt
+            if charability[0] == 3:
+                enemy_bolt_collision(char[0], enemytype[i])
+            if charability[1] == 3 and multiplayer == True:
+                enemy_bolt_collision(char[1], enemytype[i])  
 
         #Ends game when players lose all health
         if multiplayer == False:
