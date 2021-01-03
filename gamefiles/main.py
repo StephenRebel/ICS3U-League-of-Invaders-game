@@ -38,11 +38,11 @@ boltx, bolty, boltwidth, boltheight, boltface, staffx, staffy, staffface = [-100
 swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
 starttime, cooldownstarted, passedtime = [0, 0], [False, False], [0, 0]
 isactive, canuse = [False, False], [True, True]
-enemytype, enemy, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed = [1, 2, 3], [[1], [1], [1]], [[300], [300], [300]], [[200], [300], [100]], 64, 64, [[""], [""], [""]], [1, 0.5]
-enemyball, enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = [1], [-100], [-100], 18, 18, [0]
-explosion, explosionx, explosiony, explosionradius, explosioncolor = [1], [-100], [-100], 64, [[255, 255, 255]]
-ballammo, ballisactive = [1], [False]
-explosionammo, explosionisactive, cantakedamage = [1], [False], [False]
+enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed = [1, 2, 3], [300, 300, 300], [200, 300, 100], 64, 64, ["", "", ""], [1, 0.5]
+enemyball, enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = 1, -100, -100, 18, 18, 0
+explosion, explosionx, explosiony, explosionradius, explosioncolor = 1, -100, -100, 64, [255, 255, 255]
+ballammo, ballisactive = 1, False
+explosionammo, explosionisactive, cantakedamage = 1, False, False
 img_num = [0, 0]
 
 #Menu setup
@@ -217,15 +217,14 @@ def draw_screen():
         draw_bolt(boltimg[img_num[1]], boltx[1], bolty[1], boltface[1], img_num[1], staffimg, staffx[1], staffy[1], staffface[1])
 
     #Enemies
-    screen.blit(enemy1img, (enemyx[0][0], enemyy[0][0]))
-    screen.blit(enemy2img, (enemyx[1][0], enemyy[1][0]))
-    screen.blit(enemy3img, (enemyx[2][0], enemyy[2][0]))
+    screen.blit(enemy1img, (enemyx[0], enemyy[0]))
+    screen.blit(enemy2img, (enemyx[1], enemyy[1]))
+    screen.blit(enemy3img, (enemyx[2], enemyy[2]))
 
     #Spike ball
-    screen.blit(ballimg, (enemyballx[0], enemybally[0]))
-
+    screen.blit(ballimg, (enemyballx, enemybally))
     #Explosion
-    pygame.draw.circle(screen, explosioncolor[0], [explosionx[0] + 32, explosiony[0] + 32], explosionradius / 2)
+    pygame.draw.circle(screen, explosioncolor, [explosionx + 32, explosiony + 32], explosionradius / 2)
 
     #Pause Button
     pause_button()
@@ -272,25 +271,28 @@ def move_char(char):
             charx[i] = 0
         else:
             charx[i] -= 2 + extraspeed
+            distance_travelled[i] += 2 + extraspeed
     elif key_type[1]:
         charface[i] = 270
         if charx[i] + 1 >= size[0] - charwidth:
             charx[i] = size[0] - charwidth
         else:
             charx[i] += 2 + extraspeed
+            distance_travelled[i] += 2 + extraspeed
     elif key_type[2]:
         charface[i] = 0
         if chary[i] - 1 <= 0:
             chary[i] = 0
         else:
             chary[i] -= 2 + extraspeed
+            distance_travelled[i] += 2 + extraspeed
     elif key_type[3]:
         charface[i] = 180
         if chary[i] + 1 >= size[1] - charheight:
             chary[i] = size[1] - charheight
         else:
             chary[i] += 2 + extraspeed
-    distance_travelled[i] += 1
+            distance_travelled[i] += 2 + extraspeed
 
 #Use ability function
 def use_ability(char):
@@ -444,56 +446,54 @@ def ability_cooldown(cooldownstarted, starttime, passedtime):
     return cooldownstarted, starttime, passedtime
 
 #Run spike ball function
-def enemy_shoot_spike_ball(enemy): 
-    from main import enemyx, enemyy, enemyface, enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface, ballammo, ballisactive   
-    i = enemy - 1
-
+def enemy_shoot_spike_ball(): 
+    import main
+ 
     #Enemy shoots the spike ball 
-    if ballammo[i] > 0 and ballisactive[i] == False:
-        ballammo[i] -= 1
-        enemyballface[i] = enemyface[1][i]
-        enemyballx[i], enemybally[i] = enemyx[1][i], enemyy[1][i]
-        ballisactive[i] = True
+    if main.ballammo > 0 and main.ballisactive == False:
+        main.ballammo -= 1
+        main.enemyballface = main.enemyface[1]
+        main.enemyballx, main.enemybally = main.enemyx[1], main.enemyy[1]
+        main.ballisactive = True
     #Spike ball flies through the air
-    if ballisactive[i] == True:
-        if enemyballface[i] == "North" and enemybally[i] > - enemyballheight:
-            enemybally[i] -= 3
-            enemyballx[i] += 5 * math.sin(0.1 * enemybally[i])
-        elif enemyballface[i] == "East" and enemyballx[i] < size[0] + enemyballwidth:
-            enemyballx[i] += 3
-            enemybally[i] += (5 * math.sin(0.1 * enemyballx[i]))
-        elif enemyballface[i] == "South" and enemybally[i] < size[1] + enemyballheight:
-            enemybally[i] += 3
-            enemyballx[i] += 5 * math.sin(0.1 * enemybally[i])
-        elif enemyballface[i] == "West" and enemyballx[i] > - enemyballwidth:
-            enemyballx[i] -= 3
-            enemybally[i] += (5 * math.sin(0.1 * enemyballx[i]))
+    if main.ballisactive == True:
+        if main.enemyballface == "North" and main.enemybally > - main.enemyballheight:
+            main.enemybally -= 3
+            main.enemyballx += 5 * math.sin(0.1 * main.enemybally)
+        elif main.enemyballface == "East" and main.enemyballx < size[0] + main.enemyballwidth:
+            main.enemyballx += 3
+            main.enemybally += (5 * math.sin(0.1 * enemyballx))
+        elif main.enemyballface == "South" and main.enemybally < size[1] + main.enemyballheight:
+            main.enemybally += 3
+            main.enemyballx += 5 * math.sin(0.1 * enemybally)
+        elif main.enemyballface == "West" and main.enemyballx > - main.enemyballwidth:
+            main.enemyballx -= 3
+            main.enemybally += (5 * math.sin(0.1 * main.enemyballx))
         else:
-            ballisactive[i] = False
-            ballammo[i] += 1
+            main.ballisactive = False
+            main.ballammo += 1
 
 #Run shoot explosion function
-def enemy_shoot_explosion(enemy):
-    from main import enemyx, enemyy, explosionx, explosiony, explosionradius, explosioncolor, explosionammo, explosionisactive, cantakedamage
-    i = enemy - 1
+def enemy_shoot_explosion():
+    import main
 
     #Shoot the exlosion
-    if explosionammo[i] > 0 and explosionisactive[i] == False:
-        cantakedamage[i] = False
-        explosionammo[i] -= 1
-        explosionx[i], explosiony[i] = find_closest_char(enemyx[2][i], enemyy[2][i])
-        explosionisactive[i] = True
+    if main.explosionammo > 0 and main.explosionisactive == False:
+        main.cantakedamage = False
+        main.explosionammo -= 1
+        main.explosionx, main.explosiony = find_closest_char(main.enemyx[2], main.enemyy[2])
+        main.explosionisactive = True
     #Explosion countdown
-    if explosionisactive[i] == True:
-        if explosioncolor[i][0] > 82 and explosioncolor[i][1] > 72 and explosioncolor[i][2] > 0:
-            explosioncolor[i][0] -= 0.67
-            explosioncolor[i][1] -= 0.71
-            explosioncolor[i][2] -= 1
+    if main.explosionisactive == True:
+        if main.explosioncolor[0] > 82 and main.explosioncolor[1] > 72 and main.explosioncolor[2] > 0:
+            main.explosioncolor[0] -= 0.67
+            main.explosioncolor[1] -= 0.71
+            main.explosioncolor[2] -= 1
         else:
-            explosionammo[i] += 1
-            explosioncolor[i] = [255, 255, 255]
-            cantakedamage[i] = True
-            explosionisactive[i] = False
+            main.explosionammo += 1
+            main.explosioncolor = [255, 255, 255]
+            main.cantakedamage = True
+            main.explosionisactive = False
   
 #Find closest character
 def find_closest_char(enemyx, enemyy):
@@ -507,44 +507,43 @@ def find_closest_char(enemyx, enemyy):
     return closest_char
 
 #Run function to move enemy
-def move_enemy(enemytype, enemy):
+def move_enemy(enemytype):
     from main import enemyx, enemyy, enemywidth, enemyheight, enemyspeed, enemyface
     t = enemytype - 1
-    i = enemy - 1
-    closest_char = find_closest_char(enemyx[t][i], enemyy[t][i])
-    if (enemyx[t][i] + enemywidth / 2) - (closest_char[0] + charwidth / 2) == 0:
+    closest_char = find_closest_char(enemyx[t], enemyy[t])
+    if (enemyx[t] + enemywidth / 2) - (closest_char[0] + charwidth / 2) == 0:
         slope = 0.01
     else:
-        slope = abs(((enemyy[t][i] + enemyheight / 2) - (closest_char[1] + charheight / 2)) / ((enemyx[t][i] + enemywidth / 2) - (closest_char[0] + charwidth / 2)))
+        slope = abs(((enemyy[t] + enemyheight / 2) - (closest_char[1] + charheight / 2)) / ((enemyx[t] + enemywidth / 2) - (closest_char[0] + charwidth / 2)))
     if slope < 1:
-        if (enemyx[t][i] + enemywidth / 2) - (closest_char[0] + charwidth / 2) > 0:
-            enemyx[t][i] -= enemyspeed[t]
-            enemyface[t][i] = "West"
-        elif (enemyx[t][i] + enemywidth / 2) - (closest_char[0] + charwidth / 2) < 0:
-            enemyx[t][i] += enemyspeed[t]
-            enemyface[t][i] = "East"
-        if (enemyy[t][i] + enemyheight / 2) - (closest_char[1] + charheight / 2) > 0:
-            enemyy[t][i] -= slope * enemyspeed[t]
-        elif (enemyy[t][i] + enemyheight / 2) - (closest_char[1] + charheight / 2) < 0:
-            enemyy[t][i] += slope * enemyspeed[t]
+        if (enemyx[t] + enemywidth / 2) - (closest_char[0] + charwidth / 2) > 0:
+            enemyx[t] -= enemyspeed[t]
+            enemyface[t] = "West"
+        elif (enemyx[t] + enemywidth / 2) - (closest_char[0] + charwidth / 2) < 0:
+            enemyx[t] += enemyspeed[t]
+            enemyface[t] = "East"
+        if (enemyy[t] + enemyheight / 2) - (closest_char[1] + charheight / 2) > 0:
+            enemyy[t] -= slope * enemyspeed[t]
+        elif (enemyy[t] + enemyheight / 2) - (closest_char[1] + charheight / 2) < 0:
+            enemyy[t] += slope * enemyspeed[t]
     else:
-        if (enemyy[t][i] + enemyy[t][i] / 2) - (closest_char[1] + charheight / 2) == 0:
+        if (enemyy[t] + enemyy[t] / 2) - (closest_char[1] + charheight / 2) == 0:
             slope = 0.01
         else:
-            slope = abs(((enemyx[t][i] + enemywidth / 2) - (closest_char[0] + charwidth / 2)) / ((enemyy[t][i] + enemyheight / 2) - (closest_char[1] + charheight / 2)))             
-        if (enemyx[t][i] + enemywidth / 2) - (closest_char[0] + charwidth / 2) > 0:
-            enemyx[t][i] -= slope * enemyspeed[t]
-        elif (enemyx[t][i] + enemywidth / 2) - (closest_char[0] + charwidth / 2) < 0:
-            enemyx[t][i] += slope * enemyspeed[t]
-        if (enemyy[t][i] + enemyheight / 2) - (closest_char[1] + charheight / 2) > 0:
-            enemyy[t][i] -= enemyspeed[t]
-            enemyface[t][i] = "North"
-        elif (enemyy[t][i] + enemyheight / 2) - (closest_char[1] + charheight / 2) < 0:
-            enemyy[t][i] += enemyspeed[t]
-            enemyface[t][i] = "South"
+            slope = abs(((enemyx[t] + enemywidth / 2) - (closest_char[0] + charwidth / 2)) / ((enemyy[t] + enemyheight / 2) - (closest_char[1] + charheight / 2)))             
+        if (enemyx[t] + enemywidth / 2) - (closest_char[0] + charwidth / 2) > 0:
+            enemyx[t] -= slope * enemyspeed[t]
+        elif (enemyx[t] + enemywidth / 2) - (closest_char[0] + charwidth / 2) < 0:
+            enemyx[t] += slope * enemyspeed[t]
+        if (enemyy[t] + enemyheight / 2) - (closest_char[1] + charheight / 2) > 0:
+            enemyy[t] -= enemyspeed[t]
+            enemyface[t] = "North"
+        elif (enemyy[t] + enemyheight / 2) - (closest_char[1] + charheight / 2) < 0:
+            enemyy[t] += enemyspeed[t]
+            enemyface[t] = "South"
 
 #Run function to detect collision between enemy and player
-def enemy_player_collision(char, enemytype, enemy):
+def enemy_player_collision(char, enemytype):
     from main import enemyx, enemyy, enemywidth, enemyheight, charx, chary, charhealth
     c = 0
     if char == 1:
@@ -552,53 +551,67 @@ def enemy_player_collision(char, enemytype, enemy):
     elif char == 2:
         c = 1
     t = enemytype - 1
-    i = enemy - 1
-    for enemyxpos in range(int(enemyx[t][i]), int(enemyx[t][i] + enemywidth)):
+    for enemyxpos in range(int(enemyx[t]), int(enemyx[t] + enemywidth)):
         if charx[c] + charwidth >= enemyxpos >= charx[c]:
-            for enemyypos in range(int(enemyy[t][i]), int(enemyy[t][i] + enemyheight)):
+            for enemyypos in range(int(enemyy[t]), int(enemyy[t] + enemyheight)):
                 if chary[c] + charheight >= enemyypos >= chary[c]:
                     playerhit.play()
-                    enemyx[t][i], enemyy[t][i] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))    
+                    enemyx[t], enemyy[t] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))    
                     charhealth[c] -= 1
                     if charhealth[c] == 0:
-                        charx[c], chary[c] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
-                        charhealth[c] = 3
+                        charx[c], chary[c] = -100000, -100000
+                    break
+            break
+
+#Run function to detect collision between enemy and ball
+def player_ball_collision(char, enemyball):
+    import main
+    c = char - 1
+
+    for ballxpos in range(int(main.enemyballx + 18), int(main.enemyballx + 48)):
+        if main.charx[c] + main.charwidth >= ballxpos >= main.charx[c]:
+            for ballypos in range(int(main.enemybally + 18), int(main.enemybally + 48)):
+                if main.chary[c] + main.charheight >= ballypos >= main.chary[c]:
+                    playerhit.play()
+                    main.enemyballx, enemybally = -100000, -100000 
+                    main.ballisactive = False
+                    main.ballammo += 1
+                    main.charhealth[c] -= 1
+                    if main.charhealth[c] == 0:
+                        main.charx[c], main.chary[c] = -200, -200
                     break
             break
 
 #Run function to detect collision between explosion and player
-def explosion_player_collision(explosion, char):
-    from main import explosionx, explosiony, explosionradius, charx, chary, charhealth, cantakedamage
-    e = explosion - 1
+def explosion_player_collision(char):
+    import main
     i = char - 1
 
-    for enemyxpos in range(int(explosionx[e]), int(explosionx[e] + explosionradius)):
-        if charx[i] + charwidth >= enemyxpos >= charx[i]:
-            for enemyypos in range(int(explosiony[e]), int(explosiony[e] + explosionradius)):
-                if chary[i] + charheight >= enemyypos >= chary[i]:
+    for main.enemyxpos in range(int(main.explosionx), int(main.explosionx + main.explosionradius)):
+        if main.charx[i] + main.charwidth >= main.enemyxpos >= main.charx[i]:
+            for main.enemyypos in range(int(main.explosiony), int(main.explosiony + main.explosionradius)):
+                if main.chary[i] + main.charheight >= main.enemyypos >= main.chary[i]:
                     playerhit.play()
-                    charhealth[i] -= 1
-                    if charhealth[i] == 0:
-                        charx[i], chary[i] = (random.randrange(explosionradius, size[0] - explosionradius), random.randrange(explosionradius, size[1] - explosionradius))
-                        charhealth[i] = 3
+                    main.charhealth[i] -= 1
+                    if main.charhealth[i] == 0:
+                        main.charx[i], main.chary[i] = -100000, -100000
                     break
             break
 
 #Run function to detect collision between enemy and arrow
-def enemy_arrow_collision(char, enemytype, enemy):
+def enemy_arrow_collision(char, enemytype):
     from main import enemyx, enemyy, enemywidth, enemyheight, arrowx, arrowy, arrowwidth, arrowheight, isactive, canuse, cooldownstarted, starttime, passedtime, arrowcollisionoccured
     t = enemytype - 1
-    i = enemy - 1
     c = char - 1
     
-    for enemyxpos in range(int(enemyx[t][i]), int(enemyx[t][i] + enemywidth)):
+    for enemyxpos in range(int(enemyx[t]), int(enemyx[t] + enemywidth)):
         if arrowx[c] + arrowwidth[c] >= enemyxpos >= arrowx[c]:
-            for enemyypos in range(int(enemyy[t][i]), int(enemyy[t][i] + enemyheight)):
+            for enemyypos in range(int(enemyy[t]), int(enemyy[t] + enemyheight)):
                 if arrowy[c] + arrowheight[c] >= enemyypos >= arrowy[c]:
                     enemyhit.play()
                     arrowcollisionoccured[c] = True
-                    enemyx[t][i], enemyy[t][i] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
-                    arrowx[c], arrowy[c] = -64, -64 
+                    enemyx[t], enemyy[t] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
+                    arrowx[c], arrowy[c] = -100000, -100000 
                     isactive[c] = False
                     if enemytype == 1:
                         player_score[c] += 25
@@ -617,19 +630,18 @@ def enemy_arrow_collision(char, enemytype, enemy):
             canuse[c] = True
 
 #Run function to detect collision between enemy and sword
-def enemy_sword_collision(char, enemytype, enemy):
+def enemy_sword_collision(char, enemytype):
     from main import enemyx, enemyy, enemywidth, enemyheight, swordx, swordy, swordwidth, swordheight, isactive, canuse, cooldownstarted, starttime, passedtime
     t = enemytype - 1
-    i = enemy - 1
     c = char - 1
     swordcollisionoccured = [False, False]
 
-    for enemyxpos in range(int(enemyx[t][i]), int(enemyx[t][i] + enemywidth)):
+    for enemyxpos in range(int(enemyx[t]), int(enemyx[t] + enemywidth)):
         if swordx[c] + swordwidth[c] >= enemyxpos >= swordx[c]:
-            for enemyypos in range(int(enemyy[t][i]), int(enemyy[t][i] + enemyheight)):
+            for enemyypos in range(int(enemyy[t]), int(enemyy[t] + enemyheight)):
                 if swordy[c] + swordheight[c] >= enemyypos >= swordy[c]:
                     enemyhit.play()
-                    enemyx[t][i], enemyy[t][i] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
+                    enemyx[t], enemyy[t] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
                     swordcollisionoccured[c] = True
     
     if swordcollisionoccured[c] == True:
@@ -643,19 +655,18 @@ def enemy_sword_collision(char, enemytype, enemy):
         enemies_killed[c] += 1
 
 #Run function to detect collision between enemy and mage bolt
-def enemy_bolt_collision(char, enemytype, enemy):
+def enemy_bolt_collision(char, enemytype):
     from main import enemyx, enemyy, enemywidth, enemyheight, boltx, bolty, boltwidth, boltheight, isactive, canuse, cooldownstarted, starttime, passedtime, boltface, multiplayer
     t = enemytype - 1
-    i = enemy - 1
     c = char - 1
     boltcollisionoccured = [False, False]
 
-    for enemyxpos in range(int(enemyx[t][i]), int(enemyx[t][i] + enemywidth)):
+    for enemyxpos in range(int(enemyx[t]), int(enemyx[t] + enemywidth)):
         if (boltx[c]) + boltwidth[c] >= enemyxpos >= (boltx[c]):
-            for enemyypos in range(int(enemyy[t][i]), int(enemyy[t][i] + enemyheight)):
+            for enemyypos in range(int(enemyy[t]), int(enemyy[t] + enemyheight)):
                 if (bolty[c]) + boltheight[c] >= enemyypos >= (bolty[c]):
                     enemyhit.play()
-                    enemyx[t][i], enemyy[t][i] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
+                    enemyx[t], enemyy[t] = (random.randrange(enemywidth, size[0] - enemywidth), random.randrange(enemyheight, size[1] - enemyheight))
                     boltcollisionoccured[c] = True
 
     if boltcollisionoccured[c] == True:
@@ -668,40 +679,18 @@ def enemy_bolt_collision(char, enemytype, enemy):
             player_score[c] += 10
         enemies_killed[c] += 1
 
-#Run function to detect collision between enemy and ball
-def player_ball_collision(char, enemyball):
-    from main import enemyballx, enemybally, charx, chary, charhealth, charwidth, charheight, ballisactive, ballammo
-    b = enemyball - 1
-    c = char - 1
-
-    for ballxpos in range(int(enemyballx[b] + 18), int(enemyballx[b] + 48)):
-        if charx[c] + charwidth >= ballxpos >= charx[c]:
-            for ballypos in range(int(enemybally[b] + 18), int(enemybally[b] + 48)):
-                if chary[c] + charheight >= ballypos >= chary[c]:
-                    playerhit.play()
-                    enemyballx[b], enemybally[b] = -64, -64 
-                    ballisactive[b] = False
-                    ballammo[b] += 1
-                    charhealth[c] -= 1
-                    if charhealth[c] == 0:
-                        charx[c], chary[c] = (random.randrange(charwidth, size[0] - charwidth), random.randrange(charheight, size[1] - charheight))
-                        charhealth[c] = 3
-                    break
-            break
-
 #Run function to reset menu variables when using a button to take you back to main menu
 def reset_menu():
     import main
     import playMenu
-    from playMenu import selected
-    from main import player_count, charability, charx, chary, charhealth, arrowx, arrowy, swordx, swordy, enemyx, enemyy, charface, arrowface, swordface, enemyballx, enemybally, explosionx, explosiony, enemies_killed, abilities_used, time_played, distance_travelled
 
     main.player_count, main.charability, main.charx, main.chary, main.arrowx, main.arrowy, main.swordx, main.swordy = 0, [0,0], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [-100, -100], [0, 0], [-100, -100], [0, 0]
-    main.enemyx, main.enemyy = [[300], [300], [300]], [[200], [300], [100]]
+    main.enemyx, main.enemyy = [300, 300, 300], [200, 300, 100]
     main.charhealth = [3, 3]
     main.charface, main.arrowface, main.swordface = [0, 0], [0, 0], [0, 0]
-    main.enemyballx, main.enemybally, main.explosionx, main.explosiony = [-100], [-100], [-100], [-100]
+    main.enemyballx, main.enemybally, main.explosionx, main.explosiony, main.ballisactive, main.ballammo, main.explosionammo, main.explosionisactive, main.cantakedamage = -100, -100, -100, -100, False, 1, 1, False, False
     playMenu.selected = [0, 0]
+    main.swordcooldownstarted, main.boltcooldownstarted = [0, 0], [0, 0]
     main.player_score, main.enemies_killed, main.abilities_used, main.time_played, main.distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
     
 #Main game loop
@@ -715,6 +704,9 @@ while rungame:
         if event.type == pygame.QUIT:
             rungame = False
     
+    if window != 4:
+        gamestart = pygame.time.get_ticks()
+
     #Main menu
     if window == 0:
         menu()
@@ -733,8 +725,9 @@ while rungame:
 
     #Main game
     elif window == 4:
-        #loose game timer
-        time_played += round(0.01)
+
+        gametime = round((pygame.time.get_ticks() - gamestart) / 1000, 2)
+
         #Drawing characters
         move_char(char[0])
         if multiplayer == True:
@@ -763,63 +756,70 @@ while rungame:
             run_ability(char[1])
 
         #Drawing Enemies
-        move_enemy(enemytype[0], enemy[0][0])
-        move_enemy(enemytype[1], enemy[1][0])
+        move_enemy(enemytype[0])
+        move_enemy(enemytype[1])
 
         #Drawing enemy spike ball
-        enemy_shoot_spike_ball(enemy[1][0])
+        enemy_shoot_spike_ball()
 
         #Drawing the explosion
-        enemy_shoot_explosion(enemy[2][0])
+        enemy_shoot_explosion()
 
-        if cantakedamage[0] == True:
-            explosion_player_collision(explosion[0], char[0])
+        if cantakedamage == True:
+            explosion_player_collision(char[0])
             if multiplayer == True:
-                explosion_player_collision(explosion[0], char[1])
+                explosion_player_collision(char[1])
         
         #Enemy collision with player
-        enemy_player_collision(char[0], enemytype[0], enemy[0][0])  
+        enemy_player_collision(char[0], enemytype[0])  
         if multiplayer:
-            enemy_player_collision(char[1], enemytype[0], enemy[0][0])  
-        enemy_player_collision(char[0], enemytype[1], enemy[1][0])  
+            enemy_player_collision(char[1], enemytype[0])  
+        enemy_player_collision(char[0], enemytype[1])  
         if multiplayer:
-            enemy_player_collision(char[1], enemytype[1], enemy[1][0])  
-        enemy_player_collision(char[0], enemytype[2], enemy[2][0])  
+            enemy_player_collision(char[1], enemytype[1])  
+        enemy_player_collision(char[0], enemytype[2])  
         if multiplayer:
-            enemy_player_collision(char[1], enemytype[2], enemy[2][0])  
+            enemy_player_collision(char[1], enemytype[2])  
 
         #Enemy collision with arrow
         if charability[0] == 1:
-           enemy_arrow_collision(char[0], enemytype[0], enemy[0][0])
-           enemy_arrow_collision(char[0], enemytype[1], enemy[1][0])
-           enemy_arrow_collision(char[0], enemytype[2], enemy[2][0])
+           enemy_arrow_collision(char[0], enemytype[0])
+           enemy_arrow_collision(char[0], enemytype[1])
+           enemy_arrow_collision(char[0], enemytype[2])
         if charability[1] == 1 and multiplayer == True:
-            enemy_arrow_collision(char[1], enemytype[0], enemy[0][0])
-            enemy_arrow_collision(char[1], enemytype[1], enemy[1][0])
-            enemy_arrow_collision(char[1], enemytype[2], enemy[2][0])
+            enemy_arrow_collision(char[1], enemytype[0])
+            enemy_arrow_collision(char[1], enemytype[1])
+            enemy_arrow_collision(char[1], enemytype[2])
         #Enemy collision with sword
         if charability[0] == 2:
-            enemy_sword_collision(char[0], enemytype[0], enemy[0][0])
-            enemy_sword_collision(char[0], enemytype[1], enemy[1][0])
-            enemy_sword_collision(char[0], enemytype[2], enemy[2][0])
+            enemy_sword_collision(char[0], enemytype[0])
+            enemy_sword_collision(char[0], enemytype[1])
+            enemy_sword_collision(char[0], enemytype[2])
         if charability[1] == 2 and multiplayer == True:
-            enemy_sword_collision(char[1], enemytype[0], enemy[0][0])  
-            enemy_sword_collision(char[1], enemytype[1], enemy[1][0])   
-            enemy_sword_collision(char[1], enemytype[2], enemy[2][0])
+            enemy_sword_collision(char[1], enemytype[0])  
+            enemy_sword_collision(char[1], enemytype[1])   
+            enemy_sword_collision(char[1], enemytype[2])
         #Enemy collision with mage bolt
         if charability[0] == 3:
-            enemy_bolt_collision(char[0], enemytype[0], enemy[0][0])
-            enemy_bolt_collision(char[0], enemytype[1], enemy[1][0])
-            enemy_bolt_collision(char[0], enemytype[2], enemy[2][0])
+            enemy_bolt_collision(char[0], enemytype[0])
+            enemy_bolt_collision(char[0], enemytype[1])
+            enemy_bolt_collision(char[0], enemytype[2])
         if charability[1] == 3 and multiplayer == True:
-            enemy_bolt_collision(char[1], enemytype[0], enemy[0][0])
-            enemy_bolt_collision(char[1], enemytype[1], enemy[1][0])
-            enemy_bolt_collision(char[1], enemytype[2], enemy[2][0])    
-
+            enemy_bolt_collision(char[1], enemytype[0])
+            enemy_bolt_collision(char[1], enemytype[1])
+            enemy_bolt_collision(char[1], enemytype[2])    
+            
         #Enemy spike ball collision with player
-        player_ball_collision(char[0], enemyball[0])
+        player_ball_collision(char[0], enemyball)
         if multiplayer:
-            player_ball_collision(char[1], enemyball[0])
+            player_ball_collision(char[1], enemyball)
+
+        if multiplayer == False:
+            if charhealth[0] <= 0:
+                window = 6
+        elif multiplayer == True:
+            if charhealth[0] <= 0 and charhealth[1] <= 0:
+                window = 6
             
         #Draw all the changes
         draw_screen()
@@ -827,6 +827,9 @@ while rungame:
     #Pause window
     elif window == 5:
         pause()
+
+    elif window == 6:
+        end_menu()
 
     pygame.display.update()
     

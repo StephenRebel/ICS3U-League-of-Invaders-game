@@ -1,7 +1,7 @@
 #Menu to display the end of the game and show some interesting stats
 def end_menu():
     import main 
-    from main import pygame, window, title_font, big_font, sml_font, BLACK, RED, DARK_GR, LIGHT_GR, background, screen, player_score, enemies_killed, abilities_used, time_played, distance_travelled, menuselectsound
+    from main import pygame, window, title_font, big_font, sml_font, BLACK, RED, DARK_GR, LIGHT_GR, background, screen, player_score, enemies_killed, abilities_used, gametime, distance_travelled, menuselectsound, reset_menu
     pygame.init()
 
     #Allows for a quit event
@@ -43,9 +43,9 @@ def end_menu():
     stat7 = sml_font.render(str(sum(abilities_used)), True, BLACK)
     stat8 = sml_font.render(str(abilities_used[0]), True, BLACK)
     stat9 = sml_font.render(str(abilities_used[1]), True, BLACK)
-    stat10 = sml_font.render(str(time_played), True, BLACK)
-    stat11 = sml_font.render(str(distance_travelled[0]), True, BLACK)
-    stat12 = sml_font.render(str(distance_travelled[1]), True, BLACK)
+    stat10 = sml_font.render(str(gametime), True, BLACK)
+    stat11 = sml_font.render(str(round(distance_travelled[0], 2)), True, BLACK)
+    stat12 = sml_font.render(str(round(distance_travelled[1], 2)), True, BLACK)
 
     #Output all stats and text to the screen
     pygame.draw.rect(screen, LIGHT_GR, (50, 25, 500, 670), 50, 75)
@@ -83,6 +83,7 @@ def end_menu():
     if 805 <= mouse[0] <= 1205 and 545 <= mouse[1] <= 670 and pressed[0] == True:
         menuselectsound.play()
         main.window = 0
+        reset_menu()
         pygame.time.delay(100)
     elif 805 <= mouse[0] <= 1205 and 545 <= mouse[1] <= 670:
         pygame.draw.rect(screen, DARK_GR, (805, 545, 400, 125))
