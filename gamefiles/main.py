@@ -21,11 +21,7 @@ char2img = pygame.image.load("gamefiles/images/blue_char.png").convert_alpha()
 arrowimg = pygame.image.load("gamefiles/images/arrow.png").convert_alpha()
 swordimg = pygame.image.load("gamefiles/images/sword.png").convert_alpha()
 staffimg = pygame.image.load("gamefiles/images/staff.png").convert_alpha()
-enemy1img = pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha()
-enemy2img = pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha()
-enemy3img = pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha()
-enemy4img = pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha()
-enemy5img = pygame.image.load("gamefiles/images/boss_enemy.png").convert_alpha()
+enemyimg = [pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/boss_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/turquoise_enemy.png").convert_alpha()]
 ballimg = pygame.image.load("gamefiles/images/spike_ball.png").convert_alpha()
 boltimg = [pygame.image.load("gamefiles/images/fire_ball.png").convert_alpha(), pygame.image.load("gamefiles/images/ice_spikes.png").convert_alpha(), pygame.image.load("gamefiles/images/green_rock.png").convert_alpha()]
 heartimg = pygame.image.load("gamefiles/images/heart.png").convert_alpha()
@@ -40,7 +36,7 @@ boltx, bolty, boltwidth, boltheight, boltface, staffx, staffy, staffface = [-100
 swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
 starttime, cooldownstarted, passedtime = [0, 0], [False, False], [0, 0]
 isactive, canuse = [False, False], [True, True]
-enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints, benemyhealth, benemyhit = [0, 1, 2, 3, 4], [-100, -100, -100, -100, -100], [-100, -100, -100, -100, -100], [64, 64, 64, 64, 96], [64, 64, 64, 64, 96], ["", "", "", "", ""], [1, 0.25, 0, 0.5, 0.35], [False, False, False, False, False], [25, 40, 20, 10, 100], 4, [False, False]
+enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints, benemyhealth, benemyhit = [0, 1, 2, 3, 4, 5], [-100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 96, 32], [64, 64, 64, 64, 96, 32], ["", "", "", "", "", ""], [1, 0.25, 0, 0.5, 0.35, 1.5], [False, False, False, False, False, False], [25, 40, 20, 10, 100, 30], 4, [False, False]
 enemyball, enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = 1, -100, -100, 18, 18, 0
 explosion, explosionx, explosiony, explosionradius, explosioncolor = 1, -100, -100, 64, [255, 255, 255]
 ballammo, ballisactive = 1, False
@@ -101,7 +97,7 @@ def draw_sword(img, x, y, face):
     screen.blit(new_sword, (newx, newy))
 
 #Draw mage bolts
-def draw_bolt(img, x, y, face, img_num, staff, staffx, staffy, staffface):
+def draw_bolt(img, x, y, face, staff, staffx, staffy, staffface):
     new_staff = pygame.transform.rotate(staff, staffface)
     screen.blit(img, (x, y))
     screen.blit(new_staff, (staffx, staffy))
@@ -214,19 +210,21 @@ def draw_screen():
 
     #Mage bolt
     if charability[0] == 3:
-        draw_bolt(boltimg[img_num[0]], boltx[0], bolty[0], boltface[0], img_num[0], staffimg, staffx[0], staffy[0], staffface[0])
+        draw_bolt(boltimg[img_num[0]], boltx[0], bolty[0], boltface[0], staffimg, staffx[0], staffy[0], staffface[0])
     if multiplayer == True and charability[1] == 3:
-        draw_bolt(boltimg[img_num[1]], boltx[1], bolty[1], boltface[1], img_num[1], staffimg, staffx[1], staffy[1], staffface[1])
+        draw_bolt(boltimg[img_num[1]], boltx[1], bolty[1], boltface[1], staffimg, staffx[1], staffy[1], staffface[1])
 
     #Enemies
-    screen.blit(enemy1img, (enemyx[0], enemyy[0]))
-    screen.blit(enemy2img, (enemyx[1], enemyy[1]))
-    screen.blit(enemy3img, (enemyx[2], enemyy[2]))
-    screen.blit(enemy4img, (enemyx[3], enemyy[3]))
-    screen.blit(enemy5img, (enemyx[4], enemyy[4]))
+    for i in range(len(enemytype)):
+        screen.blit(enemyimg[i], (enemyx[i], enemyy[i]))
+
+    #Draw boss health
+    pygame.draw.rect(screen, BLACK, (enemyx[4], enemyy[4] - 25, enemywidth[4], 15))
+    pygame.draw.rect(screen, RED, (enemyx[4], enemyy[4] - 25, enemywidth[4] / 4 * benemyhealth, 15))
 
     #Spike ball
     screen.blit(ballimg, (enemyballx, enemybally))
+
     #Explosion
     pygame.draw.circle(screen, explosioncolor, [explosionx + 32, explosiony + 32], explosionradius / 2)
 
@@ -676,13 +674,13 @@ def reset_menu():
     import playMenu
 
     main.player_count, main.charability, main.charx, main.chary, main.arrowx, main.arrowy, main.swordx, main.swordy, main.boltx, main.bolty, main.staffx, main.staffy = 0, [0,0], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [-100, -100], [0, 0], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100]
-    main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100], [-100, -100, -100, -100, -100], [False, False, False, False, False]
+    main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100], [False, False, False, False, False, False]
     main.benemyhealth = 4
     main.charhealth = [3, 3]
     main.charface, main.arrowface, main.swordface = [0, 0], [0, 0], [0, 0]
     main.enemyballx, main.enemybally, main.explosionx, main.explosiony, main.ballisactive, main.ballammo, main.explosionammo, main.explosionisactive, main.cantakedamage, main.explosioncolor = -100, -100, -100, -100, False, 1, 1, False, False, [255, 255, 255]
     playMenu.selected = [0, 0]
-    main.swordcooldownstarted, main.swordstarttime, main.swordpassedtime, main.boltcooldownstarted, main.boltstarttime, main.boltpassedtime = [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]
+    main.swordcooldownstarted, main.swordstarttime, main.swordpassedtime, main.boltcooldownstarted, main.boltstarttime, main.boltpassedtime = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
     main.passedtime, main.cooldownstarted, main.starttime, main.isactive, main.canuse = [0, 0], [False, False], [0, 0], [False, False], [True, True]
     main.player_score, main.enemies_killed, main.abilities_used, main.time_played, main.distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
 
