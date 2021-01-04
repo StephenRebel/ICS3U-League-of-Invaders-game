@@ -25,6 +25,7 @@ enemy1img = pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha()
 enemy2img = pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha()
 enemy3img = pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha()
 enemy4img = pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha()
+enemy5img = pygame.image.load("gamefiles/images/boss_enemy.png").convert_alpha()
 ballimg = pygame.image.load("gamefiles/images/spike_ball.png").convert_alpha()
 boltimg = [pygame.image.load("gamefiles/images/fire_ball.png").convert_alpha(), pygame.image.load("gamefiles/images/ice_spikes.png").convert_alpha(), pygame.image.load("gamefiles/images/green_rock.png").convert_alpha()]
 heartimg = pygame.image.load("gamefiles/images/heart.png").convert_alpha()
@@ -39,7 +40,7 @@ boltx, bolty, boltwidth, boltheight, boltface, staffx, staffy, staffface = [-100
 swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
 starttime, cooldownstarted, passedtime = [0, 0], [False, False], [0, 0]
 isactive, canuse = [False, False], [True, True]
-enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints = [0, 1, 2, 3], [-100, -100, -100, -100], [-100, -100, -100, -100], 64, 64, ["", "", "", ""], [1, 0.25, 0, 0.5], [False, False, False, False], [25, 40, 20, 10]
+enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints, benemyhealth, benemyhit = [0, 1, 2, 3, 4], [-100, -100, -100, -100, -100], [-100, -100, -100, -100, -100], [64, 64, 64, 64, 96], [64, 64, 64, 64, 96], ["", "", "", "", ""], [1, 0.25, 0, 0.5, 0.35], [False, False, False, False, False], [25, 40, 20, 10, 100], 4, [False, False]
 enemyball, enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = 1, -100, -100, 18, 18, 0
 explosion, explosionx, explosiony, explosionradius, explosioncolor = 1, -100, -100, 64, [255, 255, 255]
 ballammo, ballisactive = 1, False
@@ -222,6 +223,7 @@ def draw_screen():
     screen.blit(enemy2img, (enemyx[1], enemyy[1]))
     screen.blit(enemy3img, (enemyx[2], enemyy[2]))
     screen.blit(enemy4img, (enemyx[3], enemyy[3]))
+    screen.blit(enemy5img, (enemyx[4], enemyy[4]))
 
     #Spike ball
     screen.blit(ballimg, (enemyballx, enemybally))
@@ -356,7 +358,7 @@ def use_ability(char):
 
 #Run ability function
 def run_ability(char):
-    from main import charx, chary, charface, charability, isactive, canuse
+    from main import charx, chary, charface, charability, isactive, canuse, benemyhit
 
     #Arrow ability
     if charability[char] == 1 and isactive[char] == True:
@@ -394,6 +396,7 @@ def run_ability(char):
             swordcooldownstarted[char] = False
             isactive[char] = False
             swordx[char], swordy[char] = -100, -100
+            benemyhit[char] = False
 
     #Mage bolt ability
     if charability[char] == 3 and isactive[char] == True:
@@ -415,6 +418,7 @@ def run_ability(char):
             isactive[char] = False
             boltx[char], bolty[char] = -100, -100
             staffx[char], staffy[char] = -100, -100
+            benemyhit[char] = False
 
     #Starts the cooldown after ability is done
     from main import cooldownstarted, starttime, passedtime, arrowcollisionoccured
@@ -499,34 +503,34 @@ def find_closest_char(enemyx, enemyy):
 def move_enemy(enemytype):
     from main import enemyx, enemyy, enemywidth, enemyheight, enemyspeed, enemyface
     closest_char = find_closest_char(enemyx[enemytype], enemyy[enemytype])
-    if (enemyx[enemytype] + enemywidth / 2) - (closest_char[0] + charwidth / 2) == 0:
+    if (enemyx[enemytype] + enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) == 0:
         slope = 0.01
     else:
-        slope = abs(((enemyy[enemytype] + enemyheight / 2) - (closest_char[1] + charheight / 2)) / ((enemyx[enemytype] + enemywidth / 2) - (closest_char[0] + charwidth / 2)))
+        slope = abs(((enemyy[enemytype] + enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2)) / ((enemyx[enemytype] + enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2)))
     if slope < 1:
-        if (enemyx[enemytype] + enemywidth / 2) - (closest_char[0] + charwidth / 2) > 0:
+        if (enemyx[enemytype] + enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) > 0:
             enemyx[enemytype] -= enemyspeed[enemytype]
             enemyface[enemytype] = "West"
-        elif (enemyx[enemytype] + enemywidth / 2) - (closest_char[0] + charwidth / 2) < 0:
+        elif (enemyx[enemytype] + enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) < 0:
             enemyx[enemytype] += enemyspeed[enemytype]
             enemyface[enemytype] = "East"
-        if (enemyy[enemytype] + enemyheight / 2) - (closest_char[1] + charheight / 2) > 0:
+        if (enemyy[enemytype] + enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) > 0:
             enemyy[enemytype] -= slope * enemyspeed[enemytype]
-        elif (enemyy[enemytype] + enemyheight / 2) - (closest_char[1] + charheight / 2) < 0:
+        elif (enemyy[enemytype] + enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) < 0:
             enemyy[enemytype] += slope * enemyspeed[enemytype]
     else:
         if (enemyy[enemytype] + enemyy[enemytype] / 2) - (closest_char[1] + charheight / 2) == 0:
             slope = 0.01
         else:
-            slope = abs(((enemyx[enemytype] + enemywidth / 2) - (closest_char[0] + charwidth / 2)) / ((enemyy[enemytype] + enemyheight / 2) - (closest_char[1] + charheight / 2)))             
-        if (enemyx[enemytype] + enemywidth / 2) - (closest_char[0] + charwidth / 2) > 0:
+            slope = abs(((enemyx[enemytype] + enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2)) / ((enemyy[enemytype] + enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2)))             
+        if (enemyx[enemytype] + enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) > 0:
             enemyx[enemytype] -= slope * enemyspeed[enemytype]
-        elif (enemyx[enemytype] + enemywidth / 2) - (closest_char[0] + charwidth / 2) < 0:
+        elif (enemyx[enemytype] + enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) < 0:
             enemyx[enemytype] += slope * enemyspeed[enemytype]
-        if (enemyy[enemytype] + enemyheight / 2) - (closest_char[1] + charheight / 2) > 0:
+        if (enemyy[enemytype] + enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) > 0:
             enemyy[enemytype] -= enemyspeed[enemytype]
             enemyface[enemytype] = "North"
-        elif (enemyy[enemytype] + enemyheight / 2) - (closest_char[1] + charheight / 2) < 0:
+        elif (enemyy[enemytype] + enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) < 0:
             enemyy[enemytype] += enemyspeed[enemytype]
             enemyface[enemytype] = "South"
 
@@ -536,13 +540,13 @@ def spawn_enemy(enemytype):
         main.isalive[enemytype] = True
         chooseside = round(random.randrange(1, 5))
         if chooseside == 1:
-            main.enemyx[enemytype], main.enemyy[enemytype] = random.randrange(enemywidth, size[0] - enemywidth), 0
+            main.enemyx[enemytype], main.enemyy[enemytype] = random.randrange(enemywidth[enemytype], size[0] - enemywidth[enemytype]), 0
         elif chooseside == 2:
-            main.enemyx[enemytype], main.enemyy[enemytype] = 0, random.randrange(enemyheight, size[1] - enemyheight)
+            main.enemyx[enemytype], main.enemyy[enemytype] = 0, random.randrange(enemyheight[enemytype], size[1] - enemyheight[enemytype])
         elif chooseside == 3:
-            main.enemyx[enemytype], main.enemyy[enemytype] = random.randrange(enemywidth, size[0] - enemywidth), size[1] - enemyheight
+            main.enemyx[enemytype], main.enemyy[enemytype] = random.randrange(enemywidth[enemytype], size[0] - enemywidth[enemytype]), size[1] - enemyheight[enemytype]
         elif chooseside == 4:
-            main.enemyx[enemytype], main.enemyy[enemytype] = size[0] - enemywidth, random.randrange(enemyheight, size[1] - enemyheight)
+            main.enemyx[enemytype], main.enemyy[enemytype] = size[0] - enemywidth[enemytype], random.randrange(enemyheight[enemytype], size[1] - enemyheight[enemytype])
 
 def give_points(char, enemytype):
     import main
@@ -550,13 +554,30 @@ def give_points(char, enemytype):
     main.player_score[char] += enemypoints[enemytype]
     main.enemies_killed[char] += 1
 
+def collision_sorting(char, enemytype):
+    import main
+
+    if enemytype == 4 and main.benemyhealth == 1 and main.benemyhit[char] == False:
+        main.isalive[enemytype] = False
+        main.benemyhealth = 4
+        give_points(char, enemytype)
+    elif enemytype == 4 and main.benemyhit[char] == False:
+        if main.charability[char] != 1:
+            main.benemyhit[char] = True
+        enemyhit.play()
+        main.benemyhealth -= 1
+    elif enemytype != 4:
+        enemyhit.play()
+        main.isalive[enemytype] = False
+        give_points(char, enemytype)
+
 #Run function to detect collision between enemy and player
 def enemy_player_collision(char, enemytype):
     from main import enemyx, enemyy, enemywidth, enemyheight, isalive, charx, chary, charhealth
 
-    for enemyxpos in range(int(enemyx[enemytype]), int(enemyx[enemytype] + enemywidth)):
+    for enemyxpos in range(int(enemyx[enemytype]), int(enemyx[enemytype] + enemywidth[enemytype])):
         if charx[char] + charwidth >= enemyxpos >= charx[char]:
-            for enemyypos in range(int(enemyy[enemytype]), int(enemyy[enemytype] + enemyheight)):
+            for enemyypos in range(int(enemyy[enemytype]), int(enemyy[enemytype] + enemyheight[enemytype])):
                 if chary[char] + charheight >= enemyypos >= chary[char]:
                     isalive[enemytype] = False
                     playerhit.play()
@@ -601,15 +622,14 @@ def explosion_player_collision(char):
 
 #Run function to detect collision between enemy and arrow
 def enemy_arrow_collision(char, enemytype):
-    from main import enemyx, enemyy, enemywidth, enemyheight, isalive, arrowx, arrowy, arrowwidth, arrowheight, isactive, canuse, cooldownstarted, starttime, passedtime, arrowcollisionoccured
+    import main
+    from main import enemyx, enemyy, enemywidth, enemyheight, isalive, arrowx, arrowy, arrowwidth, arrowheight, isactive, canuse, cooldownstarted, starttime, passedtime, arrowcollisionoccured, benemyhealth
     
-    for enemyxpos in range(int(enemyx[enemytype]), int(enemyx[enemytype] + enemywidth)):
+    for enemyxpos in range(int(enemyx[enemytype]), int(enemyx[enemytype] + enemywidth[enemytype])):
         if arrowx[char] + arrowwidth[char] >= enemyxpos >= arrowx[char]:
-            for enemyypos in range(int(enemyy[enemytype]), int(enemyy[enemytype] + enemyheight)):
+            for enemyypos in range(int(enemyy[enemytype]), int(enemyy[enemytype] + enemyheight[enemytype])):
                 if arrowy[char] + arrowheight[char] >= enemyypos >= arrowy[char]:
-                    enemyhit.play()
-                    isalive[enemytype] = False
-                    give_points(char, enemytype)
+                    collision_sorting(char, enemytype)
                     arrowcollisionoccured[char] = True
                     arrowx[char], arrowy[char] = -100000, -100000 
                     isactive[char] = False
@@ -626,29 +646,27 @@ def enemy_arrow_collision(char, enemytype):
 
 #Run function to detect collision between enemy and sword
 def enemy_sword_collision(char, enemytype):
-    from main import enemyx, enemyy, enemywidth, enemyheight, isalive, swordx, swordy, swordwidth, swordheight, isactive, canuse, cooldownstarted, starttime, passedtime
+    import main
+    from main import enemyx, enemyy, enemywidth, enemyheight, isalive, swordx, swordy, swordwidth, swordheight, isactive, canuse, cooldownstarted, starttime, passedtime, benemyhealth
 
-    for enemyxpos in range(int(enemyx[enemytype]), int(enemyx[enemytype] + enemywidth)):
+    for enemyxpos in range(int(enemyx[enemytype]), int(enemyx[enemytype] + enemywidth[enemytype])):
         if swordx[char] + swordwidth[char] >= enemyxpos >= swordx[char]:
-            for enemyypos in range(int(enemyy[enemytype]), int(enemyy[enemytype] + enemyheight)):
+            for enemyypos in range(int(enemyy[enemytype]), int(enemyy[enemytype] + enemyheight[enemytype])):
                 if swordy[char] + swordheight[char] >= enemyypos >= swordy[char]:
-                    enemyhit.play()
-                    isalive[enemytype] = False
-                    give_points(char, enemytype)
+                    collision_sorting(char, enemytype)
                     break
             break
 
 #Run function to detect collision between enemy and mage bolt
 def enemy_bolt_collision(char, enemytype):
-    from main import enemyx, enemyy, enemywidth, enemyheight, isalive, boltx, bolty, boltwidth, boltheight, isactive, canuse, cooldownstarted, starttime, passedtime, boltface, multiplayer
+    import main
+    from main import enemyx, enemyy, enemywidth, enemyheight, isalive, boltx, bolty, boltwidth, boltheight, isactive, canuse, cooldownstarted, starttime, passedtime, boltface, multiplayer, benemyhealth
 
-    for enemyxpos in range(int(enemyx[enemytype]), int(enemyx[enemytype] + enemywidth)):
+    for enemyxpos in range(int(enemyx[enemytype]), int(enemyx[enemytype] + enemywidth[enemytype])):
         if (boltx[char]) + boltwidth[char] >= enemyxpos >= (boltx[char]):
-            for enemyypos in range(int(enemyy[enemytype]), int(enemyy[enemytype] + enemyheight)):
+            for enemyypos in range(int(enemyy[enemytype]), int(enemyy[enemytype] + enemyheight[enemytype])):
                 if (bolty[char]) + boltheight[char] >= enemyypos >= (bolty[char]):
-                    enemyhit.play()
-                    isalive[enemytype] = False
-                    give_points(char, enemytype)
+                    collision_sorting(char, enemytype)
                     break
             break
 
@@ -658,7 +676,8 @@ def reset_menu():
     import playMenu
 
     main.player_count, main.charability, main.charx, main.chary, main.arrowx, main.arrowy, main.swordx, main.swordy, main.boltx, main.bolty, main.staffx, main.staffy = 0, [0,0], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [-100, -100], [0, 0], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100]
-    main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100], [-100, -100, -100, -100], [False, False, False, False]
+    main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100], [-100, -100, -100, -100, -100], [False, False, False, False, False]
+    main.benemyhealth = 4
     main.charhealth = [3, 3]
     main.charface, main.arrowface, main.swordface = [0, 0], [0, 0], [0, 0]
     main.enemyballx, main.enemybally, main.explosionx, main.explosiony, main.ballisactive, main.ballammo, main.explosionammo, main.explosionisactive, main.cantakedamage, main.explosioncolor = -100, -100, -100, -100, False, 1, 1, False, False, [255, 255, 255]
@@ -699,7 +718,7 @@ while rungame:
 
     #Main game
     elif window == 4:
-
+        print(benemyhealth)
         #Start game time
         gametime = round((pygame.time.get_ticks() - gamestart) / 1000, 2)
 
