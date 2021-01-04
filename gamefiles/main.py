@@ -718,7 +718,6 @@ while rungame:
 
     #Main game
     elif window == 4:
-        print(benemyhealth)
         #Start game time
         gametime = round((pygame.time.get_ticks() - gamestart) / 1000, 2)
 
