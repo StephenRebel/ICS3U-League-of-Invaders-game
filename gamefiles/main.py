@@ -36,11 +36,11 @@ boltx, bolty, boltwidth, boltheight, boltface, staffx, staffy, staffface = [-100
 swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
 starttime, cooldownstarted, passedtime = [0, 0], [False, False], [0, 0]
 isactive, canuse = [False, False], [True, True]
-enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints, benemyhealth, benemyhit = [0, 1, 2, 3, 4, 5], [-100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 96, 32], [64, 64, 64, 64, 96, 32], ["", "", "", "", "", ""], [1, 0.25, 0, 0.5, 0.35, 1.5], [False, False, False, False, False, False], [25, 40, 20, 10, 100, 30], 4, [False, False]
+enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints, benemyhealth, benemyhit = [0, 1, 2, 3, 4, 5], [-100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 96, 32], [64, 64, 64, 64, 96, 32], ["", "", "", "", "", ""], [1, 0.25, 0, 0.5, 0.35, 1.25], [False, False, False, False, False, False], [20, 40, 20, 10, 100, 30], 4, [False, False]
 enemyball, enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = 1, -100, -100, 18, 18, 0
 explosion, explosionx, explosiony, explosionradius, explosioncolor = 1, -100, -100, 64, [255, 255, 255]
-ballammo, ballisactive = 1, False
-explosionammo, explosionisactive, cantakedamage = 1, False, False
+ballammo, ballisactive, ballcanshoot, ballcooldownstarted, ballstarttime, ballpassedtime = 1, False, True, False, 0, 0
+explosionammo, explosionisactive, cantakedamage, explosioncanshoot, explosioncooldownstarted, explosionstarttime, explosionpassedtime = 1, False, False, True, False, 0, 0
 img_num = [0, 0]
 
 #Menu setup
@@ -105,7 +105,6 @@ def draw_bolt(img, x, y, face, staff, staffx, staffy, staffface):
 #Draw pause button
 def pause_button():
     import main
-    from main import window
 
     #Allows for interaction with the mouse
     mouse = pygame.mouse.get_pos()
@@ -113,6 +112,7 @@ def pause_button():
 
     #Allow for interactions with the pause button
     if 1233 <= mouse[0] <= 1270 and 8 <= mouse[1] <= 43 and pressed[0] == True:
+        menuselectsound.play()
         main.window = 5
         pygame.time.delay(100)
     elif 1233 <= mouse[0] <= 1270 and 8 <= mouse[1] <= 43:
@@ -242,7 +242,7 @@ def draw_screen():
 
 #Move character function
 def move_char(char):
-    from main import charx, chary, charwidth, charheight, charface, charability, charhealth
+    import main
 
     keys = pygame.key.get_pressed()
     key_type = []
@@ -259,173 +259,168 @@ def move_char(char):
 
     #Changes speed based on ability
     extraspeed = 0
-    if charability[char] == 2:
+    if main.charability[char] == 2:
         extraspeed = 0.5
-    elif charability[char] == 3:
+    elif main.charability[char] == 3:
         extraspeed = 0.2
 
     # Movement for both players
-    if charhealth[char] > 0:
+    if main.charhealth[char] > 0:
         if key_type[0]:
-            charface[char] = 90
-            if charx[char] - 1 <= 0:
-                charx[char] = 0
+            main.charface[char] = 90
+            if main.charx[char] - 1 <= 0:
+                main.charx[char] = 0
             else:
-                charx[char] -= 2 + extraspeed
-                distance_travelled[char] += 2 + extraspeed
+                main.charx[char] -= 2 + extraspeed
+                main.distance_travelled[char] += 2 + extraspeed
         elif key_type[1]:
-            charface[char] = 270
-            if charx[char] + 1 >= size[0] - charwidth:
-                charx[char] = size[0] - charwidth
+            main.charface[char] = 270
+            if main.charx[char] + 1 >= size[0] - charwidth:
+                main.charx[char] = size[0] - charwidth
             else:
-                charx[char] += 2 + extraspeed
-                distance_travelled[char] += 2 + extraspeed
+                main.charx[char] += 2 + extraspeed
+                main.distance_travelled[char] += 2 + extraspeed
         elif key_type[2]:
-            charface[char] = 0
-            if chary[char] - 1 <= 0:
-                chary[char] = 0
+            main.charface[char] = 0
+            if main.chary[char] - 1 <= 0:
+                main.chary[char] = 0
             else:
-                chary[char] -= 2 + extraspeed
-                distance_travelled[char] += 2 + extraspeed
+                main.chary[char] -= 2 + extraspeed
+                main.distance_travelled[char] += 2 + extraspeed
         elif key_type[3]:
-            charface[char] = 180
-            if chary[char] + 1 >= size[1] - charheight:
-                chary[char] = size[1] - charheight
+            main.charface[char] = 180
+            if main.chary[char] + 1 >= size[1] - charheight:
+                main.chary[char] = size[1] - charheight
             else:
-                chary[char] += 2 + extraspeed
-                distance_travelled[char] += 2 + extraspeed
+                main.chary[char] += 2 + extraspeed
+                main.distance_travelled[char] += 2 + extraspeed
 
 #Use ability function
 def use_ability(char):
-    from main import charx, chary, charface, charability, charhealth, isactive, canuse
+    import main
 
     keys = pygame.key.get_pressed()
     key_type = []
     if char == 0: key_type.append(keys[pygame.K_SPACE])
     elif char == 1: key_type.append(keys[pygame.K_e])
 
-    if key_type[0] and isactive[char] == False and canuse[char] == True and charhealth[char] > 0:
-        isactive[char] = True
-        canuse[char] = False
-        abilities_used[char] += 1
+    if key_type[0] and main.isactive[char] == False and main.canuse[char] == True and main.charhealth[char] > 0:
+        main.isactive[char] = True
+        main.canuse[char] = False
+        main.abilities_used[char] += 1
 
         #Arrow ability    
-        if charability[char] == 1:
-            from main import arrowx, arrowy, arrowwidth, arrowheight, arrowface
+        if main.charability[char] == 1:
             bowuse.play()
-            arrowface[char] = charface[char]
-            if arrowface[char] == 0 or arrowface[char] == 180:
-                arrowwidth[char], arrowheight[char] = 8, 64
-                arrowx[char], arrowy[char] = charx[char] + (charwidth / 2) - arrowwidth[char] / 2, chary[char] + (charheight / 2)
-            elif arrowface[char] == 90 or arrowface[char] == 270:
-                arrowwidth[char], arrowheight[char] = 64, 8
-                arrowx[char], arrowy[char] = charx[char] + (charwidth / 2), chary[char] + (charheight / 2) - arrowheight[char] / 2
+            main.arrowface[char] = main.charface[char]
+            if main.arrowface[char] == 0 or main.arrowface[char] == 180:
+                main.arrowwidth[char], main.arrowheight[char] = 8, 64
+                main.arrowx[char], main.arrowy[char] = main.charx[char] + (charwidth / 2) - main.arrowwidth[char] / 2, main.chary[char] + (charheight / 2)
+            elif main.arrowface[char] == 90 or main.arrowface[char] == 270:
+                main.arrowwidth[char], main.arrowheight[char] = 64, 8
+                main.arrowx[char], main.arrowy[char] = main.charx[char] + (charwidth / 2), main.chary[char] + (charheight / 2) - main.arrowheight[char] / 2
 
         #Sword ability
         elif charability[char] == 2:
-            from main import swordx, swordy, swordwidth, swordheight, swordface
             sworduse.play()
-            swordface[char] = charface[char]
-            if swordface[char] == 0:
-                swordwidth[char], swordheight[char] = 22, 50
-                swordx[char], swordy[char] = charx[char], chary[char] - charheight + 10
-            elif swordface[char] == 90:
-                swordwidth[char], swordheight[char] = 50, 22
-                swordx[char], swordy[char] = charx[char] - charwidth + 10, chary[char]
-            elif swordface[char] == 180:
-                swordwidth[char], swordheight[char] = 22, 50
-                swordx[char], swordy[char] = charx[char], chary[char] + charheight - 10
-            elif swordface[char] == 270:
-                swordwidth[char], swordheight[char] = 50, 22
-                swordx[char], swordy[char] = charx[char] + charwidth - 10, chary[char]   
+            main.swordface[char] = main.charface[char]
+            if main.swordface[char] == 0:
+                main.swordwidth[char], main.swordheight[char] = 22, 50
+                main.swordx[char], main.swordy[char] = main.charx[char], main.chary[char] - charheight + 10
+            elif main.swordface[char] == 90:
+                main.swordwidth[char], main.swordheight[char] = 50, 22
+                main.swordx[char], main.swordy[char] = main.charx[char] - charwidth + 10, main.chary[char]
+            elif main.swordface[char] == 180:
+                main.swordwidth[char], main.swordheight[char] = 22, 50
+                main.swordx[char], main.swordy[char] = main.charx[char], main.chary[char] + charheight - 10
+            elif main.swordface[char] == 270:
+                main.swordwidth[char], main.swordheight[char] = 50, 22
+                main.swordx[char], main.swordy[char] = main.charx[char] + charwidth - 10, main.chary[char]   
 
         #Mage bolt ability
-        elif charability[char] == 3:
-            from main import boltx, bolty, boltface, img_num
+        elif main.charability[char] == 3:
             staffuse.play()
-            boltface[char] = charface[char]
-            img_num[char] = random.randrange(0, 3)
-            if boltface[char] == 0:
-                boltx[char], bolty[char] = charx[char], chary[char] - charheight - 128
-            elif boltface[char] == 90:
-                boltx[char], bolty[char] = charx[char] - charwidth - 128, chary[char]
-            elif boltface[char] == 180:
-                boltx[char], bolty[char] = charx[char], chary[char] + charheight + 128
-            elif boltface[char] == 270:
-                boltx[char], bolty[char] = charx[char] + charwidth + 128, chary[char]
+            main.boltface[char] = main.charface[char]
+            main.img_num[char] = random.randrange(0, 3)
+            if main.boltface[char] == 0:
+                main.boltx[char], main.bolty[char] = main.charx[char], main.chary[char] - charheight - 128
+            elif main.boltface[char] == 90:
+                main.boltx[char], main.bolty[char] = main.charx[char] - charwidth - 128, main.chary[char]
+            elif main.boltface[char] == 180:
+                main.boltx[char], main.bolty[char] = main.charx[char], main.chary[char] + charheight + 128
+            elif main.boltface[char] == 270:
+                main.boltx[char], main.bolty[char] = main.charx[char] + charwidth + 128, main.chary[char]
 
 #Run ability function
 def run_ability(char):
-    from main import charx, chary, charface, charability, isactive, canuse, benemyhit
+    import main
 
     #Arrow ability
-    if charability[char] == 1 and isactive[char] == True:
+    if main.charability[char] == 1 and main.isactive[char] == True:
         from main import arrowface, arrowx, arrowy
-        if arrowface[char] == 0 and arrowy[char] > -64:
-            arrowy[char] -= 10
-        elif arrowface[char] == 180 and arrowy[char] < size[1] + 64:
-            arrowy[char] += 10
-        elif arrowface[char] == 270 and arrowx[char] < size[0] + 64:
-            arrowx[char] += 10
-        elif arrowface[char] == 90 and arrowx[char] > -64:
-            arrowx[char] -= 10
+        if main.arrowface[char] == 0 and main.arrowy[char] > -64:
+            main.arrowy[char] -= 10
+        elif main.arrowface[char] == 180 and main.arrowy[char] < size[1] + 64:
+            main.arrowy[char] += 10
+        elif main.arrowface[char] == 270 and main.arrowx[char] < size[0] + 64:
+            main.arrowx[char] += 10
+        elif main.arrowface[char] == 90 and main.arrowx[char] > -64:
+            main.arrowx[char] -= 10
         else:
-            isactive[char] = False
+            main.isactive[char] = False
 
     #Sword ability
-    if charability[char] == 2 and isactive[char] == True:
-        from main import swordx, swordy, swordwidth, swordheight, swordface, swordcooldownstarted, swordstarttime, swordpassedtime
-        if swordface[char] == 0:
-            swordwidth[char], swordheight[char] = 22, 50
-            swordx[char], swordy[char] = charx[char] + swordwidth[char], chary[char] - charheight + 10
-        elif swordface[char] == 90:
-            swordwidth[char], swordheight[char] = 50, 22
-            swordx[char], swordy[char] = charx[char] - charwidth + 10, chary[char] + swordheight[char]
-        elif swordface[char] == 180:
-            swordwidth[char], swordheight[char] = 22, 50
-            swordx[char], swordy[char] = charx[char] + swordwidth[char], chary[char] + charheight 
-        elif swordface[char] == 270:
-            swordwidth[char], swordheight[char] = 50, 22
-            swordx[char], swordy[char] = charx[char] + charwidth, chary[char]+ swordheight[char]
+    if main.charability[char] == 2 and main.isactive[char] == True:
+        if main.swordface[char] == 0:
+            main.swordwidth[char], main.swordheight[char] = 22, 50
+            main.swordx[char], main.swordy[char] = main.charx[char] + main.swordwidth[char], main.chary[char] - charheight + 10
+        elif main.swordface[char] == 90:
+            main.swordwidth[char], main.swordheight[char] = 50, 22
+            main.swordx[char], main.swordy[char] = main.charx[char] - charwidth + 10, main.chary[char] + main.swordheight[char]
+        elif main.swordface[char] == 180:
+            main.swordwidth[char], main.swordheight[char] = 22, 50
+            main.swordx[char], main.swordy[char] = main.charx[char] + main.swordwidth[char], main.chary[char] + charheight 
+        elif main.swordface[char] == 270:
+            main.swordwidth[char], main.swordheight[char] = 50, 22
+            main.swordx[char], main.swordy[char] = main.charx[char] + charwidth, main.chary[char] + main.swordheight[char]
         #Makes the sword appear for 0.5 seconds
-        swordcooldownstarted[char], swordstarttime[char], swordpassedtime[char] = ability_cooldown(swordcooldownstarted[char], swordstarttime[char], swordpassedtime[char])
-        if swordpassedtime[char] >= 500:
-            swordpassedtime[char] = 0
-            swordcooldownstarted[char] = False
-            isactive[char] = False
-            swordx[char], swordy[char] = -100, -100
-            benemyhit[char] = False
+        main.swordcooldownstarted[char], main.swordstarttime[char], main.swordpassedtime[char] = ability_cooldown(main.swordcooldownstarted[char], main.swordstarttime[char], main.swordpassedtime[char])
+        if main.swordpassedtime[char] >= 500:
+            main.swordpassedtime[char] = 0
+            main.swordcooldownstarted[char] = False
+            main.isactive[char] = False
+            main.swordx[char], main.swordy[char] = -100, -100
+            main.benemyhit[char] = False
 
     #Mage bolt ability
-    if charability[char] == 3 and isactive[char] == True:
+    if main.charability[char] == 3 and main.isactive[char] == True:
         from main import staffx, staffy, staffface, boltcooldownstarted, boltstarttime, boltpassedtime
-        staffface[char] = charface[char]
-        if staffface[char] == 0:
-            staffx[char], staffy[char] = charx[char], chary[char] - charheight
-        elif staffface[char] == 90:
-            staffx[char], staffy[char] = charx[char] - charwidth, chary[char]
-        elif staffface[char] == 180:
-            staffx[char], staffy[char] = charx[char], chary[char] + charheight
+        main.staffface[char] = main.charface[char]
+        if main.staffface[char] == 0:
+            main.staffx[char], main.staffy[char] = main.charx[char], main.chary[char] - charheight
+        elif main.staffface[char] == 90:
+            main.staffx[char], main.staffy[char] = main.charx[char] - charwidth, main.chary[char]
+        elif main.staffface[char] == 180:
+            main.staffx[char], main.staffy[char] = main.charx[char], main.chary[char] + charheight
         elif staffface[char] == 270:
-            staffx[char], staffy[char] = charx[char] + charwidth, chary[char]
+            main.staffx[char], main.staffy[char] = main.charx[char] + charwidth, main.chary[char]
         #Makes the bolt disapear after 1 second
-        boltcooldownstarted[char], boltstarttime[char], boltpassedtime[char] = ability_cooldown(boltcooldownstarted[char], boltstarttime[char], boltpassedtime[char])
-        if boltpassedtime[char] >= 1000:
-            boltpassedtime[char] = 0
-            boltcooldownstarted[char] = False
-            isactive[char] = False
-            boltx[char], bolty[char] = -100, -100
-            staffx[char], staffy[char] = -100, -100
-            benemyhit[char] = False
+        main.boltcooldownstarted[char], main.boltstarttime[char], main.boltpassedtime[char] = ability_cooldown(main.boltcooldownstarted[char], main.boltstarttime[char], main.boltpassedtime[char])
+        if main.boltpassedtime[char] >= 500:
+            main.boltpassedtime[char] = 0
+            main.boltcooldownstarted[char] = False
+            main.isactive[char] = False
+            main.boltx[char], main.bolty[char] = -100, -100
+            main.staffx[char], main.staffy[char] = -100, -100
+            main.benemyhit[char] = False
 
     #Starts the cooldown after ability is done
-    from main import cooldownstarted, starttime, passedtime, arrowcollisionoccured
-    if isactive[char] == False and canuse[char] == False and arrowcollisionoccured[char] == False:
-        cooldownstarted[char], starttime[char], passedtime[char] = ability_cooldown(cooldownstarted[char], starttime[char], passedtime[char])
-        if passedtime[char] >= 1000:
-            passedtime[char] = 0
-            cooldownstarted[char] = False
-            canuse[char] = True
+    if main.isactive[char] == False and main.canuse[char] == False and main.arrowcollisionoccured[char] == False:
+        main.cooldownstarted[char], main.starttime[char], main.passedtime[char] = ability_cooldown(main.cooldownstarted[char], main.starttime[char], main.passedtime[char])
+        if main.passedtime[char] >= 1000:
+            main.passedtime[char] = 0
+            main.cooldownstarted[char] = False
+            main.canuse[char] = True
 
 #Gets the cooldown after an ability has been used
 def ability_cooldown(cooldownstarted, starttime, passedtime):
@@ -439,37 +434,43 @@ def ability_cooldown(cooldownstarted, starttime, passedtime):
 #Run spike ball function
 def enemy_shoot_spike_ball(): 
     import main
- 
     #Enemy shoots the spike ball 
-    if main.ballammo > 0 and main.ballisactive == False:
+    if main.ballammo > 0 and main.ballisactive == False and main.ballcanshoot == True:
         main.ballammo -= 1
         main.enemyballface = main.enemyface[1]
         main.enemyballx, main.enemybally = main.enemyx[1], main.enemyy[1]
         main.ballisactive = True
+        main.ballcanshoot = False
     #Spike ball flies through the air
     if main.ballisactive == True:
-        if main.enemyballface == "North" and main.enemybally > - main.enemyballheight:
+        if main.enemyballface == "North" and main.enemybally > -main.enemyballheight * 3:
             main.enemybally -= 3
             main.enemyballx += 5 * math.sin(0.1 * main.enemybally)
-        elif main.enemyballface == "East" and main.enemyballx < size[0] + main.enemyballwidth:
+        elif main.enemyballface == "East" and main.enemyballx < size[0] + main.enemyballwidth * 3:
             main.enemyballx += 3
             main.enemybally += (5 * math.sin(0.1 * enemyballx))
-        elif main.enemyballface == "South" and main.enemybally < size[1] + main.enemyballheight:
+        elif main.enemyballface == "South" and main.enemybally < size[1] + main.enemyballheight * 3:
             main.enemybally += 3
             main.enemyballx += 5 * math.sin(0.1 * enemybally)
-        elif main.enemyballface == "West" and main.enemyballx > - main.enemyballwidth:
+        elif main.enemyballface == "West" and main.enemyballx > -main.enemyballwidth * 3:
             main.enemyballx -= 3
             main.enemybally += (5 * math.sin(0.1 * main.enemyballx))
         else:
             main.ballisactive = False
             main.ballammo += 1
+    else:
+        main.ballcooldownstarted, main.ballstarttime, main.ballpassedtime = ability_cooldown(main.ballcooldownstarted, main.ballstarttime, main.ballpassedtime)
+        if main.ballpassedtime >= 2000:
+            main.ballpassedtime = 0
+            main.ballcooldownstarted = False
+            main.ballcanshoot = True
 
 #Run shoot explosion function
 def enemy_shoot_explosion():
     import main
 
     #Shoot the exlosion
-    if main.explosionammo > 0 and main.explosionisactive == False:
+    if main.explosionammo > 0 and main.explosionisactive == False and main.explosioncanshoot == True:
         main.cantakedamage = False
         main.explosionammo -= 1
         main.explosionx, main.explosiony = find_closest_char(main.enemyx[2], main.enemyy[2])
@@ -483,8 +484,16 @@ def enemy_shoot_explosion():
         else:
             main.explosionammo += 1
             main.explosioncolor = [255, 255, 255]
+            main.explosionx, main.explosiony = -100, -100
             main.cantakedamage = True
             main.explosionisactive = False
+            main.explosioncanshoot = False
+    else:
+        main.explosioncooldownstarted, main.explosionstarttime, main.explosionpassedtime = ability_cooldown(main.explosioncooldownstarted, main.explosionstarttime, main.explosionpassedtime)
+        if main.explosionpassedtime >= 2000:
+            main.explosionpassedtime = 0
+            main.explosioncooldownstarted = False
+            main.explosioncanshoot = True
   
 #Find closest character
 def find_closest_char(enemyx, enemyy):
@@ -499,38 +508,38 @@ def find_closest_char(enemyx, enemyy):
 
 #Run function to move enemy
 def move_enemy(enemytype):
-    from main import enemyx, enemyy, enemywidth, enemyheight, enemyspeed, enemyface
+    import main
     closest_char = find_closest_char(enemyx[enemytype], enemyy[enemytype])
-    if (enemyx[enemytype] + enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) == 0:
+    if (main.enemyx[enemytype] + main.enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) == 0:
         slope = 0.01
     else:
-        slope = abs(((enemyy[enemytype] + enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2)) / ((enemyx[enemytype] + enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2)))
+        slope = abs(((main.enemyy[enemytype] + main.enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2)) / ((main.enemyx[enemytype] + main.enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2)))
     if slope < 1:
-        if (enemyx[enemytype] + enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) > 0:
-            enemyx[enemytype] -= enemyspeed[enemytype]
-            enemyface[enemytype] = "West"
-        elif (enemyx[enemytype] + enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) < 0:
-            enemyx[enemytype] += enemyspeed[enemytype]
-            enemyface[enemytype] = "East"
-        if (enemyy[enemytype] + enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) > 0:
-            enemyy[enemytype] -= slope * enemyspeed[enemytype]
-        elif (enemyy[enemytype] + enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) < 0:
-            enemyy[enemytype] += slope * enemyspeed[enemytype]
+        if (main.enemyx[enemytype] + main.enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) > 0:
+            main.enemyx[enemytype] -= main.enemyspeed[enemytype]
+            main.enemyface[enemytype] = "West"
+        elif (main.enemyx[enemytype] + main.enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) < 0:
+            main.enemyx[enemytype] += main.enemyspeed[enemytype]
+            main.enemyface[enemytype] = "East"
+        if (main.enemyy[enemytype] + main.enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) > 0:
+            main.enemyy[enemytype] -= slope * main.enemyspeed[enemytype]
+        elif (main.enemyy[enemytype] + main.enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) < 0:
+            main.enemyy[enemytype] += slope * main.enemyspeed[enemytype]
     else:
-        if (enemyy[enemytype] + enemyy[enemytype] / 2) - (closest_char[1] + charheight / 2) == 0:
+        if (main.enemyy[enemytype] + main.enemyy[enemytype] / 2) - (closest_char[1] + charheight / 2) == 0:
             slope = 0.01
         else:
             slope = abs(((enemyx[enemytype] + enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2)) / ((enemyy[enemytype] + enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2)))             
-        if (enemyx[enemytype] + enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) > 0:
-            enemyx[enemytype] -= slope * enemyspeed[enemytype]
-        elif (enemyx[enemytype] + enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) < 0:
-            enemyx[enemytype] += slope * enemyspeed[enemytype]
-        if (enemyy[enemytype] + enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) > 0:
-            enemyy[enemytype] -= enemyspeed[enemytype]
-            enemyface[enemytype] = "North"
-        elif (enemyy[enemytype] + enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) < 0:
-            enemyy[enemytype] += enemyspeed[enemytype]
-            enemyface[enemytype] = "South"
+        if (main.enemyx[enemytype] + main.enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) > 0:
+            main.enemyx[enemytype] -= slope * main.enemyspeed[enemytype]
+        elif (main.enemyx[enemytype] + main.enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) < 0:
+            main.enemyx[enemytype] += slope * main.enemyspeed[enemytype]
+        if (main.enemyy[enemytype] + main.enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) > 0:
+            main.enemyy[enemytype] -= main.enemyspeed[enemytype]
+            main.enemyface[enemytype] = "North"
+        elif (main.enemyy[enemytype] + main.enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) < 0:
+            main.enemyy[enemytype] += main.enemyspeed[enemytype]
+            main.enemyface[enemytype] = "South"
 
 def spawn_enemy(enemytype):
     import main
@@ -556,6 +565,7 @@ def collision_sorting(char, enemytype):
     import main
 
     if enemytype == 4 and main.benemyhealth == 1 and main.benemyhit[char] == False:
+        enemyhit.play()
         main.isalive[enemytype] = False
         main.benemyhealth = 4
         give_points(char, enemytype)
@@ -571,17 +581,19 @@ def collision_sorting(char, enemytype):
 
 #Run function to detect collision between enemy and player
 def enemy_player_collision(char, enemytype):
-    from main import enemyx, enemyy, enemywidth, enemyheight, isalive, charx, chary, charhealth
+    import main
 
-    for enemyxpos in range(int(enemyx[enemytype]), int(enemyx[enemytype] + enemywidth[enemytype])):
+    for enemyxpos in range(int(main.enemyx[enemytype]), int(main.enemyx[enemytype] + main.enemywidth[enemytype])):
         if charx[char] + charwidth >= enemyxpos >= charx[char]:
-            for enemyypos in range(int(enemyy[enemytype]), int(enemyy[enemytype] + enemyheight[enemytype])):
-                if chary[char] + charheight >= enemyypos >= chary[char]:
-                    isalive[enemytype] = False
+            for enemyypos in range(int(main.enemyy[enemytype]), int(main.enemyy[enemytype] + main.enemyheight[enemytype])):
+                if main.chary[char] + charheight >= enemyypos >= main.chary[char]:
+                    main.isalive[enemytype] = False
                     playerhit.play()
-                    charhealth[char] -= 1
-                    if charhealth[char] <= 0:
-                        charx[char], chary[char] = -100000, -100000
+                    main.charhealth[char] -= 1
+                    if enemytype == 4:
+                        main.benemyhealth = 4
+                    if main.charhealth[char] <= 0:
+                        main.charx[char], main.chary[char] = -100000, -100000
                     break
             break
 
@@ -621,36 +633,34 @@ def explosion_player_collision(char):
 #Run function to detect collision between enemy and arrow
 def enemy_arrow_collision(char, enemytype):
     import main
-    from main import enemyx, enemyy, enemywidth, enemyheight, isalive, arrowx, arrowy, arrowwidth, arrowheight, isactive, canuse, cooldownstarted, starttime, passedtime, arrowcollisionoccured, benemyhealth
-    
-    for enemyxpos in range(int(enemyx[enemytype]), int(enemyx[enemytype] + enemywidth[enemytype])):
-        if arrowx[char] + arrowwidth[char] >= enemyxpos >= arrowx[char]:
-            for enemyypos in range(int(enemyy[enemytype]), int(enemyy[enemytype] + enemyheight[enemytype])):
-                if arrowy[char] + arrowheight[char] >= enemyypos >= arrowy[char]:
+
+    for enemyxpos in range(int(main.enemyx[enemytype]), int(main.enemyx[enemytype] + main.enemywidth[enemytype])):
+        if main.arrowx[char] + main.arrowwidth[char] >= enemyxpos >= main.arrowx[char]:
+            for enemyypos in range(int(main.enemyy[enemytype]), int(main.enemyy[enemytype] + main.enemyheight[enemytype])):
+                if main.arrowy[char] + main.arrowheight[char] >= enemyypos >= main.arrowy[char]:
                     collision_sorting(char, enemytype)
-                    arrowcollisionoccured[char] = True
-                    arrowx[char], arrowy[char] = -100000, -100000 
-                    isactive[char] = False
+                    main.arrowcollisionoccured[char] = True
+                    main.arrowx[char], main.arrowy[char] = -100000, -100000 
+                    main.isactive[char] = False
                     break
             break
 
-    if arrowcollisionoccured[char] == True:
-        cooldownstarted[char], starttime[char], passedtime[char] = ability_cooldown(cooldownstarted[char], starttime[char], passedtime[char])
-        if passedtime[char] >= 1000:
-            passedtime[char] = 0
-            cooldownstarted[char] = False
-            arrowcollisionoccured[char] = False
-            canuse[char] = True
+    if main.arrowcollisionoccured[char] == True:
+        main.cooldownstarted[char], main.starttime[char], main.passedtime[char] = ability_cooldown(main.cooldownstarted[char], main.starttime[char], main.passedtime[char])
+        if main.passedtime[char] >= 1000:
+            main.passedtime[char] = 0
+            main.cooldownstarted[char] = False
+            main.arrowcollisionoccured[char] = False
+            main.canuse[char] = True
 
 #Run function to detect collision between enemy and sword
 def enemy_sword_collision(char, enemytype):
     import main
-    from main import enemyx, enemyy, enemywidth, enemyheight, isalive, swordx, swordy, swordwidth, swordheight, isactive, canuse, cooldownstarted, starttime, passedtime, benemyhealth
 
-    for enemyxpos in range(int(enemyx[enemytype]), int(enemyx[enemytype] + enemywidth[enemytype])):
-        if swordx[char] + swordwidth[char] >= enemyxpos >= swordx[char]:
-            for enemyypos in range(int(enemyy[enemytype]), int(enemyy[enemytype] + enemyheight[enemytype])):
-                if swordy[char] + swordheight[char] >= enemyypos >= swordy[char]:
+    for enemyxpos in range(int(main.enemyx[enemytype]), int(main.enemyx[enemytype] + main.enemywidth[enemytype])):
+        if main.swordx[char] + main.swordwidth[char] >= enemyxpos >= main.swordx[char]:
+            for enemyypos in range(int(main.enemyy[enemytype]), int(main.enemyy[enemytype] + main.enemyheight[enemytype])):
+                if main.swordy[char] + main.swordheight[char] >= enemyypos >= main.swordy[char]:
                     collision_sorting(char, enemytype)
                     break
             break
@@ -658,12 +668,11 @@ def enemy_sword_collision(char, enemytype):
 #Run function to detect collision between enemy and mage bolt
 def enemy_bolt_collision(char, enemytype):
     import main
-    from main import enemyx, enemyy, enemywidth, enemyheight, isalive, boltx, bolty, boltwidth, boltheight, isactive, canuse, cooldownstarted, starttime, passedtime, boltface, multiplayer, benemyhealth
 
-    for enemyxpos in range(int(enemyx[enemytype]), int(enemyx[enemytype] + enemywidth[enemytype])):
-        if (boltx[char]) + boltwidth[char] >= enemyxpos >= (boltx[char]):
-            for enemyypos in range(int(enemyy[enemytype]), int(enemyy[enemytype] + enemyheight[enemytype])):
-                if (bolty[char]) + boltheight[char] >= enemyypos >= (bolty[char]):
+    for enemyxpos in range(int(main.enemyx[enemytype]), int(main.enemyx[enemytype] + main.enemywidth[enemytype])):
+        if (main.boltx[char]) + main.boltwidth[char] >= enemyxpos >= (main.boltx[char]):
+            for enemyypos in range(int(main.enemyy[enemytype]), int(main.enemyy[enemytype] + main.enemyheight[enemytype])):
+                if (main.bolty[char]) + main.boltheight[char] >= enemyypos >= (main.bolty[char]):
                     collision_sorting(char, enemytype)
                     break
             break
@@ -724,7 +733,7 @@ while rungame:
         if multiplayer == True:
             move_char(char[1])
             
-        #Drawing Arrows
+        #Drawing abilities
         for i in range(1, 4):
             if charability[0] == i:
                 use_ability(char[0])
