@@ -21,14 +21,14 @@ char2img = pygame.image.load("gamefiles/images/blue_char.png").convert_alpha()
 arrowimg = pygame.image.load("gamefiles/images/arrow.png").convert_alpha()
 swordimg = pygame.image.load("gamefiles/images/sword.png").convert_alpha()
 staffimg = pygame.image.load("gamefiles/images/staff.png").convert_alpha()
-enemyimg = [pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/boss_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/turquoise_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/white_enemy.png").convert_alpha(),]
+enemyimg = [pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/boss_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/turquoise_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/white_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/blue_enemy.png").convert_alpha()]
 ballimg = pygame.image.load("gamefiles/images/spike_ball.png").convert_alpha()
+iceimg = pygame.image.load("gamefiles/images/icicle.png").convert_alpha()
 boltimg = [pygame.image.load("gamefiles/images/fire_ball.png").convert_alpha(), pygame.image.load("gamefiles/images/ice_spikes.png").convert_alpha(), pygame.image.load("gamefiles/images/green_rock.png").convert_alpha()]
 heartimg = pygame.image.load("gamefiles/images/heart.png").convert_alpha()
 emptyheartimg = pygame.image.load("gamefiles/images/heart_empty.png").convert_alpha()
 
 #Game variables
-hasgamestarted = False
 multiplayer = False
 char, charx, chary, charwidth, charheight, charface, charability, charhealth = [0, 1], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], 64, 64, [0, 0], [0, 0], [3, 3]
 arrowx, arrowy, arrowwidth, arrowheight, arrowface, arrowcollisionoccured = [-100, -100], [-100, -100], [10, 10], [62, 62], [0, 0], [False, False]
@@ -37,13 +37,16 @@ boltx, bolty, boltwidth, boltheight, boltface, staffx, staffy, staffface = [-100
 swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
 starttime, cooldownstarted, passedtime = [0, 0], [False, False], [0, 0]
 isactive, canuse = [False, False], [True, True]
-enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints, benemyhealth, benemyhit = [0, 1, 2, 3, 4, 5, 6], [-100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 96, 32, 64], [64, 64, 64, 64, 96, 32, 64], ["", "", "", "", "", "", ""], [1, 0.25, 0, 0.5, 0.35, 1.25, 0.75], [False, False, False, False, False, False, False], [20, 40, 20, 10, 100, 30, 30], 4, [False, False]
-enemyball, enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = 1, -100, -100, 18, 18, 0
+enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints, benemyhealth, benemyhit = [0, 1, 2, 3, 4, 5, 6, 7], [-100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 96, 32, 64, 64], [64, 64, 64, 64, 96, 32, 64, 64], [0, 0, 0, 0, 0, 0, 0, 0], [1, 0.25, 0, 0.5, 0.35, 1.25, 0.75, 0.5], [False, False, False, False, False, False, False, False], [20, 40, 20, 10, 100, 30, 30, 30], 4, [False, False]
+enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = -100, -100, 18, 18, 0
+iciclex, icicley, iciclewidth, icicleheight, icicleface = -100, -100, 32, 64, 0
 explosion, explosionx, explosiony, explosionradius, explosioncolor = 1, -100, -100, 64, [255, 255, 255]
 ballammo, ballisactive, ballcanshoot, ballcooldownstarted, ballstarttime, ballpassedtime = 1, False, True, False, 0, 0
+icicleammo, icicleisactive, iciclecanshoot, iciclecooldownstarted, iciclestarttime, iciclepassedtime, isfrozen, frozencooldownstarted, frozenstarttime, frozenpassedtime = 1, False, True, False, 0, 0, [False, False], [False, False], [0, 0], [0, 0]
 invisiblevalue, decrease, isinvisible, invisiblecooldownstarted, invisiblestarttime, invisiblepassedtime = 255, True, False, False, 0, 0
 explosionammo, explosionisactive, cantakedamage, explosioncanshoot, explosioncooldownstarted, explosionstarttime, explosionpassedtime = 1, False, False, True, False, 0, 0
-respawntimer, timerstart = [20, 60, 40, 0, 120, 80, 100], [0, 0, 0, 0, 0, 0, 0]
+respawntimer, timerstart = [20, 80, 60, 0, 140, 100, 120, 40], [0, 0, 0, 0, 0, 0, 0, 0]
+unpausetime = 0
 img_num = [0, 0]
 
 #Menu setup
@@ -105,6 +108,11 @@ def draw_bolt(img, x, y, face, staff, staffx, staffy, staffface):
     screen.blit(img, (x, y))
     screen.blit(new_staff, (staffx, staffy))
 
+#Draw arrows
+def draw_icicle(img, x, y, face):
+    new_icicle = pygame.transform.rotate(img, face)
+    screen.blit(new_icicle, (x, y))
+
 #Draw pause button
 def pause_button():
     import main
@@ -115,6 +123,7 @@ def pause_button():
 
     #Allow for interactions with the pause button
     if 1233 <= mouse[0] <= 1270 and 8 <= mouse[1] <= 43 and pressed[0] == True:
+        main.startpause = pygame.time.get_ticks()
         menuselectsound.play()
         main.window = 5
         pygame.time.delay(100)
@@ -231,6 +240,8 @@ def draw_screen():
     #Explosion
     pygame.draw.circle(screen, explosioncolor, [explosionx + 32, explosiony + 32], explosionradius / 2)
 
+    draw_icicle(iceimg, iciclex, icicley, icicleface)
+
     #Pause Button
     pause_button()
 
@@ -274,7 +285,7 @@ def move_char(char):
         extraspeed = 0.2
 
     # Movement for both players
-    if main.charhealth[char] > 0:
+    if main.charhealth[char] > 0 and main.isfrozen[char] == False:
         if key_type[0]:
             main.charface[char] = 90
             if main.charx[char] - 1 <= 0:
@@ -303,6 +314,15 @@ def move_char(char):
             else:
                 main.chary[char] += 2 + extraspeed
                 main.distance_travelled[char] += 2 + extraspeed
+
+def frozen(char):
+    if isfrozen[char] == True:
+        #Makes the sword appear for 0.5 seconds
+        main.frozencooldownstarted[char], main.frozenstarttime[char], main.frozenpassedtime[char] = ability_cooldown(main.frozencooldownstarted[char], main.frozenstarttime[char], main.frozenpassedtime[char])
+        if main.frozenpassedtime[char] >= 750:
+            main.frozenpassedtime[char] = 0
+            main.frozencooldownstarted[char] = False
+            main.isfrozen[char] = False
 
 #Use ability function
 def use_ability(char):
@@ -452,22 +472,22 @@ def enemy_shoot_spike_ball():
         main.ballcanshoot = False
     #Spike ball flies through the air
     if main.ballisactive == True:
-        if main.enemyballface == "North" and main.enemybally > -main.enemyballheight * 3:
+        if main.enemyballface == 0 and main.enemybally > -main.enemyballheight * 3:
             main.enemybally -= 3
             main.enemyballx += 5 * math.sin(0.1 * main.enemybally)
-        elif main.enemyballface == "East" and main.enemyballx < size[0] + main.enemyballwidth * 3:
+        elif main.enemyballface == 270 and main.enemyballx < size[0] + main.enemyballwidth * 3:
             main.enemyballx += 3
             main.enemybally += (5 * math.sin(0.1 * enemyballx))
-        elif main.enemyballface == "South" and main.enemybally < size[1] + main.enemyballheight * 3:
+        elif main.enemyballface == 180 and main.enemybally < size[1] + main.enemyballheight * 3:
             main.enemybally += 3
             main.enemyballx += 5 * math.sin(0.1 * enemybally)
-        elif main.enemyballface == "West" and main.enemyballx > -main.enemyballwidth * 3:
+        elif main.enemyballface == 90 and main.enemyballx > -main.enemyballwidth * 3:
             main.enemyballx -= 3
             main.enemybally += (5 * math.sin(0.1 * main.enemyballx))
         else:
             main.ballisactive = False
             main.ballammo += 1
-    else:
+    elif main.isalive[1] == True:
         main.ballcooldownstarted, main.ballstarttime, main.ballpassedtime = ability_cooldown(main.ballcooldownstarted, main.ballstarttime, main.ballpassedtime)
         if main.ballpassedtime >= 2000:
             main.ballpassedtime = 0
@@ -485,7 +505,7 @@ def enemy_shoot_explosion():
         main.explosionx, main.explosiony = find_closest_char(main.enemyx[2], main.enemyy[2])
         main.explosionisactive = True
     #Explosion countdown
-    if main.explosionisactive == True:
+    if main.explosionisactive == True and main.isalive[2] == True:
         if main.explosioncolor[0] > 82 and main.explosioncolor[1] > 72 and main.explosioncolor[2] > 0:
             main.explosioncolor[0] -= 0.67
             main.explosioncolor[1] -= 0.71
@@ -496,33 +516,69 @@ def enemy_shoot_explosion():
             main.cantakedamage = True
             main.explosionisactive = False
             main.explosioncanshoot = False
-    else:
+    elif main.isalive[2] == True:
         main.explosioncooldownstarted, main.explosionstarttime, main.explosionpassedtime = ability_cooldown(main.explosioncooldownstarted, main.explosionstarttime, main.explosionpassedtime)
         if main.explosionpassedtime >= 2000:
             main.explosionpassedtime = 0
             main.explosioncooldownstarted = False
             main.explosioncanshoot = True
+    else:
+        main.explosionx, main.explosiony = -100, -100
 
 #Run the invisible function
 def enemy_invisible():
     import main
+    if main.isalive[6] == True:
+        enemyimg[6].set_alpha(main.invisiblevalue)
+        if main.invisiblevalue == 0:
+            main.isinvisible = True
+            main.invisiblecooldownstarted, main.invisiblestarttime, main.invisiblepassedtime = ability_cooldown(main.invisiblecooldownstarted, main.invisiblestarttime, main.invisiblepassedtime)
+            if main.invisiblepassedtime >= 3000:
+                main.decrease = False
+                main.invisiblepassedtime = 0
+                main.invisiblecooldownstarted = False
+                main.isinvisible = False
+        elif main.invisiblevalue >= 255:
+            main.decrease = True
+        if main.isinvisible == False:
+            if main.decrease == True and main.invisiblevalue >= 1:
+                main.invisiblevalue -= 1
+            elif main.decrease == False and main.invisiblevalue <= 255:
+                main.invisiblevalue += 1
 
-    enemyimg[6].set_alpha(main.invisiblevalue)
-    if main.invisiblevalue == 0:
-        main.isinvisible = True
-        main.invisiblecooldownstarted, main.invisiblestarttime, main.invisiblepassedtime = ability_cooldown(main.invisiblecooldownstarted, main.invisiblestarttime, main.invisiblepassedtime)
-        if main.invisiblepassedtime >= 3000:
-            main.decrease = False
-            main.invisiblepassedtime = 0
-            main.invisiblecooldownstarted = False
-            main.isinvisible = False
-    elif main.invisiblevalue >= 255:
-        main.decrease = True
-    if main.isinvisible == False:
-        if main.decrease == True and main.invisiblevalue >= 1:
-            main.invisiblevalue -= 1
-        elif main.decrease == False and main.invisiblevalue <= 255:
-            main.invisiblevalue += 1
+#Run spike ball function
+def enemy_shoot_icicle(): 
+    import main
+    #Enemy shoots the spike ball 
+    if main.icicleammo > 0 and main.icicleisactive == False and main.iciclecanshoot == True and main.isalive[7] == True:
+        main.icicleammo -= 1
+        main.icicleface = main.enemyface[7]
+        main.iciclex, main.icicley = main.enemyx[7] + main.enemywidth[7] / 4, main.enemyy[7] + main.enemyheight[7] / 4
+        main.icicleisactive = True
+        main.iciclecanshoot = False
+    #Spike ball flies through the air
+    if main.icicleisactive == True:
+        if main.icicleface == 0 and main.icicley > -main.icicleheight * 2:
+            main.iciclewidth, main.icicleheight = 32, 64
+            main.icicley -= 7
+        elif main.icicleface == 270 and main.iciclex < size[0] + main.iciclewidth * 2:
+            main.iciclewidth, main.icicleheight = 64, 32
+            main.iciclex += 7
+        elif main.icicleface == 180 and main.icicley < size[1] + main.icicleheight * 2:
+            main.iciclewidth, main.icicleheight = 32, 64
+            main.icicley += 7
+        elif main.icicleface == 90 and main.iciclex > -main.iciclewidth * 2:
+            main.iciclewidth, main.icicleheight = 64, 32
+            main.iciclex -= 7
+        else:
+            main.icicleisactive = False
+            main.icicleammo += 1
+    elif main.isalive[7] == True:
+        main.iciclecooldownstarted, main.iciclestarttime, main.iciclepassedtime = ability_cooldown(main.iciclecooldownstarted, main.iciclestarttime, main.iciclepassedtime)
+        if main.iciclepassedtime >= 2000:
+            main.iciclepassedtime = 0
+            main.iciclecooldownstarted = False
+            main.iciclecanshoot = True
 
 #Find closest character
 def find_closest_char(enemyx, enemyy):
@@ -546,10 +602,10 @@ def move_enemy(enemytype):
     if slope < 1:
         if (main.enemyx[enemytype] + main.enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) > 0:
             main.enemyx[enemytype] -= main.enemyspeed[enemytype]
-            main.enemyface[enemytype] = "West"
+            main.enemyface[enemytype] = 90
         elif (main.enemyx[enemytype] + main.enemywidth[enemytype] / 2) - (closest_char[0] + charwidth / 2) < 0:
             main.enemyx[enemytype] += main.enemyspeed[enemytype]
-            main.enemyface[enemytype] = "East"
+            main.enemyface[enemytype] = 270
         if (main.enemyy[enemytype] + main.enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) > 0:
             main.enemyy[enemytype] -= slope * main.enemyspeed[enemytype]
         elif (main.enemyy[enemytype] + main.enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) < 0:
@@ -565,10 +621,10 @@ def move_enemy(enemytype):
             main.enemyx[enemytype] += slope * main.enemyspeed[enemytype]
         if (main.enemyy[enemytype] + main.enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) > 0:
             main.enemyy[enemytype] -= main.enemyspeed[enemytype]
-            main.enemyface[enemytype] = "North"
+            main.enemyface[enemytype] = 0
         elif (main.enemyy[enemytype] + main.enemyheight[enemytype] / 2) - (closest_char[1] + charheight / 2) < 0:
             main.enemyy[enemytype] += main.enemyspeed[enemytype]
-            main.enemyface[enemytype] = "South"
+            main.enemyface[enemytype] = 180
 
 def spawn_timer(enemytype):
     import main
@@ -601,7 +657,7 @@ def spawn_enemy(enemytype):
         elif enemytype == 1:
             main.respawntimer[1] = 10
         elif enemytype == 2:
-            main.respawntimer[2] = 5
+            main.respawntimer[2] = 15
         elif enemytype == 3:
             main.respawntimer[3] = 0
         elif enemytype == 4:
@@ -610,6 +666,8 @@ def spawn_enemy(enemytype):
             main.respawntimer[5] = 10 
         elif enemytype == 6:
             main.respawntimer[6] = 10
+        elif enemytype == 7:
+            main.respawntimer[7] = 10
 
 def give_points(char, enemytype):
     import main
@@ -677,10 +735,24 @@ def player_ball_collision(char):
                     break
             break
 
+#Run function to detect collision between enemy and ball
+def player_icicle_collision(char):
+    import main
+
+    for ballxpos in range(int(main.iciclex), int(main.iciclex + main.iciclewidth)):
+        if main.charx[char] + main.charwidth >= ballxpos >= main.charx[char]:
+            for ballypos in range(int(main.icicley), int(main.icicley + main.icicleheight)):
+                if main.chary[char] + main.charheight >= ballypos >= main.chary[char]:
+                    playerhit.play()
+                    main.iciclex, main.icicley = 100000, 100000 
+                    main.icicleisactive = False
+                    main.icicleammo += 1
+                    main.isfrozen[char] = True
+            break
+
 #Run function to detect collision between explosion and player
 def explosion_player_collision(char):
     import main
-
     for enemyxpos in range(int(main.explosionx), int(main.explosionx + main.explosionradius)):
         if main.charx[char] + main.charwidth >= enemyxpos >= main.charx[char]:
             for enemyypos in range(int(main.explosiony), int(main.explosiony + main.explosionradius)):
@@ -691,7 +763,6 @@ def explosion_player_collision(char):
                         main.charx[char], main.chary[char] = -100000, -100000
                     break
             break
-    main.explosionx, main.explosiony = -100, -100
 
 #Run function to detect collision between enemy and arrow
 def enemy_arrow_collision(char, enemytype):
@@ -746,17 +817,18 @@ def reset_menu():
     import playMenu
 
     main.player_count, main.charability, main.charx, main.chary, main.arrowx, main.arrowy, main.swordx, main.swordy, main.boltx, main.bolty, main.staffx, main.staffy = 0, [0,0], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [-100, -100], [0, 0], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100]
-    main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100], [False, False, False, False, False, False, False]
-    main.respawntimer, main.timerstart = [20, 60, 40, 0, 120, 80, 100], [0, 0, 0, 0, 0, 0, 0]
+    main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100], [False, False, False, False, False, False, False, False]
+    main.respawntimer, main.timerstart = [20, 80, 60, 0, 140, 100, 120, 40], [0, 0, 0, 0, 0, 0, 0, 0]
     main.benemyhealth = 4
     main.charhealth = [3, 3]
     main.charface, main.arrowface, main.swordface = [0, 0], [0, 0], [0, 0]
     main.enemyballx, main.enemybally, main.explosionx, main.explosiony, main.ballisactive, main.ballammo, main.explosionammo, main.explosionisactive, main.cantakedamage, main.explosioncolor = -100, -100, -100, -100, False, 1, 1, False, False, [255, 255, 255]
+    main.icicleammo, main.icicleisactive, main.iciclecanshoot, main.iciclecooldownstarted, main.iciclestarttime, main.iciclepassedtime, main.isfrozen, main.frozencooldownstarted, main.frozenstarttime, main.frozenpassedtime = 1, False, True, False, 0, 0, [False, False], [False, False], [0, 0], [0, 0]
     playMenu.selected = [0, 0]
-    main.swordcooldownstarted, main.swordstarttime, main.swordpassedtime, main.boltcooldownstarted, main.boltstarttime, main.boltpassedtime = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
+    main.arrowcollisionoccured, main.swordcooldownstarted, main.swordstarttime, main.swordpassedtime, main.boltcooldownstarted, main.boltstarttime, main.boltpassedtime = [False, False], [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
     main.passedtime, main.cooldownstarted, main.starttime, main.isactive, main.canuse = [0, 0], [False, False], [0, 0], [False, False], [True, True]
     main.player_score, main.enemies_killed, main.abilities_used, main.time_played, main.distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
-    main.hasgamestarted = False
+    main.unpausetime = 0
 
 #Main game loop
 rungame = True
@@ -770,7 +842,7 @@ while rungame:
         if event.type == pygame.QUIT:
             rungame = False
     
-    if window != 4:
+    if window != 4 and window != 5:
         gamestart = pygame.time.get_ticks()
 
     #Main menu
@@ -791,14 +863,15 @@ while rungame:
 
     #Main game
     elif window == 4:
-        print(hasgamestarted)
-        #Start game time
-        gametime = round((pygame.time.get_ticks() - gamestart) / 1000, 2)
-
+        gametime = round((pygame.time.get_ticks() - gamestart - unpausetime) / 1000, 2)
         #Drawing characters
         move_char(char[0])
         if multiplayer == True:
             move_char(char[1])
+
+        frozen(char[0])
+        if multiplayer == True:
+            frozen(char[1])
             
         #Drawing abilities
         for i in range(1, 4):
@@ -826,6 +899,8 @@ while rungame:
 
         #Sets the invisible value for the invisible enemy
         enemy_invisible()
+
+        enemy_shoot_icicle()
         
         #Enemy collision with player
         for i in range(len(enemytype)):
@@ -843,6 +918,12 @@ while rungame:
             explosion_player_collision(char[0])
             if multiplayer == True:
                 explosion_player_collision(char[1])
+            main.explosionx, main.explosiony = -100, -100
+
+        #Enemy spike ball collision with player
+        player_icicle_collision(char[0])
+        if multiplayer:
+            player_icicle_collision(char[1])
 
         for i in range(len(enemytype)):
             #Enemy collision with arrow
@@ -874,6 +955,7 @@ while rungame:
 
     #Pause window
     elif window == 5:
+        main.unpausetime = pygame.time.get_ticks() - main.gamestart - main.gametime * 1000
         pause()
 
     #End screen
