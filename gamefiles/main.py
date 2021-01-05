@@ -45,8 +45,8 @@ ballammo, ballisactive, ballcanshoot, ballcooldownstarted, ballstarttime, ballpa
 icicleammo, icicleisactive, iciclecanshoot, iciclecooldownstarted, iciclestarttime, iciclepassedtime, isfrozen, frozencooldownstarted, frozenstarttime, frozenpassedtime = 1, False, True, False, 0, 0, [False, False], [False, False], [0, 0], [0, 0]
 invisiblevalue, decrease, isinvisible, invisiblecooldownstarted, invisiblestarttime, invisiblepassedtime = 255, True, False, False, 0, 0
 explosionammo, explosionisactive, cantakedamage, explosioncanshoot, explosioncooldownstarted, explosionstarttime, explosionpassedtime = 1, False, False, True, False, 0, 0
-respawntimer, timerstart = [20, 80, 60, 0, 140, 100, 120, 40], [0, 0, 0, 0, 0, 0, 0, 0]
-unpausetime = 0
+respawntimer, timerstart, timetospawn = [20, 80, 60, 0, 140, 100, 120, 40], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]
+unpausetime, spawnunpausetime = 0, [0, 0, 0, 0, 0, 0, 0, 0]
 img_num = [0, 0]
 
 #Menu setup
@@ -630,18 +630,14 @@ def spawn_timer(enemytype):
     import main
 
     if main.isalive[enemytype] == False:
-        """
-        starttime = pygame.time.get_ticks()
-        if cooldownstarted == True:
-        passedtime = pygame.time.get_ticks() - starttime
-        """
-        main.respawntimer[enemytype] -= 0.018
-        round(main.respawntimer[enemytype], 2)
-        main.enemyx[enemytype], main.enemyy[enemytype] = 100000, 100000
+        if main.respawntimer[enemytype] != 0:    
+            main.timetospawn[enemytype] = round((pygame.time.get_ticks() - main.timerstart[enemytype] - main.spawnunpausetime[enemytype]) / 1000, 2)
+            main.enemyx[enemytype], main.enemyy[enemytype] = 100000, 100000
+            print(timetospawn)
 
 def spawn_enemy(enemytype):
     import main
-    if main.isalive[enemytype] == False and main.respawntimer[enemytype] <= 0:
+    if main.isalive[enemytype] == False and (main.respawntimer[enemytype] <= main.timetospawn[enemytype]):
         main.isalive[enemytype] = True
         chooseside = round(random.randrange(1, 5))
         if chooseside == 1:
@@ -818,7 +814,7 @@ def reset_menu():
 
     main.player_count, main.charability, main.charx, main.chary, main.arrowx, main.arrowy, main.swordx, main.swordy, main.boltx, main.bolty, main.staffx, main.staffy = 0, [0,0], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [-100, -100], [0, 0], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100]
     main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100], [False, False, False, False, False, False, False, False]
-    main.respawntimer, main.timerstart = [20, 80, 60, 0, 140, 100, 120, 40], [0, 0, 0, 0, 0, 0, 0, 0]
+    main.respawntimer, main.timerstart, main.timetospawn = [20, 80, 60, 0, 140, 100, 120, 40], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]
     main.benemyhealth = 4
     main.charhealth = [3, 3]
     main.charface, main.arrowface, main.swordface = [0, 0], [0, 0], [0, 0]
@@ -828,7 +824,7 @@ def reset_menu():
     main.arrowcollisionoccured, main.swordcooldownstarted, main.swordstarttime, main.swordpassedtime, main.boltcooldownstarted, main.boltstarttime, main.boltpassedtime = [False, False], [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
     main.passedtime, main.cooldownstarted, main.starttime, main.isactive, main.canuse = [0, 0], [False, False], [0, 0], [False, False], [True, True]
     main.player_score, main.enemies_killed, main.abilities_used, main.time_played, main.distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
-    main.unpausetime = 0
+    main.unpausetime, main.spawnunpausetime = 0, [0, 0, 0, 0, 0, 0, 0, 0]
 
 #Main game loop
 rungame = True
@@ -956,6 +952,8 @@ while rungame:
     #Pause window
     elif window == 5:
         main.unpausetime = pygame.time.get_ticks() - main.gamestart - main.gametime * 1000
+        for i in range(len(main.enemytype)):
+            main.spawnunpausetime[i] = pygame.time.get_ticks() - main.timerstart[i] - main.timetospawn[i] * 1000
         pause()
 
     #End screen
