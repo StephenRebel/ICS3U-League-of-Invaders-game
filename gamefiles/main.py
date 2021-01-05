@@ -28,6 +28,7 @@ heartimg = pygame.image.load("gamefiles/images/heart.png").convert_alpha()
 emptyheartimg = pygame.image.load("gamefiles/images/heart_empty.png").convert_alpha()
 
 #Game variables
+hasgamestarted = False
 multiplayer = False
 char, charx, chary, charwidth, charheight, charface, charability, charhealth = [0, 1], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], 64, 64, [0, 0], [0, 0], [3, 3]
 arrowx, arrowy, arrowwidth, arrowheight, arrowface, arrowcollisionoccured = [-100, -100], [-100, -100], [10, 10], [62, 62], [0, 0], [False, False]
@@ -42,6 +43,7 @@ explosion, explosionx, explosiony, explosionradius, explosioncolor = 1, -100, -1
 ballammo, ballisactive, ballcanshoot, ballcooldownstarted, ballstarttime, ballpassedtime = 1, False, True, False, 0, 0
 invisiblevalue, decrease, isinvisible, invisiblecooldownstarted, invisiblestarttime, invisiblepassedtime = 255, True, False, False, 0, 0
 explosionammo, explosionisactive, cantakedamage, explosioncanshoot, explosioncooldownstarted, explosionstarttime, explosionpassedtime = 1, False, False, True, False, 0, 0
+respawntimer, timerstart = [20, 60, 40, 0, 120, 80, 100], [0, 0, 0, 0, 0, 0, 0]
 img_num = [0, 0]
 
 #Menu setup
@@ -231,6 +233,12 @@ def draw_screen():
 
     #Pause Button
     pause_button()
+
+    #Draw timer
+    pygame.draw.rect(screen, BLACK, (10, 10, 185, 70), 0, 30, 30, 30, 30)
+    pygame.draw.rect(screen, LIGHT_GR, (15, 15, 175, 60), 0, 30, 30, 30, 30)
+    time = med_font.render(str(gametime), True, BLACK)
+    screen.blit(time, (25, 20))
 
     #Cooldown
     draw_cooldowns()
@@ -436,7 +444,7 @@ def ability_cooldown(cooldownstarted, starttime, passedtime):
 def enemy_shoot_spike_ball(): 
     import main
     #Enemy shoots the spike ball 
-    if main.ballammo > 0 and main.ballisactive == False and main.ballcanshoot == True:
+    if main.ballammo > 0 and main.ballisactive == False and main.ballcanshoot == True and main.isalive[1] == True:
         main.ballammo -= 1
         main.enemyballface = main.enemyface[1]
         main.enemyballx, main.enemybally = main.enemyx[1], main.enemyy[1]
@@ -471,7 +479,7 @@ def enemy_shoot_explosion():
     import main
 
     #Shoot the exlosion
-    if main.explosionammo > 0 and main.explosionisactive == False and main.explosioncanshoot == True:
+    if main.explosionammo > 0 and main.explosionisactive == False and main.explosioncanshoot == True and main.isalive[2] == True:
         main.cantakedamage = False
         main.explosionammo -= 1
         main.explosionx, main.explosiony = find_closest_char(main.enemyx[2], main.enemyy[2])
@@ -562,9 +570,22 @@ def move_enemy(enemytype):
             main.enemyy[enemytype] += main.enemyspeed[enemytype]
             main.enemyface[enemytype] = "South"
 
+def spawn_timer(enemytype):
+    import main
+
+    if main.isalive[enemytype] == False:
+        """
+        starttime = pygame.time.get_ticks()
+        if cooldownstarted == True:
+        passedtime = pygame.time.get_ticks() - starttime
+        """
+        main.respawntimer[enemytype] -= 0.018
+        round(main.respawntimer[enemytype], 2)
+        main.enemyx[enemytype], main.enemyy[enemytype] = 100000, 100000
+
 def spawn_enemy(enemytype):
     import main
-    if main.isalive[enemytype] == False:
+    if main.isalive[enemytype] == False and main.respawntimer[enemytype] <= 0:
         main.isalive[enemytype] = True
         chooseside = round(random.randrange(1, 5))
         if chooseside == 1:
@@ -575,6 +596,20 @@ def spawn_enemy(enemytype):
             main.enemyx[enemytype], main.enemyy[enemytype] = random.randrange(enemywidth[enemytype], size[0] - enemywidth[enemytype]), size[1] - enemyheight[enemytype]
         elif chooseside == 4:
             main.enemyx[enemytype], main.enemyy[enemytype] = size[0] - enemywidth[enemytype], random.randrange(enemyheight[enemytype], size[1] - enemyheight[enemytype])
+        if enemytype == 0:
+            main.respawntimer[0] = 0
+        elif enemytype == 1:
+            main.respawntimer[1] = 10
+        elif enemytype == 2:
+            main.respawntimer[2] = 5
+        elif enemytype == 3:
+            main.respawntimer[3] = 0
+        elif enemytype == 4:
+            main.respawntimer[4] = 30
+        elif enemytype == 5:
+            main.respawntimer[5] = 10 
+        elif enemytype == 6:
+            main.respawntimer[6] = 10
 
 def give_points(char, enemytype):
     import main
@@ -590,6 +625,7 @@ def collision_sorting(char, enemytype):
         main.isalive[enemytype] = False
         main.benemyhealth = 4
         give_points(char, enemytype)
+        main.timerstart[enemytype] = pygame.time.get_ticks()
     elif enemytype == 4 and main.benemyhit[char] == False:
         if main.charability[char] != 1:
             main.benemyhit[char] = True
@@ -603,7 +639,8 @@ def collision_sorting(char, enemytype):
         enemyhit.play()
         main.isalive[enemytype] = False
         give_points(char, enemytype)
-
+        main.timerstart[enemytype] = pygame.time.get_ticks()
+        
 #Run function to detect collision between enemy and player
 def enemy_player_collision(char, enemytype):
     import main
@@ -631,7 +668,7 @@ def player_ball_collision(char):
             for ballypos in range(int(main.enemybally + 18), int(main.enemybally + 48)):
                 if main.chary[char] + main.charheight >= ballypos >= main.chary[char]:
                     playerhit.play()
-                    main.enemyballx, enemybally = -100000, -100000 
+                    main.enemyballx, main.enemybally = 100000, 100000 
                     main.ballisactive = False
                     main.ballammo += 1
                     main.charhealth[char] -= 1
@@ -710,6 +747,7 @@ def reset_menu():
 
     main.player_count, main.charability, main.charx, main.chary, main.arrowx, main.arrowy, main.swordx, main.swordy, main.boltx, main.bolty, main.staffx, main.staffy = 0, [0,0], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [-100, -100], [0, 0], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100]
     main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100], [False, False, False, False, False, False, False]
+    main.respawntimer, main.timerstart = [20, 60, 40, 0, 120, 80, 100], [0, 0, 0, 0, 0, 0, 0]
     main.benemyhealth = 4
     main.charhealth = [3, 3]
     main.charface, main.arrowface, main.swordface = [0, 0], [0, 0], [0, 0]
@@ -718,10 +756,12 @@ def reset_menu():
     main.swordcooldownstarted, main.swordstarttime, main.swordpassedtime, main.boltcooldownstarted, main.boltstarttime, main.boltpassedtime = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
     main.passedtime, main.cooldownstarted, main.starttime, main.isactive, main.canuse = [0, 0], [False, False], [0, 0], [False, False], [True, True]
     main.player_score, main.enemies_killed, main.abilities_used, main.time_played, main.distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
+    main.hasgamestarted = False
 
 #Main game loop
 rungame = True
 while rungame:
+    import main
 
     pygame.time.delay(10)
     
@@ -751,6 +791,7 @@ while rungame:
 
     #Main game
     elif window == 4:
+        print(hasgamestarted)
         #Start game time
         gametime = round((pygame.time.get_ticks() - gamestart) / 1000, 2)
 
@@ -770,6 +811,7 @@ while rungame:
 
         #Spawning enemies
         for i in range(len(enemytype)):
+            spawn_timer(enemytype[i])
             spawn_enemy(enemytype[i])
 
         #Drawing Enemies
