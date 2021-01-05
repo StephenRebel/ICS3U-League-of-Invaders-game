@@ -21,7 +21,7 @@ char2img = pygame.image.load("gamefiles/images/blue_char.png").convert_alpha()
 arrowimg = pygame.image.load("gamefiles/images/arrow.png").convert_alpha()
 swordimg = pygame.image.load("gamefiles/images/sword.png").convert_alpha()
 staffimg = pygame.image.load("gamefiles/images/staff.png").convert_alpha()
-enemyimg = [pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/boss_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/turquoise_enemy.png").convert_alpha()]
+enemyimg = [pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/boss_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/turquoise_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/white_enemy.png").convert_alpha(),]
 ballimg = pygame.image.load("gamefiles/images/spike_ball.png").convert_alpha()
 boltimg = [pygame.image.load("gamefiles/images/fire_ball.png").convert_alpha(), pygame.image.load("gamefiles/images/ice_spikes.png").convert_alpha(), pygame.image.load("gamefiles/images/green_rock.png").convert_alpha()]
 heartimg = pygame.image.load("gamefiles/images/heart.png").convert_alpha()
@@ -36,10 +36,11 @@ boltx, bolty, boltwidth, boltheight, boltface, staffx, staffy, staffface = [-100
 swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
 starttime, cooldownstarted, passedtime = [0, 0], [False, False], [0, 0]
 isactive, canuse = [False, False], [True, True]
-enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints, benemyhealth, benemyhit = [0, 1, 2, 3, 4, 5], [-100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 96, 32], [64, 64, 64, 64, 96, 32], ["", "", "", "", "", ""], [1, 0.25, 0, 0.5, 0.35, 1.25], [False, False, False, False, False, False], [20, 40, 20, 10, 100, 30], 4, [False, False]
+enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints, benemyhealth, benemyhit = [0, 1, 2, 3, 4, 5, 6], [-100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 96, 32, 64], [64, 64, 64, 64, 96, 32, 64], ["", "", "", "", "", "", ""], [1, 0.25, 0, 0.5, 0.35, 1.25, 0.75], [False, False, False, False, False, False, False], [20, 40, 20, 10, 100, 30, 30], 4, [False, False]
 enemyball, enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = 1, -100, -100, 18, 18, 0
 explosion, explosionx, explosiony, explosionradius, explosioncolor = 1, -100, -100, 64, [255, 255, 255]
 ballammo, ballisactive, ballcanshoot, ballcooldownstarted, ballstarttime, ballpassedtime = 1, False, True, False, 0, 0
+invisiblevalue, decrease, isinvisible, invisiblecooldownstarted, invisiblestarttime, invisiblepassedtime = 255, True, False, False, 0, 0
 explosionammo, explosionisactive, cantakedamage, explosioncanshoot, explosioncooldownstarted, explosionstarttime, explosionpassedtime = 1, False, False, True, False, 0, 0
 img_num = [0, 0]
 
@@ -484,7 +485,6 @@ def enemy_shoot_explosion():
         else:
             main.explosionammo += 1
             main.explosioncolor = [255, 255, 255]
-            main.explosionx, main.explosiony = -100, -100
             main.cantakedamage = True
             main.explosionisactive = False
             main.explosioncanshoot = False
@@ -494,7 +494,28 @@ def enemy_shoot_explosion():
             main.explosionpassedtime = 0
             main.explosioncooldownstarted = False
             main.explosioncanshoot = True
-  
+
+#Run the invisible function
+def enemy_invisible():
+    import main
+
+    enemyimg[6].set_alpha(main.invisiblevalue)
+    if main.invisiblevalue == 0:
+        main.isinvisible = True
+        main.invisiblecooldownstarted, main.invisiblestarttime, main.invisiblepassedtime = ability_cooldown(main.invisiblecooldownstarted, main.invisiblestarttime, main.invisiblepassedtime)
+        if main.invisiblepassedtime >= 3000:
+            main.decrease = False
+            main.invisiblepassedtime = 0
+            main.invisiblecooldownstarted = False
+            main.isinvisible = False
+    elif main.invisiblevalue >= 255:
+        main.decrease = True
+    if main.isinvisible == False:
+        if main.decrease == True and main.invisiblevalue >= 1:
+            main.invisiblevalue -= 1
+        elif main.decrease == False and main.invisiblevalue <= 255:
+            main.invisiblevalue += 1
+
 #Find closest character
 def find_closest_char(enemyx, enemyy):
     if multiplayer:
@@ -575,6 +596,10 @@ def collision_sorting(char, enemytype):
         enemyhit.play()
         main.benemyhealth -= 1
     elif enemytype != 4:
+        if enemytype == 6:
+            main.invisiblevalue = 255
+            main.invisiblecooldownstarted = False
+            main.isinvisible = False
         enemyhit.play()
         main.isalive[enemytype] = False
         give_points(char, enemytype)
@@ -619,16 +644,17 @@ def player_ball_collision(char):
 def explosion_player_collision(char):
     import main
 
-    for main.enemyxpos in range(int(main.explosionx), int(main.explosionx + main.explosionradius)):
-        if main.charx[char] + main.charwidth >= main.enemyxpos >= main.charx[char]:
-            for main.enemyypos in range(int(main.explosiony), int(main.explosiony + main.explosionradius)):
-                if main.chary[char] + main.charheight >= main.enemyypos >= main.chary[char]:
+    for enemyxpos in range(int(main.explosionx), int(main.explosionx + main.explosionradius)):
+        if main.charx[char] + main.charwidth >= enemyxpos >= main.charx[char]:
+            for enemyypos in range(int(main.explosiony), int(main.explosiony + main.explosionradius)):
+                if main.chary[char] + main.charheight >= enemyypos >= main.chary[char]:
                     playerhit.play()
                     main.charhealth[char] -= 1
                     if main.charhealth[char] <= 0:
                         main.charx[char], main.chary[char] = -100000, -100000
                     break
             break
+    main.explosionx, main.explosiony = -100, -100
 
 #Run function to detect collision between enemy and arrow
 def enemy_arrow_collision(char, enemytype):
@@ -683,7 +709,7 @@ def reset_menu():
     import playMenu
 
     main.player_count, main.charability, main.charx, main.chary, main.arrowx, main.arrowy, main.swordx, main.swordy, main.boltx, main.bolty, main.staffx, main.staffy = 0, [0,0], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [-100, -100], [0, 0], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100]
-    main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100], [False, False, False, False, False, False]
+    main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100], [False, False, False, False, False, False, False]
     main.benemyhealth = 4
     main.charhealth = [3, 3]
     main.charface, main.arrowface, main.swordface = [0, 0], [0, 0], [0, 0]
@@ -755,6 +781,9 @@ while rungame:
 
         #Drawing the explosion
         enemy_shoot_explosion()
+
+        #Sets the invisible value for the invisible enemy
+        enemy_invisible()
         
         #Enemy collision with player
         for i in range(len(enemytype)):
