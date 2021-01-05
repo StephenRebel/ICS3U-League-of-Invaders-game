@@ -36,7 +36,7 @@ boltx, bolty, boltwidth, boltheight, boltface, staffx, staffy, staffface = [-100
 swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
 starttime, cooldownstarted, passedtime = [0, 0], [False, False], [0, 0]
 isactive, canuse = [False, False], [True, True]
-enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints, benemyhealth, benemyhit = [0, 1, 2, 3, 4, 5], [-100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 96, 32], [64, 64, 64, 64, 96, 32], ["", "", "", "", "", ""], [1, 0.25, 0, 0.5, 0.35, 1.25], [False, False, False, False, False, False], [20, 40, 20, 10, 100, 30], 4, [False, False]
+enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints, benemyhealth, benemyhit, respawntimer, timerstart = [0, 1, 2, 3, 4, 5], [-100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 96, 32], [64, 64, 64, 64, 96, 32], ["", "", "", "", "", ""], [1, 0.25, 0, 0.5, 0.35, 1.25], [False, False, False, False, False, False], [20, 40, 20, 10, 100, 30], 4, [False, False], [0, 10, 5, 0, 30, 10], [0, 0, 0, 0, 0, 0]
 enemyball, enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = 1, -100, -100, 18, 18, 0
 explosion, explosionx, explosiony, explosionradius, explosioncolor = 1, -100, -100, 64, [255, 255, 255]
 ballammo, ballisactive, ballcanshoot, ballcooldownstarted, ballstarttime, ballpassedtime = 1, False, True, False, 0, 0
@@ -435,7 +435,7 @@ def ability_cooldown(cooldownstarted, starttime, passedtime):
 def enemy_shoot_spike_ball(): 
     import main
     #Enemy shoots the spike ball 
-    if main.ballammo > 0 and main.ballisactive == False and main.ballcanshoot == True:
+    if main.ballammo > 0 and main.ballisactive == False and main.ballcanshoot == True and main.isalive[1] == True:
         main.ballammo -= 1
         main.enemyballface = main.enemyface[1]
         main.enemyballx, main.enemybally = main.enemyx[1], main.enemyy[1]
@@ -470,7 +470,7 @@ def enemy_shoot_explosion():
     import main
 
     #Shoot the exlosion
-    if main.explosionammo > 0 and main.explosionisactive == False and main.explosioncanshoot == True:
+    if main.explosionammo > 0 and main.explosionisactive == False and main.explosioncanshoot == True and main.isalive[2] == True:
         main.cantakedamage = False
         main.explosionammo -= 1
         main.explosionx, main.explosiony = find_closest_char(main.enemyx[2], main.enemyy[2])
@@ -484,7 +484,6 @@ def enemy_shoot_explosion():
         else:
             main.explosionammo += 1
             main.explosioncolor = [255, 255, 255]
-            main.explosionx, main.explosiony = -100, -100
             main.cantakedamage = True
             main.explosionisactive = False
             main.explosioncanshoot = False
@@ -541,9 +540,22 @@ def move_enemy(enemytype):
             main.enemyy[enemytype] += main.enemyspeed[enemytype]
             main.enemyface[enemytype] = "South"
 
+def spawn_timer(enemytype):
+    import main
+
+    if main.isalive[enemytype] == False:
+        """
+        starttime = pygame.time.get_ticks()
+        if cooldownstarted == True:
+        passedtime = pygame.time.get_ticks() - starttime
+        """
+        main.respawntimer[enemytype] -= 0.018
+        round(main.respawntimer[enemytype], 2)
+        main.enemyx[enemytype], main.enemyy[enemytype] = 100000, 100000
+
 def spawn_enemy(enemytype):
     import main
-    if main.isalive[enemytype] == False:
+    if main.isalive[enemytype] == False and main.respawntimer[enemytype] <= 0:
         main.isalive[enemytype] = True
         chooseside = round(random.randrange(1, 5))
         if chooseside == 1:
@@ -554,6 +566,18 @@ def spawn_enemy(enemytype):
             main.enemyx[enemytype], main.enemyy[enemytype] = random.randrange(enemywidth[enemytype], size[0] - enemywidth[enemytype]), size[1] - enemyheight[enemytype]
         elif chooseside == 4:
             main.enemyx[enemytype], main.enemyy[enemytype] = size[0] - enemywidth[enemytype], random.randrange(enemyheight[enemytype], size[1] - enemyheight[enemytype])
+        if enemytype == 0:
+            main.respawntimer[0] = 0
+        elif enemytype == 1:
+            main.respawntimer[1] = 10
+        elif enemytype == 2:
+            main.respawntimer[2] = 5
+        elif enemytype == 3:
+            main.respawntimer[3] = 0
+        elif enemytype == 4:
+            main.respawntimer[4] = 30
+        elif enemytype == 5:
+            main.respawntimer[5] = 10 
 
 def give_points(char, enemytype):
     import main
@@ -569,6 +593,7 @@ def collision_sorting(char, enemytype):
         main.isalive[enemytype] = False
         main.benemyhealth = 4
         give_points(char, enemytype)
+        main.timerstart[enemytype] = pygame.time.get_ticks()
     elif enemytype == 4 and main.benemyhit[char] == False:
         if main.charability[char] != 1:
             main.benemyhit[char] = True
@@ -578,7 +603,8 @@ def collision_sorting(char, enemytype):
         enemyhit.play()
         main.isalive[enemytype] = False
         give_points(char, enemytype)
-
+        main.timerstart[enemytype] = pygame.time.get_ticks()
+        
 #Run function to detect collision between enemy and player
 def enemy_player_collision(char, enemytype):
     import main
@@ -606,7 +632,7 @@ def player_ball_collision(char):
             for ballypos in range(int(main.enemybally + 18), int(main.enemybally + 48)):
                 if main.chary[char] + main.charheight >= ballypos >= main.chary[char]:
                     playerhit.play()
-                    main.enemyballx, enemybally = -100000, -100000 
+                    main.enemyballx, main.enemybally = -100000, -100000 
                     main.ballisactive = False
                     main.ballammo += 1
                     main.charhealth[char] -= 1
@@ -619,16 +645,17 @@ def player_ball_collision(char):
 def explosion_player_collision(char):
     import main
 
-    for main.enemyxpos in range(int(main.explosionx), int(main.explosionx + main.explosionradius)):
-        if main.charx[char] + main.charwidth >= main.enemyxpos >= main.charx[char]:
-            for main.enemyypos in range(int(main.explosiony), int(main.explosiony + main.explosionradius)):
-                if main.chary[char] + main.charheight >= main.enemyypos >= main.chary[char]:
+    for enemyxpos in range(int(main.explosionx), int(main.explosionx + main.explosionradius)):
+        if main.charx[char] + main.charwidth >= enemyxpos >= main.charx[char]:
+            for enemyypos in range(int(main.explosiony), int(main.explosiony + main.explosionradius)):
+                if main.chary[char] + main.charheight >= enemyypos >= main.chary[char]:
                     playerhit.play()
                     main.charhealth[char] -= 1
                     if main.charhealth[char] <= 0:
                         main.charx[char], main.chary[char] = -100000, -100000
                     break
             break
+    main.explosionx, main.explosiony = -100, -100
 
 #Run function to detect collision between enemy and arrow
 def enemy_arrow_collision(char, enemytype):
@@ -683,7 +710,7 @@ def reset_menu():
     import playMenu
 
     main.player_count, main.charability, main.charx, main.chary, main.arrowx, main.arrowy, main.swordx, main.swordy, main.boltx, main.bolty, main.staffx, main.staffy = 0, [0,0], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [-100, -100], [0, 0], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100]
-    main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100], [False, False, False, False, False, False]
+    main.enemyx, main.enemyy, main.isalive, main.respawntimer, main.timerstart = [-100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100], [False, False, False, False, False, False], [0, 10, 5, 0, 30, 10], [0, 0, 0, 0, 0, 0]
     main.benemyhealth = 4
     main.charhealth = [3, 3]
     main.charface, main.arrowface, main.swordface = [0, 0], [0, 0], [0, 0]
@@ -744,6 +771,7 @@ while rungame:
 
         #Spawning enemies
         for i in range(len(enemytype)):
+            spawn_timer(enemytype[i])
             spawn_enemy(enemytype[i])
 
         #Drawing Enemies
