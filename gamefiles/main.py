@@ -632,7 +632,7 @@ def player_ball_collision(char):
             for ballypos in range(int(main.enemybally + 18), int(main.enemybally + 48)):
                 if main.chary[char] + main.charheight >= ballypos >= main.chary[char]:
                     playerhit.play()
-                    main.enemyballx, main.enemybally = -100000, -100000 
+                    main.enemyballx, main.enemybally = 100000, 100000 
                     main.ballisactive = False
                     main.ballammo += 1
                     main.charhealth[char] -= 1
