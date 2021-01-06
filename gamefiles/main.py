@@ -45,8 +45,8 @@ ballammo, ballisactive, ballcanshoot, ballcooldownstarted, ballstarttime, ballpa
 icicleammo, icicleisactive, iciclecanshoot, iciclecooldownstarted, iciclestarttime, iciclepassedtime, isfrozen, frozencooldownstarted, frozenstarttime, frozenpassedtime = 1, False, True, False, 0, 0, [False, False], [False, False], [0, 0], [0, 0]
 invisiblevalue, decrease, isinvisible, invisiblecooldownstarted, invisiblestarttime, invisiblepassedtime = 255, True, False, False, 0, 0
 explosionammo, explosionisactive, cantakedamage, explosioncanshoot, explosioncooldownstarted, explosionstarttime, explosionpassedtime = 1, False, False, True, False, 0, 0
-respawntimer, timerstart, timetospawn = [20, 80, 60, 0, 140, 100, 120, 40], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]
-unpausetime, spawnunpausetime = 0, [0, 0, 0, 0, 0, 0, 0, 0]
+spawntimer, timetospawn, respawntimer = [20, 80, 60, 0, 140, 100, 120, 40], [20, 80, 60, 0, 140, 100, 120, 40], [0, 10, 15, 0, 30, 10, 10, 10]
+unpausetime = 0
 img_num = [0, 0]
 
 #Menu setup
@@ -630,14 +630,11 @@ def spawn_timer(enemytype):
     import main
 
     if main.isalive[enemytype] == False:
-        if main.respawntimer[enemytype] != 0:    
-            main.timetospawn[enemytype] = round((pygame.time.get_ticks() - main.timerstart[enemytype] - main.spawnunpausetime[enemytype]) / 1000, 2)
-            main.enemyx[enemytype], main.enemyy[enemytype] = 100000, 100000
-            print(timetospawn)
+        main.enemyx[enemytype], main.enemyy[enemytype] = 100000, 100000
 
 def spawn_enemy(enemytype):
     import main
-    if main.isalive[enemytype] == False and (main.respawntimer[enemytype] <= main.timetospawn[enemytype]):
+    if main.isalive[enemytype] == False and (main.gametime >= main.timetospawn[enemytype]):
         main.isalive[enemytype] = True
         chooseside = round(random.randrange(1, 5))
         if chooseside == 1:
@@ -648,22 +645,6 @@ def spawn_enemy(enemytype):
             main.enemyx[enemytype], main.enemyy[enemytype] = random.randrange(enemywidth[enemytype], size[0] - enemywidth[enemytype]), size[1] - enemyheight[enemytype]
         elif chooseside == 4:
             main.enemyx[enemytype], main.enemyy[enemytype] = size[0] - enemywidth[enemytype], random.randrange(enemyheight[enemytype], size[1] - enemyheight[enemytype])
-        if enemytype == 0:
-            main.respawntimer[0] = 0
-        elif enemytype == 1:
-            main.respawntimer[1] = 10
-        elif enemytype == 2:
-            main.respawntimer[2] = 15
-        elif enemytype == 3:
-            main.respawntimer[3] = 0
-        elif enemytype == 4:
-            main.respawntimer[4] = 30
-        elif enemytype == 5:
-            main.respawntimer[5] = 10 
-        elif enemytype == 6:
-            main.respawntimer[6] = 10
-        elif enemytype == 7:
-            main.respawntimer[7] = 10
 
 def give_points(char, enemytype):
     import main
@@ -679,7 +660,6 @@ def collision_sorting(char, enemytype):
         main.isalive[enemytype] = False
         main.benemyhealth = 4
         give_points(char, enemytype)
-        main.timerstart[enemytype] = pygame.time.get_ticks()
     elif enemytype == 4 and main.benemyhit[char] == False:
         if main.charability[char] != 1:
             main.benemyhit[char] = True
@@ -693,7 +673,7 @@ def collision_sorting(char, enemytype):
         enemyhit.play()
         main.isalive[enemytype] = False
         give_points(char, enemytype)
-        main.timerstart[enemytype] = pygame.time.get_ticks()
+    main.timetospawn[enemytype] = main.gametime + main.respawntimer[enemytype]
         
 #Run function to detect collision between enemy and player
 def enemy_player_collision(char, enemytype):
@@ -814,17 +794,17 @@ def reset_menu():
 
     main.player_count, main.charability, main.charx, main.chary, main.arrowx, main.arrowy, main.swordx, main.swordy, main.boltx, main.bolty, main.staffx, main.staffy = 0, [0,0], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [-100, -100], [0, 0], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100]
     main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100], [False, False, False, False, False, False, False, False]
-    main.respawntimer, main.timerstart, main.timetospawn = [20, 80, 60, 0, 140, 100, 120, 40], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]
+    main.timetospawn = [20, 80, 60, 0, 140, 100, 120, 40]
     main.benemyhealth = 4
     main.charhealth = [3, 3]
     main.charface, main.arrowface, main.swordface = [0, 0], [0, 0], [0, 0]
     main.enemyballx, main.enemybally, main.explosionx, main.explosiony, main.ballisactive, main.ballammo, main.explosionammo, main.explosionisactive, main.cantakedamage, main.explosioncolor = -100, -100, -100, -100, False, 1, 1, False, False, [255, 255, 255]
-    main.icicleammo, main.icicleisactive, main.iciclecanshoot, main.iciclecooldownstarted, main.iciclestarttime, main.iciclepassedtime, main.isfrozen, main.frozencooldownstarted, main.frozenstarttime, main.frozenpassedtime = 1, False, True, False, 0, 0, [False, False], [False, False], [0, 0], [0, 0]
+    main.icicleammo, main.icicleisactive, main.iciclecanshoot, main.iciclecooldownstarted, main.iciclestarttime, main.iciclepassedtime, main.isfrozen, main.frozencooldownstarted, main.frozenstarttime, main.frozenpassedtime, main.iciclex, main.icicley = 1, False, True, False, 0, 0, [False, False], [False, False], [0, 0], [0, 0], -100, -100
     playMenu.selected = [0, 0]
     main.arrowcollisionoccured, main.swordcooldownstarted, main.swordstarttime, main.swordpassedtime, main.boltcooldownstarted, main.boltstarttime, main.boltpassedtime = [False, False], [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
     main.passedtime, main.cooldownstarted, main.starttime, main.isactive, main.canuse = [0, 0], [False, False], [0, 0], [False, False], [True, True]
     main.player_score, main.enemies_killed, main.abilities_used, main.time_played, main.distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
-    main.unpausetime, main.spawnunpausetime = 0, [0, 0, 0, 0, 0, 0, 0, 0]
+    main.unpausetime = 0
 
 #Main game loop
 rungame = True
@@ -952,8 +932,6 @@ while rungame:
     #Pause window
     elif window == 5:
         main.unpausetime = pygame.time.get_ticks() - main.gamestart - main.gametime * 1000
-        for i in range(len(main.enemytype)):
-            main.spawnunpausetime[i] = pygame.time.get_ticks() - main.timerstart[i] - main.timetospawn[i] * 1000
         pause()
 
     #End screen

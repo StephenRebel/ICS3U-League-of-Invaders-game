@@ -210,8 +210,6 @@ def char_selection():
                 menuselectsound.play()
                 main.window = 4
                 pygame.time.delay(100)
-                for i in range(len(main.enemytype)):
-                    main.timerstart[i] = pygame.time.get_ticks()
             elif 730 <= mouse[0] <= 1230 and 470 <= mouse[1] <= 645:
                 pygame.draw.rect(screen, DARK_GR, (730, 470, 500, 175))
                 screen.blit(text2, (795, 485))
@@ -393,8 +391,6 @@ def char_selection():
                 menuselectsound.play()
                 main.window = 4
                 pygame.time.delay(100)
-                for i in range(len(main.enemytype)):
-                    main.timerstart[i] = pygame.time.get_ticks()
             elif 730 <= mouse[0] <= 1230 and 470 <= mouse[1] <= 645:
                 pygame.draw.rect(screen, DARK_GR, (730, 470, 500, 175))
                 screen.blit(text2, (795, 485))
