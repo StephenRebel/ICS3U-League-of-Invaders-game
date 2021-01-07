@@ -21,12 +21,14 @@ char2img = pygame.image.load("gamefiles/images/blue_char.png").convert_alpha()
 arrowimg = pygame.image.load("gamefiles/images/arrow.png").convert_alpha()
 swordimg = pygame.image.load("gamefiles/images/sword.png").convert_alpha()
 staffimg = pygame.image.load("gamefiles/images/staff.png").convert_alpha()
-enemyimg = [pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/boss_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/turquoise_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/white_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/blue_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/pink_enemy.png").convert_alpha()]
+enemyimg = [pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/boss_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/turquoise_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/white_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/blue_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/pink_enemy1.png").convert_alpha()]
+pinkenemyimg = [pygame.image.load("gamefiles/images/pink_enemy1.png").convert_alpha(), pygame.image.load("gamefiles/images/pink_enemy2.png").convert_alpha()]
 ballimg = pygame.image.load("gamefiles/images/spike_ball.png").convert_alpha()
 iceimg = pygame.image.load("gamefiles/images/icicle.png").convert_alpha()
 boltimg = [pygame.image.load("gamefiles/images/fire_ball.png").convert_alpha(), pygame.image.load("gamefiles/images/ice_spikes.png").convert_alpha(), pygame.image.load("gamefiles/images/green_rock.png").convert_alpha()]
 heartimg = pygame.image.load("gamefiles/images/heart.png").convert_alpha()
 emptyheartimg = pygame.image.load("gamefiles/images/heart_empty.png").convert_alpha()
+pygame.display.set_icon(enemyimg[0])
 
 #Game variables
 multiplayer = False
@@ -48,6 +50,7 @@ explosionammo, explosionisactive, cantakedamage, explosioncanshoot, explosioncoo
 spawntimer, timetospawn, respawntimer = [20, 80, 60, 0, 140, 100, 120, 40, 180], [20, 80, 60, 0, 140, 100, 120, 40, 180], [0, 10, 15, 0, 30, 10, 10, 10, 15]
 unpausetime = 0
 img_num = [0, 0]
+pink_skin = 0
 
 #Menu setup
 window = 0
@@ -635,6 +638,9 @@ def spawn_timer(enemytype):
 def spawn_enemy(enemytype):
     import main
     if main.isalive[enemytype] == False and (main.gametime >= main.timetospawn[enemytype]):
+        if enemytype == 8:
+            main.pink_skin = round(random.randrange(0, 2))
+            main.enemyimg[enemytype] = main.pinkenemyimg[pink_skin]
         main.isalive[enemytype] = True
         chooseside = round(random.randrange(1, 5))
         if chooseside == 1:
