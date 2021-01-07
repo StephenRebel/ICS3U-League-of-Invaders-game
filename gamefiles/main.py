@@ -21,7 +21,7 @@ char2img = pygame.image.load("gamefiles/images/blue_char.png").convert_alpha()
 arrowimg = pygame.image.load("gamefiles/images/arrow.png").convert_alpha()
 swordimg = pygame.image.load("gamefiles/images/sword.png").convert_alpha()
 staffimg = pygame.image.load("gamefiles/images/staff.png").convert_alpha()
-enemyimg = [pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/boss_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/turquoise_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/white_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/blue_enemy.png").convert_alpha()]
+enemyimg = [pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/boss_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/turquoise_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/white_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/blue_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/pink_enemy.png").convert_alpha()]
 ballimg = pygame.image.load("gamefiles/images/spike_ball.png").convert_alpha()
 iceimg = pygame.image.load("gamefiles/images/icicle.png").convert_alpha()
 boltimg = [pygame.image.load("gamefiles/images/fire_ball.png").convert_alpha(), pygame.image.load("gamefiles/images/ice_spikes.png").convert_alpha(), pygame.image.load("gamefiles/images/green_rock.png").convert_alpha()]
@@ -37,7 +37,7 @@ boltx, bolty, boltwidth, boltheight, boltface, staffx, staffy, staffface = [-100
 swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
 starttime, cooldownstarted, passedtime = [0, 0], [False, False], [0, 0]
 isactive, canuse = [False, False], [True, True]
-enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints, benemyhealth, benemyhit = [0, 1, 2, 3, 4, 5, 6, 7], [-100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 96, 32, 64, 64], [64, 64, 64, 64, 96, 32, 64, 64], [0, 0, 0, 0, 0, 0, 0, 0], [1, 0.25, 0, 0.5, 0.35, 1.25, 0.75, 0.5], [False, False, False, False, False, False, False, False], [20, 40, 20, 10, 100, 30, 30, 30], 4, [False, False]
+enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints, benemyhealth, benemyhit = [0, 1, 2, 3, 4, 5, 6, 7, 8], [-100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 96, 32, 64, 64, 64], [64, 64, 64, 64, 96, 32, 64, 64, 64], [0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0.25, 0, 0.5, 0.35, 1.25, 0.75, 0.5, 1.75], [False, False, False, False, False, False, False, False, False], [20, 40, 20, 10, 100, 30, 30, 30, 40], 4, [False, False]
 enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = -100, -100, 18, 18, 0
 iciclex, icicley, iciclewidth, icicleheight, icicleface = -100, -100, 32, 64, 0
 explosion, explosionx, explosiony, explosionradius, explosioncolor = 1, -100, -100, 64, [255, 255, 255]
@@ -45,7 +45,7 @@ ballammo, ballisactive, ballcanshoot, ballcooldownstarted, ballstarttime, ballpa
 icicleammo, icicleisactive, iciclecanshoot, iciclecooldownstarted, iciclestarttime, iciclepassedtime, isfrozen, frozencooldownstarted, frozenstarttime, frozenpassedtime = 1, False, True, False, 0, 0, [False, False], [False, False], [0, 0], [0, 0]
 invisiblevalue, decrease, isinvisible, invisiblecooldownstarted, invisiblestarttime, invisiblepassedtime = 255, True, False, False, 0, 0
 explosionammo, explosionisactive, cantakedamage, explosioncanshoot, explosioncooldownstarted, explosionstarttime, explosionpassedtime = 1, False, False, True, False, 0, 0
-spawntimer, timetospawn, respawntimer = [20, 80, 60, 0, 140, 100, 120, 40], [20, 80, 60, 0, 140, 100, 120, 40], [0, 10, 15, 0, 30, 10, 10, 10]
+spawntimer, timetospawn, respawntimer = [20, 80, 60, 0, 140, 100, 120, 40, 180], [20, 80, 60, 0, 140, 100, 120, 40, 180], [0, 10, 15, 0, 30, 10, 10, 10, 15]
 unpausetime = 0
 img_num = [0, 0]
 
@@ -518,7 +518,7 @@ def enemy_shoot_explosion():
             main.explosioncanshoot = False
     elif main.isalive[2] == True:
         main.explosioncooldownstarted, main.explosionstarttime, main.explosionpassedtime = ability_cooldown(main.explosioncooldownstarted, main.explosionstarttime, main.explosionpassedtime)
-        if main.explosionpassedtime >= 2000:
+        if main.explosionpassedtime >= 1000:
             main.explosionpassedtime = 0
             main.explosioncooldownstarted = False
             main.explosioncanshoot = True
@@ -560,16 +560,16 @@ def enemy_shoot_icicle():
     if main.icicleisactive == True:
         if main.icicleface == 0 and main.icicley > -main.icicleheight * 2:
             main.iciclewidth, main.icicleheight = 32, 64
-            main.icicley -= 7
+            main.icicley -= 10
         elif main.icicleface == 270 and main.iciclex < size[0] + main.iciclewidth * 2:
             main.iciclewidth, main.icicleheight = 64, 32
-            main.iciclex += 7
+            main.iciclex += 10
         elif main.icicleface == 180 and main.icicley < size[1] + main.icicleheight * 2:
             main.iciclewidth, main.icicleheight = 32, 64
-            main.icicley += 7
+            main.icicley += 10
         elif main.icicleface == 90 and main.iciclex > -main.iciclewidth * 2:
             main.iciclewidth, main.icicleheight = 64, 32
-            main.iciclex -= 7
+            main.iciclex -= 10
         else:
             main.icicleisactive = False
             main.icicleammo += 1
@@ -793,8 +793,8 @@ def reset_menu():
     import playMenu
 
     main.player_count, main.charability, main.charx, main.chary, main.arrowx, main.arrowy, main.swordx, main.swordy, main.boltx, main.bolty, main.staffx, main.staffy = 0, [0,0], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [-100, -100], [0, 0], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100]
-    main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100], [False, False, False, False, False, False, False, False]
-    main.timetospawn = [20, 80, 60, 0, 140, 100, 120, 40]
+    main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100], [False, False, False, False, False, False, False, False, False]
+    main.timetospawn = [20, 80, 60, 0, 140, 100, 120, 40, 180]
     main.benemyhealth = 4
     main.charhealth = [3, 3]
     main.charface, main.arrowface, main.swordface = [0, 0], [0, 0], [0, 0]
