@@ -21,14 +21,16 @@ char2img = pygame.image.load("gamefiles/images/blue_char.png").convert_alpha()
 arrowimg = pygame.image.load("gamefiles/images/arrow.png").convert_alpha()
 swordimg = pygame.image.load("gamefiles/images/sword.png").convert_alpha()
 staffimg = pygame.image.load("gamefiles/images/staff.png").convert_alpha()
-enemyimg = [pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/boss_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/turquoise_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/white_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/blue_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/pink_enemy1.png").convert_alpha()]
+enemyimg = [pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/boss_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/turquoise_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/white_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/blue_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/pink_enemy1.png").convert_alpha(), pygame.image.load("gamefiles/images/gold_enemy.png").convert_alpha()]
 pinkenemyimg = [pygame.image.load("gamefiles/images/pink_enemy1.png").convert_alpha(), pygame.image.load("gamefiles/images/pink_enemy2.png").convert_alpha()]
 ballimg = pygame.image.load("gamefiles/images/spike_ball.png").convert_alpha()
 iceimg = pygame.image.load("gamefiles/images/icicle.png").convert_alpha()
 boltimg = [pygame.image.load("gamefiles/images/fire_ball.png").convert_alpha(), pygame.image.load("gamefiles/images/ice_spikes.png").convert_alpha(), pygame.image.load("gamefiles/images/green_rock.png").convert_alpha()]
 heartimg = pygame.image.load("gamefiles/images/heart.png").convert_alpha()
 emptyheartimg = pygame.image.load("gamefiles/images/heart_empty.png").convert_alpha()
+frozenimg = pygame.image.load("gamefiles/images/ice.png").convert_alpha()
 pygame.display.set_icon(enemyimg[0])
+frozenimg.set_alpha(200)
 
 #Game variables
 multiplayer = False
@@ -39,7 +41,8 @@ boltx, bolty, boltwidth, boltheight, boltface, staffx, staffy, staffface = [-100
 swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
 starttime, cooldownstarted, passedtime = [0, 0], [False, False], [0, 0]
 isactive, canuse = [False, False], [True, True]
-enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints, benemyhealth, benemyhit = [0, 1, 2, 3, 4, 5, 6, 7, 8], [-100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 96, 32, 64, 64, 64], [64, 64, 64, 64, 96, 32, 64, 64, 64], [0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0.25, 0, 0.5, 0.35, 1.25, 0.75, 0.5, 1.75], [False, False, False, False, False, False, False, False, False], [20, 40, 20, 10, 100, 30, 30, 30, 40], 4, [False, False]
+enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 96, 32, 64, 64, 64, 64], [64, 64, 64, 64, 96, 32, 64, 64, 64, 64], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0.25, 0, 0.5, 0.35, 1.25, 0.75, 0.5, 1.75, 0.5], [False, False, False, False, False, False, False, False, False, False], [20, 40, 20, 10, 100, 30, 30, 30, 50, 75]
+benemytype, benemyhealth, benemyhit, gold_max_health = [0, 1], [4, 1], [[False, False], [False, False]], 1
 enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = -100, -100, 18, 18, 0
 iciclex, icicley, iciclewidth, icicleheight, icicleface = -100, -100, 32, 64, 0
 explosion, explosionx, explosiony, explosionradius, explosioncolor = 1, -100, -100, 64, [255, 255, 255]
@@ -47,7 +50,7 @@ ballammo, ballisactive, ballcanshoot, ballcooldownstarted, ballstarttime, ballpa
 icicleammo, icicleisactive, iciclecanshoot, iciclecooldownstarted, iciclestarttime, iciclepassedtime, isfrozen, frozencooldownstarted, frozenstarttime, frozenpassedtime = 1, False, True, False, 0, 0, [False, False], [False, False], [0, 0], [0, 0]
 invisiblevalue, decrease, isinvisible, invisiblecooldownstarted, invisiblestarttime, invisiblepassedtime = 255, True, False, False, 0, 0
 explosionammo, explosionisactive, cantakedamage, explosioncanshoot, explosioncooldownstarted, explosionstarttime, explosionpassedtime = 1, False, False, True, False, 0, 0
-spawntimer, timetospawn, respawntimer = [20, 80, 60, 0, 140, 100, 120, 40, 180], [20, 80, 60, 0, 140, 100, 120, 40, 180], [0, 10, 15, 0, 30, 10, 10, 10, 15]
+spawntimer, timetospawn, respawntimer, canspawnonposition = [20, 80, 60, 0, 140, 100, 120, 40, 200, 180], [20, 80, 60, 0, 140, 100, 120, 40, 200, 180], [0, 10, 15, 0, 30, 10, 10, 10, 15, 10], True
 unpausetime = 0
 img_num = [0, 0]
 pink_skin = 0
@@ -71,6 +74,7 @@ RED = (255, 0, 0)
 LIGHT_GR = (211, 211, 211)
 DARK_GR = (71, 71, 71)
 WHITE = (255, 255, 255)
+GOLD = (255, 215, 0)
 player_count = 0
 player_score, enemies_killed, abilities_used, time_played, distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
 
@@ -203,6 +207,8 @@ def draw_player_score(player_score):
 
 #Draw the screen
 def draw_screen():
+    import main
+
     #Background
     screen.blit(bg_scale, (0, 0))
 
@@ -235,7 +241,10 @@ def draw_screen():
 
     #Draw boss health
     pygame.draw.rect(screen, BLACK, (enemyx[4], enemyy[4] - 25, enemywidth[4], 15))
-    pygame.draw.rect(screen, RED, (enemyx[4], enemyy[4] - 25, enemywidth[4] / 4 * benemyhealth, 15))
+    pygame.draw.rect(screen, RED, (enemyx[4], enemyy[4] - 25, enemywidth[4] / 4 * benemyhealth[0], 15))
+
+    pygame.draw.rect(screen, BLACK, (enemyx[9], enemyy[9] - 20, enemywidth[9], 10))
+    pygame.draw.rect(screen, GOLD, (enemyx[9], enemyy[9] - 20, enemywidth[9] / main.gold_max_health * benemyhealth[1], 10))
 
     #Spike ball
     screen.blit(ballimg, (enemyballx, enemybally))
@@ -243,7 +252,14 @@ def draw_screen():
     #Explosion
     pygame.draw.circle(screen, explosioncolor, [explosionx + 32, explosiony + 32], explosionradius / 2)
 
+    #Icicle
     draw_icicle(iceimg, iciclex, icicley, icicleface)
+    if main.isfrozen[0]:
+        screen.blit(frozenimg, (charx[0], chary[0]))
+    elif multiplayer == True and main.isfrozen[1]:
+        screen.blit(frozenimg, (charx[1], chary[1]))
+    else:
+        screen.blit(frozenimg, (-100, -100))
 
     #Pause Button
     pause_button()
@@ -422,7 +438,8 @@ def run_ability(char):
             main.swordcooldownstarted[char] = False
             main.isactive[char] = False
             main.swordx[char], main.swordy[char] = -100, -100
-            main.benemyhit[char] = False
+            for i in range(len(main.benemytype)):
+                main.benemyhit[i][char] = False
 
     #Mage bolt ability
     if main.charability[char] == 3 and main.isactive[char] == True:
@@ -444,7 +461,8 @@ def run_ability(char):
             main.isactive[char] = False
             main.boltx[char], main.bolty[char] = -100, -100
             main.staffx[char], main.staffy[char] = -100, -100
-            main.benemyhit[char] = False
+            for i in range(len(main.benemytype)):
+                main.benemyhit[i][char] = False
 
     #Starts the cooldown after ability is done
     if main.isactive[char] == False and main.canuse[char] == False and main.arrowcollisionoccured[char] == False:
@@ -629,13 +647,14 @@ def move_enemy(enemytype):
             main.enemyy[enemytype] += main.enemyspeed[enemytype]
             main.enemyface[enemytype] = 180
 
-def spawn_timer(enemytype):
+#Resets the enemy position on death
+def set_enemy_position(enemytype):
     import main
-
     if main.isalive[enemytype] == False:
         main.enemyx[enemytype], main.enemyy[enemytype] = 100000, 100000
 
-def spawn_enemy(enemytype):
+#Figures out when and where to spawn an enemy
+def spawn_enemy(char, enemytype):
     import main
     if main.isalive[enemytype] == False and (main.gametime >= main.timetospawn[enemytype]):
         if enemytype == 8:
@@ -652,26 +671,40 @@ def spawn_enemy(enemytype):
         elif chooseside == 4:
             main.enemyx[enemytype], main.enemyy[enemytype] = size[0] - enemywidth[enemytype], random.randrange(enemyheight[enemytype], size[1] - enemyheight[enemytype])
 
+#Gives points to player when enemy killed
 def give_points(char, enemytype):
     import main
 
     main.player_score[char] += enemypoints[enemytype]
     main.enemies_killed[char] += 1
 
-def collision_sorting(char, enemytype):
+#What happens when a boss enemy dies
+def boss_collision_sorting(char, enemytype, benemytype):
     import main
 
-    if enemytype == 4 and main.benemyhealth == 1 and main.benemyhit[char] == False:
+    if main.benemyhealth[benemytype] == 1 and main.benemyhit[benemytype][char] == False:
+        if benemytype == 1:
+            main.gold_max_health += 1
+            main.benemyhealth[1] = main.gold_max_health
+        else:
+            main.benemyhealth[benemytype] = 4
         enemyhit.play()
         main.isalive[enemytype] = False
-        main.benemyhealth = 4
         give_points(char, enemytype)
-    elif enemytype == 4 and main.benemyhit[char] == False:
+    elif main.benemyhit[benemytype][char] == False:
         if main.charability[char] != 1:
-            main.benemyhit[char] = True
+            main.benemyhit[benemytype][char] = True
         enemyhit.play()
-        main.benemyhealth -= 1
-    elif enemytype != 4:
+        main.benemyhealth[benemytype] -= 1
+
+#What happens when an enemy dies
+def collision_sorting(char, enemytype):
+    import main    
+    if enemytype == 4: 
+        boss_collision_sorting(char, enemytype, main.benemytype[0])
+    elif enemytype == 9:
+        boss_collision_sorting(char, enemytype, main.benemytype[1])
+    if enemytype != 4 and enemytype != 9:
         if enemytype == 6:
             main.invisiblevalue = 255
             main.invisiblecooldownstarted = False
@@ -693,7 +726,9 @@ def enemy_player_collision(char, enemytype):
                     playerhit.play()
                     main.charhealth[char] -= 1
                     if enemytype == 4:
-                        main.benemyhealth = 4
+                        main.benemyhealth[0] = 4
+                    elif enemytype == 9:
+                        main.benemyhealth[1] = main.gold_max_health
                     if main.charhealth[char] <= 0:
                         main.charx[char], main.chary[char] = -100000, -100000
                     break
@@ -799,9 +834,9 @@ def reset_menu():
     import playMenu
 
     main.player_count, main.charability, main.charx, main.chary, main.arrowx, main.arrowy, main.swordx, main.swordy, main.boltx, main.bolty, main.staffx, main.staffy = 0, [0,0], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [-100, -100], [0, 0], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100]
-    main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100], [False, False, False, False, False, False, False, False, False]
-    main.timetospawn = [20, 80, 60, 0, 140, 100, 120, 40, 180]
-    main.benemyhealth = 4
+    main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [False, False, False, False, False, False, False, False, False, False]
+    main.timetospawn = [20, 80, 60, 0, 140, 100, 120, 40, 200, 180]
+    main.benemyhealth, main.gold_enemy = [4, 1], 1
     main.charhealth = [3, 3]
     main.charface, main.arrowface, main.swordface = [0, 0], [0, 0], [0, 0]
     main.enemyballx, main.enemybally, main.explosionx, main.explosiony, main.ballisactive, main.ballammo, main.explosionammo, main.explosionisactive, main.cantakedamage, main.explosioncolor = -100, -100, -100, -100, False, 1, 1, False, False, [255, 255, 255]
@@ -846,15 +881,17 @@ while rungame:
     #Main game
     elif window == 4:
         gametime = round((pygame.time.get_ticks() - gamestart - unpausetime) / 1000, 2)
+
         #Drawing characters
         move_char(char[0])
         if multiplayer == True:
             move_char(char[1])
 
+        #Finds out how long the player is frozen for
         frozen(char[0])
         if multiplayer == True:
             frozen(char[1])
-            
+
         #Drawing abilities
         for i in range(1, 4):
             if charability[0] == i:
@@ -866,8 +903,10 @@ while rungame:
 
         #Spawning enemies
         for i in range(len(enemytype)):
-            spawn_timer(enemytype[i])
-            spawn_enemy(enemytype[i])
+            set_enemy_position(enemytype[i])
+            spawn_enemy(char[0], enemytype[i])
+            if multiplayer == True:
+               spawn_enemy(char[1], enemytype[i]) 
 
         #Drawing Enemies
         for i in range(len(enemytype)):
@@ -931,7 +970,7 @@ while rungame:
         elif multiplayer == True:
             if charhealth[0] <= 0 and charhealth[1] <= 0:
                 window = 6
-            
+                
         #Draw all the changes
         draw_screen()
 
