@@ -41,7 +41,7 @@ boltx, bolty, boltwidth, boltheight, boltface, staffx, staffy, staffface = [-100
 swordcooldownstarted, swordstarttime, swordpassedtime, boltcooldownstarted, boltstarttime, boltpassedtime = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
 starttime, cooldownstarted, passedtime = [0, 0], [False, False], [0, 0]
 isactive, canuse = [False, False], [True, True]
-enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 96, 32, 64, 64, 64, 64], [64, 64, 64, 64, 96, 32, 64, 64, 64, 64], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0.25, 0, 0.5, 0.35, 1.25, 0.75, 0.5, 1.75, 0.5], [False, False, False, False, False, False, False, False, False, False], [20, 40, 20, 10, 100, 30, 30, 30, 50, 75]
+enemytype, enemyx, enemyy, enemywidth, enemyheight, enemyface, enemyspeed, isalive, enemypoints, enemyamountkilled, enemyendscreentype = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 96, 32, 64, 64, 64, 64], [64, 64, 64, 64, 96, 32, 64, 64, 64, 64], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0.25, 0, 0.5, 0.35, 1.25, 0.75, 0.5, 1.75, 0.5], [False, False, False, False, False, False, False, False, False, False], [20, 40, 20, 10, 100, 30, 30, 30, 50, 75], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 0
 benemytype, benemyhealth, benemyhit, gold_max_health = [0, 1], [4, 1], [[False, False], [False, False]], 1
 enemyballx, enemybally, enemyballwidth, enemyballheight, enemyballface = -100, -100, 18, 18, 0
 iciclex, icicley, iciclewidth, icicleheight, icicleface = -100, -100, 32, 64, 0
@@ -77,6 +77,7 @@ WHITE = (255, 255, 255)
 GOLD = (255, 215, 0)
 player_count = 0
 player_score, enemies_killed, abilities_used, time_played, distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
+buttoncooldownstarted, buttonstarttime, buttonpassedtime, isbuttonpressed = False, 0, 0, False
 
 #Draw characters
 def draw_char(img, x, y, face):
@@ -677,6 +678,7 @@ def give_points(char, enemytype):
 
     main.player_score[char] += enemypoints[enemytype]
     main.enemies_killed[char] += 1
+    main.enemyamountkilled[enemytype] += 1
 
 #What happens when a boss enemy dies
 def boss_collision_sorting(char, enemytype, benemytype):
@@ -836,7 +838,7 @@ def reset_menu():
     main.player_count, main.charability, main.charx, main.chary, main.arrowx, main.arrowy, main.swordx, main.swordy, main.boltx, main.bolty, main.staffx, main.staffy = 0, [0,0], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [-100, -100], [0, 0], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100]
     main.enemyx, main.enemyy, main.isalive = [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [False, False, False, False, False, False, False, False, False, False]
     main.timetospawn = [20, 80, 60, 0, 140, 100, 120, 40, 200, 180]
-    main.benemyhealth, main.gold_enemy = [4, 1], 1
+    main.benemyhealth, main.gold_enemy, main.gold_max_health = [4, 1], 1, 1
     main.charhealth = [3, 3]
     main.charface, main.arrowface, main.swordface = [0, 0], [0, 0], [0, 0]
     main.enemyballx, main.enemybally, main.explosionx, main.explosiony, main.ballisactive, main.ballammo, main.explosionammo, main.explosionisactive, main.cantakedamage, main.explosioncolor = -100, -100, -100, -100, False, 1, 1, False, False, [255, 255, 255]
@@ -846,6 +848,8 @@ def reset_menu():
     main.passedtime, main.cooldownstarted, main.starttime, main.isactive, main.canuse = [0, 0], [False, False], [0, 0], [False, False], [True, True]
     main.player_score, main.enemies_killed, main.abilities_used, main.time_played, main.distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
     main.unpausetime = 0
+    main.buttoncooldownstarted, main.buttonstarttime, main.buttonpassedtime, main.isbuttonpressed = False, 0, 0, False
+    main.enemyendscreentype, main.enemyamountkilled = 0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 #Main game loop
 rungame = True

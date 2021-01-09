@@ -1,7 +1,7 @@
 #Menu to display the end of the game and show some interesting stats
 def end_menu():
     import main 
-    from main import pygame, window, title_font, big_font, sml_font, BLACK, RED, DARK_GR, LIGHT_GR, background, screen, player_score, enemies_killed, abilities_used, gametime, distance_travelled, menuselectsound, reset_menu
+    from main import pygame, window, title_font, big_font, med_font, sml_font, BLACK, RED, DARK_GR, LIGHT_GR, background, screen, player_score, enemies_killed, abilities_used, gametime, distance_travelled, menuselectsound, reset_menu, enemyamountkilled, enemyendscreentype, enemyimg, enemytype, ability_cooldown
     pygame.init()
 
     #Allows for a quit event
@@ -32,6 +32,7 @@ def end_menu():
     text13 = sml_font.render("Time played:", True, BLACK)
     text14 = sml_font.render("P1 distance travelled:", True, BLACK)
     text15 = sml_font.render("P2 distance travelled:", True, BLACK)
+    text16 = med_font.render("Enemies killed", True, BLACK)
 
     #Initiate all the stats
     stat1 = sml_font.render(str(sum(player_score)), True, BLACK)
@@ -46,6 +47,7 @@ def end_menu():
     stat10 = sml_font.render(str(gametime) + " secs", True, BLACK)
     stat11 = sml_font.render(str(round(distance_travelled[0], 2)), True, BLACK)
     stat12 = sml_font.render(str(round(distance_travelled[1], 2)), True, BLACK)
+    stat13 = sml_font.render("You killed this enemy " + str(enemyamountkilled[main.enemyendscreentype]) + " times!", True, BLACK)
 
     #Output all stats and text to the screen
     pygame.draw.rect(screen, LIGHT_GR, (50, 25, 500, 670), 50, 75)
@@ -77,6 +79,39 @@ def end_menu():
     screen.blit(stat10, (420, 520))
     screen.blit(stat11, (420, 580))
     screen.blit(stat12, (420, 610))
+
+    #Output enemy killed stats
+    pygame.draw.rect(screen, BLACK, (795, 45, 410, 310), 0, 30, 30, 30, 30)
+    pygame.draw.rect(screen, LIGHT_GR, (800, 50, 400, 300), 0, 30, 30, 30, 30)
+    screen.blit(enemyimg[main.enemyendscreentype], (965, 125))
+    screen.blit(text16, (875, 60))
+    screen.blit(stat13, (830, 225))
+    #Draw the arrow buttons
+    if 1050 <= mouse[0] <= 1100 and 275 <= mouse[1] <= 325 and pressed[0] == True and main.enemyendscreentype < enemytype[-1] and main.isbuttonpressed == False:
+        pygame.draw.polygon(screen, BLACK, ((1050, 275), (1050, 325), (1100, 300)))
+        menuselectsound.play()
+        main.enemyendscreentype += 1
+        main.isbuttonpressed = True
+    elif 1050 <= mouse[0] <= 1100 and 275 <= mouse[1] <= 325:
+        pygame.draw.polygon(screen, BLACK, ((1050, 275), (1050, 325), (1100, 300)))
+    else:
+        pygame.draw.polygon(screen, DARK_GR, ((1050, 275), (1050, 325), (1100, 300)))
+    if 900 <= mouse[0] <= 950 and 275 <= mouse[1] <= 325 and pressed[0] == True and main.enemyendscreentype > enemytype[0] and main.isbuttonpressed == False:
+        pygame.draw.polygon(screen, BLACK, ((950, 275), (950, 325), (900, 300)))
+        menuselectsound.play()
+        main.enemyendscreentype -= 1
+        main.isbuttonpressed = True
+    elif 900 <= mouse[0] <= 950 and 275 <= mouse[1] <= 325:
+        pygame.draw.polygon(screen, BLACK, ((950, 275), (950, 325), (900, 300)))
+    else:
+        pygame.draw.polygon(screen, DARK_GR, ((950, 275), (950, 325), (900, 300)))
+    
+    if main.isbuttonpressed == True:
+        main.buttoncooldownstarted, main.buttonstarttime, main.buttonpassedtime = ability_cooldown(main.buttoncooldownstarted, main.buttonstarttime, main.buttonpassedtime)
+        if main.buttonpassedtime >= 500:
+            main.buttonpassedtime = 0
+            main.buttoncooldownstarted = False
+            main.isbuttonpressed = False
 
     #Main menu button to return and play again if wanted
     pygame.draw.rect(screen, BLACK, (800, 540, 410, 135), 5, 8)
