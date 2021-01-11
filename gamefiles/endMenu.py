@@ -1,7 +1,7 @@
 #Menu to display the end of the game and show some interesting stats
 def end_menu():
     import main 
-    from main import pygame, window, title_font, big_font, med_font, sml_font, BLACK, RED, DARK_GR, LIGHT_GR, background, screen, player_score, enemies_killed, abilities_used, gametime, distance_travelled, menuselectsound, reset_menu, enemyamountkilled, enemyendscreentype, enemyimg, enemytype, ability_cooldown
+    from main import pygame, window, title_font, big_font, med_font, sml_font, BLACK, RED, DARK_GR, LIGHT_GR, background, screen, player_score, enemies_killed, abilities_used, gametime, distance_travelled, menuselectsound, reset_menu, enemyamountkilled, enemyendscreentype, enemyimg, enemytype, ability_cooldown, multiplayer
     pygame.init()
 
     #Allows for a quit event
@@ -57,28 +57,31 @@ def end_menu():
     pygame.draw.rect(screen, BLACK, (70, 110, 460, 2))
     screen.blit(text4, (80, 160))
     screen.blit(text5, (80, 190))
-    screen.blit(text6, (80, 220))
     screen.blit(text7, (80, 280))
     screen.blit(text8, (80, 310))
-    screen.blit(text9, (80, 340))
     screen.blit(text10, (80, 400))
     screen.blit(text11, (80, 430))
-    screen.blit(text12, (80, 460))
     screen.blit(text13, (80, 520))
     screen.blit(text14, (80, 580))
-    screen.blit(text15, (80, 610))
-    screen.blit(stat1, (420, 160))
-    screen.blit(stat2, (420, 190))
-    screen.blit(stat3, (420, 220))
-    screen.blit(stat4, (420, 280))
-    screen.blit(stat5, (420, 310))
-    screen.blit(stat6, (420, 340))
-    screen.blit(stat7, (420, 400))
-    screen.blit(stat8, (420, 430))
-    screen.blit(stat9, (420, 460))
-    screen.blit(stat10, (420, 520))
-    screen.blit(stat11, (420, 580))
-    screen.blit(stat12, (420, 610))
+    screen.blit(stat1, (415, 160))
+    screen.blit(stat2, (415, 190))
+    screen.blit(stat4, (415, 280))
+    screen.blit(stat5, (415, 310))
+    screen.blit(stat7, (415, 400))
+    screen.blit(stat8, (415, 430))
+    screen.blit(stat10, (415, 520))
+    screen.blit(stat11, (415, 580))
+
+    #Output multiplayer stats
+    if multiplayer == True:
+        screen.blit(text6, (80, 220))
+        screen.blit(text9, (80, 340))
+        screen.blit(text12, (80, 460))
+        screen.blit(text15, (80, 610))
+        screen.blit(stat3, (415, 220))
+        screen.blit(stat6, (415, 340))
+        screen.blit(stat9, (415, 460))
+        screen.blit(stat12, (415, 610))
 
     #Output enemy killed stats
     pygame.draw.rect(screen, BLACK, (795, 45, 410, 310), 0, 30, 30, 30, 30)
