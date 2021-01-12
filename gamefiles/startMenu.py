@@ -2,7 +2,7 @@
 def menu():
     #Importing the necessary libraries and varibales from the main
     import main
-    from main import pygame, window, big_font, med_font, background, BLACK, RED, DARK_GR, LIGHT_GR, screen, size, menuselectsound
+    from main import pygame, window, big_font, med_font, back_ground, BLACK, RED, DARK_GR, LIGHT_GR, screen, size, menu_select_sound
     pygame.init()
 
     #Handles a quit event
@@ -18,7 +18,7 @@ def menu():
     logo = pygame.image.load("gamefiles/images/leagueofinvaders.png")
 
     #Generation of the background and logo onto the screen
-    screen.blit(background, (0, 0))
+    screen.blit(back_ground, (0, 0))
     screen.blit(logo, ((size[0]/2) - 403, 0))
 
     #Creating all texts that will be used in the menu
@@ -31,7 +31,7 @@ def menu():
     
     # Play Button
     if 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675 and pressed[0] == True:
-        menuselectsound.play()
+        menu_select_sound.play()
         main.window = 3
         pygame.time.delay(100)
     elif 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675:
@@ -44,7 +44,7 @@ def menu():
 
     #Controls Button
     if 78 <= mouse[0] <= 372 and 578 <= mouse[1] <= 657 and pressed[0] == True:
-        menuselectsound.play()
+        menu_select_sound.play()
         main.window = 1
         pygame.time.delay(100)
     elif 78 <= mouse[0] <= 372 and 578 <= mouse[1] <= 657:
@@ -57,7 +57,7 @@ def menu():
 
     #Instructions Button
     if 908 <= mouse[0] <= 1202 and 578 <= mouse[1] <= 657 and pressed[0] == True:
-        menuselectsound.play()
+        menu_select_sound.play()
         main.window = 2
         pygame.time.delay(100)
     elif 908 <= mouse[0] <= 1202 and 578 <= mouse[1] <= 657:

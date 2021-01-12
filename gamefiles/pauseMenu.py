@@ -2,7 +2,7 @@
 def pause():
     #Importing the necessary variables and functions
     import main
-    from main import pygame, window, title_font, big_font, RED, BLACK, LIGHT_GR, DARK_GR, grayed_out, screen, size, reset_menu, bg_scale, menuselectsound
+    from main import pygame, window, title_font, big_font, RED, BLACK, LIGHT_GR, DARK_GR, grayed_out, screen, size, reset_menu, bg_scale, menu_select_sound
     pygame.init()
 
     #Generating any new vaiables
@@ -35,7 +35,7 @@ def pause():
 
     #Allows for interactions with the resume game button
     if 440 <= mouse[0] <= 840 and 240 <= mouse[1] <= 365 and pressed[0] == True:
-        menuselectsound.play()
+        menu_select_sound.play()
         main.window = 4
         pygame.time.delay(100)
     elif 440 <= mouse[0] <= 840 and 240 <= mouse[1] <= 365:
@@ -49,7 +49,7 @@ def pause():
 
     #Allows for interactions with the main menu button
     if 440 <= mouse[0] <= 840 and 440 <= mouse[1] <= 565 and pressed[0] == True:
-        menuselectsound.play()
+        menu_select_sound.play()
         main.window = 0
         reset_menu()
         pygame.time.delay(100)

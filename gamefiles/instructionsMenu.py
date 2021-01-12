@@ -2,7 +2,7 @@
 def instructions():
     #Importing the necessary libraries and varibales from the main
     import main
-    from main import pygame, window, big_font, med_font, title_font, background, BLACK, RED, DARK_GR, LIGHT_GR, WHITE, screen, size, menuselectsound, enemyimg, ballimg
+    from main import pygame, window, big_font, med_font, title_font, back_ground, BLACK, RED, DARK_GR, LIGHT_GR, WHITE, screen, size, menu_select_sound, enemy_img, ball_img
     pygame.init()
 
     #Handles a quit event
@@ -15,7 +15,7 @@ def instructions():
     pressed = pygame.mouse.get_pressed()
 
     #Adds the backgroun to the menu
-    screen.blit(background, (0, 0))
+    screen.blit(back_ground, (0, 0))
 
     #Declaring all the texts that will be used
     text1 = title_font.render("Instructions", True, BLACK)
@@ -38,14 +38,14 @@ def instructions():
     screen.blit(text6, (250, 360))
     screen.blit(text7, (25, 420))
     screen.blit(text8, (115, 480))
-    screen.blit(enemyimg[4], (150, 580))
-    screen.blit(ballimg, (300, 580))
+    screen.blit(enemy_img[4], (150, 580))
+    screen.blit(ball_img, (300, 580))
     pygame.draw.rect(screen, RED, (975, 563, 146, 12))
-    screen.blit(enemyimg[-4], (1000, 580))
+    screen.blit(enemy_img[-4], (1000, 580))
 
     #Creates the main menu button and handles animations
     if 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675 and pressed[0] == True:
-        menuselectsound.play()
+        menu_select_sound.play()
         main.window = 0
         pygame.time.delay(100)
     elif 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675:

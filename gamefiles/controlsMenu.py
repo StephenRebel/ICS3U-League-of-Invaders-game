@@ -2,7 +2,7 @@
 def controls():
     #Importing the necessary libraries and varibales from the main
     import main
-    from main import pygame, window, big_font, title_font, background, BLACK, RED, DARK_GR, LIGHT_GR, WHITE, screen, size, menuselectsound
+    from main import pygame, window, big_font, title_font, back_ground, BLACK, RED, DARK_GR, LIGHT_GR, WHITE, screen, size, menu_select_sound
     pygame.init()
     
     #Allows for a quit event
@@ -22,7 +22,7 @@ def controls():
     small_font = pygame.font.SysFont("Cambria", 20)
 
     #Setpup the screen
-    screen.blit(background, (0, 0))
+    screen.blit(back_ground, (0, 0))
 
     #Declaring all text that will be used in the menu
     text1 = big_font.render("MAIN MENU", True, BLACK)
@@ -58,7 +58,7 @@ def controls():
 
     #Creates the main menu button and handles animations
     if 431 <= mouse[0] <= 820 and 561 <= mouse[1] <= 675 and pressed[0] == True:
-        menuselectsound.play()
+        menu_select_sound.play()
         main.window = 0
         pygame.time.delay(100)
     elif 431 <= mouse[0] <= 820 and 561 <= mouse[1] <= 675:
