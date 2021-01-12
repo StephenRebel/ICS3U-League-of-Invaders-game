@@ -2,7 +2,7 @@
 def pause():
     #Importing the necessary variables and functions
     import main
-    from main import pygame, window, title_font, big_font, RED, BLACK, LIGHT_GR, DARK_GR, grayed_out, screen, size, reset_menu, bg_scale, menuselectsound
+    from main import pygame, window, title_font, big_font, RED, BLACK, LIGHT_GR, DARK_GR, grayed_out, screen, size, reset_menu, bg, menuselectsound
     pygame.init()
 
     #Generating any new vaiables
@@ -26,7 +26,7 @@ def pause():
     text5 = big_font.render("Main menu", True, RED)
 
     #Graying out the play screen and generating the pause box
-    screen.blit(bg_scale, (0, 0))
+    screen.blit(bg, (0, 0))
     screen.blit(gray_out_screen, (0, 0))
     pygame.draw.rect(screen, GRAY, ((size[0]/2) - 240, (size[1]/2) - 270, 480, 520), 15, 30)
     pygame.draw.rect(screen, GRAY, ((size[0]/2) - 225, (size[1]/2) - 255, 450, 490))

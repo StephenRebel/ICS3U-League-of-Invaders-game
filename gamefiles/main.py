@@ -8,14 +8,14 @@ from instructionsMenu import instructions
 from playMenu import char_selection
 from pauseMenu import pause
 from endMenu import end_menu
+from scoreboardMenu import scoreboard_menu
 
 #Basic game setup
 pygame.display.set_caption("League Of Invaders")
 clock = pygame.time.Clock()
 size = (1280, 720)
 screen = pygame.display.set_mode(size)
-bg = pygame.image.load("gamefiles/images/dirt_bg.jpg").convert_alpha()
-bg_scale = pygame.transform.scale(bg, (1280, 720))
+bg = pygame.image.load("gamefiles/images/background.jpg").convert_alpha()
 char1img = pygame.image.load("gamefiles/images/green_char.png").convert_alpha()
 char2img = pygame.image.load("gamefiles/images/blue_char.png").convert_alpha()
 arrowimg = pygame.image.load("gamefiles/images/arrow.png").convert_alpha()
@@ -54,6 +54,7 @@ spawntimer, timetospawn, respawntimer, canspawnonposition = [0, 20, 40, 60, 80, 
 unpausetime = 0
 img_num = [0, 0]
 pink_skin = 0
+has_saved = False
 
 #Menu setup
 window = 0
@@ -75,6 +76,8 @@ LIGHT_GR = (211, 211, 211)
 DARK_GR = (71, 71, 71)
 WHITE = (255, 255, 255)
 GOLD = (255, 215, 0)
+SILVER = (192, 192, 192)
+BRONZE = (205, 127, 50)
 player_count = 0
 player_score, enemies_killed, abilities_used, time_played, distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
 buttoncooldownstarted, buttonstarttime, buttonpassedtime, isbuttonpressed = False, 0, 0, False
@@ -211,7 +214,7 @@ def draw_screen():
     import main
 
     #Background
-    screen.blit(bg_scale, (0, 0))
+    screen.blit(bg, (0, 0))
 
     #Character
     draw_char(char1img, charx[0], chary[0], charface[0])
@@ -610,7 +613,7 @@ def enemy_change_size():
     import main
 
     main.enemywidth[10], main.enemyheight[10] = 16 + (16 * main.benemyhealth[2]), 16 + (16 * main.benemyhealth[2])
-    main.enemyspeed[10] = 0.75 + (3 - main.benemyhealth[2]) * 0.3 
+    main.enemyspeed[10] = 0.75 + (3 - main.benemyhealth[2]) * 0.35 
 
 #Find closest character
 def find_closest_char(enemyx, enemyy):
@@ -746,8 +749,10 @@ def enemy_player_collision(char, enemytype):
                     main.charhealth[char] -= 1
                     if enemytype == 4:
                         main.benemyhealth[0] = 4
-                    elif enemytype == 9:
+                    elif enemytype == 8:
                         main.benemyhealth[1] = main.gold_max_health
+                    elif enemytype == 10:
+                        main.benemyhealth[2] = 3
                     if main.charhealth[char] <= 0:
                         main.charx[char], main.chary[char] = -100000, -100000
                     break
@@ -867,6 +872,7 @@ def reset_menu():
     main.unpausetime = 0
     main.buttoncooldownstarted, main.buttonstarttime, main.buttonpassedtime, main.isbuttonpressed = False, 0, 0, False
     main.enemyendscreentype, main.enemyamountkilled = 0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    main.has_saved = False
 
 #Main game loop
 rungame = True
@@ -989,13 +995,9 @@ while rungame:
                 enemy_bolt_collision(char[1], enemytype[i])  
 
         #Ends game when players lose all health
-        if multiplayer == False:
-            if charhealth[0] <= 0:
-                window = 6
-        elif multiplayer == True:
-            if charhealth[0] <= 0 and charhealth[1] <= 0:
-                window = 6
-                
+        if (multiplayer == False and charhealth[0] <= 0) or (multiplayer == True and charhealth[0] <= 0 and charhealth[1] <= 0):
+            window = 6
+
         #Draw all the changes
         draw_screen()
 
@@ -1007,6 +1009,9 @@ while rungame:
     #End screen
     elif window == 6:
         end_menu()
+
+    elif window == 7:
+        scoreboard_menu()
 
     pygame.display.update()
     
