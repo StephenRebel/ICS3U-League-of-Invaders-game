@@ -8,14 +8,14 @@ from instructionsMenu import instructions
 from playMenu import char_selection
 from pauseMenu import pause
 from endMenu import end_menu
+from scoreboardMenu import scoreboard_menu
 
 #Basic game setup
 pygame.display.set_caption("League Of Invaders")
 clock = pygame.time.Clock()
 size = (1280, 720)
 screen = pygame.display.set_mode(size)
-bg = pygame.image.load("gamefiles/images/dirt_bg.jpg").convert_alpha()
-bg_scale = pygame.transform.scale(bg, (1280, 720))
+bg = pygame.image.load("gamefiles/images/background.jpg").convert_alpha()
 char1_img = pygame.image.load("gamefiles/images/green_char.png").convert_alpha()
 char2_img = pygame.image.load("gamefiles/images/blue_char.png").convert_alpha()
 arrow_img = pygame.image.load("gamefiles/images/arrow.png").convert_alpha()
@@ -54,6 +54,7 @@ spawn_timer, time_to_spawn, respawn_timer, can_spawn_on_position = [0, 20, 40, 6
 unpause_time = 0
 img_num = [0, 0]
 pink_skin = 0
+has_saved = False
 
 #Menu setup
 window = 0
@@ -76,6 +77,8 @@ LIGHT_GR = (211, 211, 211)
 DARK_GR = (71, 71, 71)
 WHITE = (255, 255, 255)
 GOLD = (255, 215, 0)
+SILVER = (192, 192, 192)
+BRONZE = (205, 127, 50)
 player_count = 0
 player_score, enemies_killed, abilities_used, time_played, distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
 button_cooldown_started, button_start_time, button_passed_time, is_button_pressed = False, 0, 0, False
@@ -212,7 +215,7 @@ def draw_screen():
     import main
 
     #Background
-    screen.blit(bg_scale, (0, 0))
+    screen.blit(bg, (0, 0))
 
     #Character
     draw_char(char1_img, char_x[0], char_y[0], char_face[0])
@@ -611,7 +614,7 @@ def enemy_change_size():
     import main
 
     main.enemy_width[10], main.enemy_height[10] = 16 + (16 * main.b_enemy_health[2]), 16 + (16 * main.b_enemy_health[2])
-    main.enemy_speed[10] = 0.75 + (3 - main.b_enemy_health[2]) * 0.3 
+    main.enemy_speed[10] = 0.75 + (3 - main.b_enemy_health[2]) * 0.35 
 
 #Find closest character
 def find_closest_char(enemy_x, enemy_y):
@@ -747,8 +750,10 @@ def enemy_player_collision(char, enemy_type):
                     main.char_health[char] -= 1
                     if enemy_type == 4:
                         main.b_enemy_health[0] = 4
-                    elif enemy_type == 9:
+                    elif enemy_type == 8:
                         main.b_enemy_health[1] = main.gold_max_health
+                    elif enemy_type == 10:
+                        main.b_enemy_health[2] = 3
                     if main.char_health[char] <= 0:
                         main.char_x[char], main.char_y[char] = -100000, -100000
                     break
@@ -868,6 +873,7 @@ def reset_menu():
     main.unpause_time = 0
     main.button_cooldown_started, main.button_start_time, main.button_passed_time, main.is_button_pressed = False, 0, 0, False
     main.enemy_end_screen_type, main.enemy_amount_killed = 0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    main.has_saved = False
 
 #Main game loop
 rungame = True
@@ -990,13 +996,9 @@ while rungame:
                 enemy_bolt_collision(char[1], enemy_type[i])  
 
         #Ends game when players lose all health
-        if multiplayer == False:
-            if char_health[0] <= 0:
-                window = 6
-        elif multiplayer == True:
-            if char_health[0] <= 0 and char_health[1] <= 0:
-                window = 6
-                
+        if (multiplayer == False and char_health[0] <= 0) or (multiplayer == True and char_health[0] <= 0 and char_health[1] <= 0):
+            window = 6
+
         #Draw all the changes
         draw_screen()
 
@@ -1008,6 +1010,9 @@ while rungame:
     #End screen
     elif window == 6:
         end_menu()
+
+    elif window == 7:
+        scoreboard_menu()
 
     pygame.display.update()
     

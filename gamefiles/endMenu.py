@@ -17,8 +17,8 @@ def end_menu():
     screen.blit(back_ground, (0, 0))
 
     #Initiate all the texts
-    text1 = big_font.render("MAIN MENU", True, BLACK)
-    text2 = big_font.render("MAIN MENU", True, RED)
+    text1 = big_font.render("NEXT", True, BLACK)
+    text2 = big_font.render("NEXT", True, RED)
     text3 = title_font.render("GAME OVER", True, BLACK)
     text4 = sml_font.render("Total Score:", True, BLACK)
     text5 = sml_font.render("P1 Score:", True, BLACK)
@@ -86,7 +86,12 @@ def end_menu():
     #Output enemy killed stats
     pygame.draw.rect(screen, BLACK, (795, 45, 410, 310), 0, 30, 30, 30, 30)
     pygame.draw.rect(screen, LIGHT_GR, (800, 50, 400, 300), 0, 30, 30, 30, 30)
-    screen.blit(enemy_img[main.enemy_end_screen_type], (965, 125))
+    if main.enemy_end_screen_type != 5 and main.enemy_end_screen_type != 7:
+        screen.blit(enemy_img[main.enemy_end_screen_type], (965, 125))
+    elif main.enemy_end_screen_type == 5:
+        screen.blit(enemy_img[main.enemy_end_screen_type], (981, 141))
+    elif main.enemy_end_screen_type == 7:
+        screen.blit(enemy_img[main.enemy_end_screen_type], (949, 109))    
     screen.blit(text16, (875, 60))
     screen.blit(stat13, (830, 225))
     #Draw the arrow buttons
@@ -120,13 +125,11 @@ def end_menu():
     pygame.draw.rect(screen, BLACK, (800, 540, 410, 135), 5, 8)
     if 805 <= mouse[0] <= 1205 and 545 <= mouse[1] <= 670 and pressed[0] == True:
         menu_select_sound.play()
-        reset_menu()
-        main.window = 0
-        reset_menu()
+        main.window = 7
         pygame.time.delay(100)
     elif 805 <= mouse[0] <= 1205 and 545 <= mouse[1] <= 670:
         pygame.draw.rect(screen, DARK_GR, (805, 545, 400, 125))
-        screen.blit(text2, (855, 575))
+        screen.blit(text2, (930, 575))
     else:
         pygame.draw.rect(screen, LIGHT_GR, (805, 545, 400, 125))
-        screen.blit(text1, (855, 575))
+        screen.blit(text1, (930, 575))
