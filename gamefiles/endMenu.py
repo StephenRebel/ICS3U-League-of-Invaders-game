@@ -4,6 +4,8 @@ def end_menu():
     from main import pygame, window, title_font, big_font, med_font, sml_font, BLACK, RED, DARK_GR, LIGHT_GR, back_ground, screen, player_score, enemies_killed, abilities_used, gametime, distance_travelled, menu_select_sound, reset_menu, enemy_amount_killed, enemy_end_screen_type, enemy_img, enemy_type, ability_cooldown, multiplayer
     pygame.init()
 
+    main.invisible_value = 255
+
     #Allows for a quit event
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -86,11 +88,11 @@ def end_menu():
     #Output enemy killed stats
     pygame.draw.rect(screen, BLACK, (795, 45, 410, 310), 0, 30, 30, 30, 30)
     pygame.draw.rect(screen, LIGHT_GR, (800, 50, 400, 300), 0, 30, 30, 30, 30)
-    if main.enemy_end_screen_type != 5 and main.enemy_end_screen_type != 7:
+    if main.enemy_end_screen_type != 5 and main.enemy_end_screen_type != 7 and main.enemy_end_screen_type != 11:
         screen.blit(enemy_img[main.enemy_end_screen_type], (965, 125))
     elif main.enemy_end_screen_type == 5:
         screen.blit(enemy_img[main.enemy_end_screen_type], (981, 141))
-    elif main.enemy_end_screen_type == 7:
+    elif main.enemy_end_screen_type == 7 or main.enemy_end_screen_type == 11:
         screen.blit(enemy_img[main.enemy_end_screen_type], (949, 109))    
     screen.blit(text16, (875, 60))
     screen.blit(stat13, (830, 225))
@@ -126,7 +128,7 @@ def end_menu():
     if 805 <= mouse[0] <= 1205 and 545 <= mouse[1] <= 670 and pressed[0] == True:
         menu_select_sound.play()
         main.window = 7
-        pygame.time.delay(100)
+        pygame.time.delay(200)
     elif 805 <= mouse[0] <= 1205 and 545 <= mouse[1] <= 670:
         pygame.draw.rect(screen, DARK_GR, (805, 545, 400, 125))
         screen.blit(text2, (930, 575))

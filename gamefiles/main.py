@@ -21,7 +21,7 @@ char2_img = pygame.image.load("gamefiles/images/blue_char.png").convert_alpha()
 arrow_img = pygame.image.load("gamefiles/images/arrow.png").convert_alpha()
 sword_img = pygame.image.load("gamefiles/images/sword.png").convert_alpha()
 staff_img = pygame.image.load("gamefiles/images/staff.png").convert_alpha()
-enemy_img = [pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/blue_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/turquoise_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/white_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/boss_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/gold_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/pink_enemy1.png").convert_alpha(), pygame.image.load("gamefiles/images/lime_enemy.png").convert_alpha()]
+enemy_img = [pygame.image.load("gamefiles/images/green_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/red_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/blue_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/yellow_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/orange_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/turquoise_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/white_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/boss_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/gold_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/pink_enemy1.png").convert_alpha(), pygame.image.load("gamefiles/images/lime_enemy.png").convert_alpha(), pygame.image.load("gamefiles/images/pirate_enemy.png").convert_alpha()]
 pink_enemy_img = [pygame.image.load("gamefiles/images/pink_enemy1.png").convert_alpha(), pygame.image.load("gamefiles/images/pink_enemy2.png").convert_alpha()]
 ball_img = pygame.image.load("gamefiles/images/spike_ball.png").convert_alpha()
 ice_img = pygame.image.load("gamefiles/images/icicle.png").convert_alpha()
@@ -29,6 +29,7 @@ bolt_img = [pygame.image.load("gamefiles/images/fire_ball.png").convert_alpha(),
 heart_img = pygame.image.load("gamefiles/images/heart.png").convert_alpha()
 empty_heart_img = pygame.image.load("gamefiles/images/heart_empty.png").convert_alpha()
 frozen_img = pygame.image.load("gamefiles/images/ice.png").convert_alpha()
+cannon_ball_img = pygame.image.load("gamefiles/images/pirate_shot.png").conver_alpha()
 pygame.display.set_icon(enemy_img[1])
 frozen_img.set_alpha(200)
 
@@ -41,7 +42,7 @@ bolt_x, bolt_y, bolt_width, bolt_height, bolt_face, staff_x, staff_y, staff_face
 sword_cooldown_started, sword_start_time, sword_passed_time, sword_cooldown_started, bolt_start_time, bolt_passes_time = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
 start_time, cooldown_started, passed_time = [0, 0], [False, False], [0, 0]
 is_active, can_use = [False, False], [True, True]
-enemy_type, enemy_x, enemy_y, enemy_width, enemy_height, enemy_face, enemy_speed, is_alive, enemy_points, enemy_amount_killed, enemy_end_screen_type = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 64, 32, 64, 96, 64, 64, 64], [64, 64, 64, 64, 64, 32, 64, 96, 64, 64, 64], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0.5, 1, 0.5, 0, 0.25, 1.25, 0.75, 0.35, 0.5, 1.75, 0.75], [False, False, False, False, False, False, False, False, False, False, False], [5, 10, 20, 25, 40, 50, 50, 100, 60, 75, 60], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 0
+enemy_type, enemy_x, enemy_y, enemy_width, enemy_height, enemy_face, enemy_speed, is_alive, enemy_points, enemy_amount_killed, enemy_end_screen_type = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 64, 32, 64, 96, 64, 64, 64, 96], [64, 64, 64, 64, 64, 32, 64, 96, 64, 64, 64, 96], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0.5, 1, 0.5, 0, 0.25, 1.25, 0.75, 0.35, 0.5, 1.75, 0.75, 0.25], [False, False, False, False, False, False, False, False, False, False, False, False], [5, 10, 20, 25, 40, 50, 50, 100, 60, 75, 60, 125], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 0
 b_enemy_type, b_enemy_health, b_enemy_hit, gold_max_health = [0, 1, 2], [4, 1, 3], [[False, False, False], [False, False, False]], 1
 enemy_ball_x, enemy_ball_y, enemy_ball_width, enemy_ball_height, enemy_ball_face = -100, -100, 18, 18, 0
 icicle_x, icicle_y, icicle_width, icicle_height, icicle_face = -100, -100, 32, 64, 0
@@ -50,7 +51,7 @@ ball_ammo, ball_is_active, ball_can_shoot, ball_cooldown_started, ball_start_tim
 icicle_ammo, icicle_is_active, icicle_can_shoot, icicle_cooldown_started, icicle_start_time, icicle_passed_time, is_frozen, frozen_cooldown_started, frozen_start_time, frozen_passed_time = 1, False, True, False, 0, 0, [False, False], [False, False], [0, 0], [0, 0]
 invisible_value, decrease, is_invisible, invisible_cooldown_started, invisible_start_time, invisible_passed_time = 255, True, False, False, 0, 0
 explosion_ammo, explosion_is_active, can_take_damage, explosion_can_shoot, explosion_cooldown_started, explosion_start_time, explosion_passed_time = 1, False, False, True, False, 0, 0
-spawn_timer, time_to_spawn, respawn_timer, can_spawn_on_position = [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220], [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220], [0, 2, 10, 15, 15, 10, 10, 20, 15, 15, 10], True
+spawn_timer, time_to_spawn, respawn_timer, can_spawn_on_position = [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220, 240], [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220, 240], [0, 2, 10, 15, 15, 10, 10, 20, 15, 15, 10, 20], True
 unpause_time = 0
 img_num = [0, 0]
 pink_skin = 0

@@ -97,7 +97,7 @@ def scoreboard_menu():
         menu_select_sound.play()
         if main.has_saved == False:
             save_score()
-        pygame.time.delay(100)
+        pygame.time.delay(200)
     elif 75 <= mouse[0] <= 255 and 545 <= mouse[1] <= 670:
         pygame.draw.rect(screen, DARK_GR, (75, 545, 200, 125))
         screen.blit(text11, (110, 595))
@@ -111,7 +111,7 @@ def scoreboard_menu():
         menu_select_sound.play()
         reset_menu()
         main.window = 0
-        pygame.time.delay(100)
+        pygame.time.delay(200)
     elif 985 <= mouse[0] <= 1165 and 545 <= mouse[1] <= 670:
         pygame.draw.rect(screen, DARK_GR, (985, 545, 200, 125))
         screen.blit(text2, (1020, 595))
