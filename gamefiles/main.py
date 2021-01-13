@@ -55,6 +55,7 @@ unpause_time = 0
 img_num = [0, 0]
 pink_skin = 0
 has_saved = False
+side = [0, 0]
 
 #Menu setup
 window = 0
@@ -610,6 +611,7 @@ def enemy_shoot_icicle():
             main.icicle_cooldown_started = False
             main.icicle_can_shoot = True
 
+#Changes the enemy stats when hit
 def enemy_change_size():
     import main
 
@@ -668,23 +670,44 @@ def set_enemy_position(enemy_type):
     if main.is_alive[enemy_type] == False:
         main.enemy_x[enemy_type], main.enemy_y[enemy_type] = 100000, 100000
 
+def find_player_side(char):
+    import main
+    
+    currentside = [0, 0, 0, 0]
+    currentside[0] = main.char_y[char]
+    currentside[1] = main.char_x[char]
+    currentside[2] = main.size[1] - main.char_y[char]
+    currentside[3] = main.size[0] - main.char_x[char]
+    currentside.sort()
+    if currentside[0] == main.char_y[char]:
+        main.side[char] = 0
+    elif currentside[0] == main.char_x[char]:
+        main.side[char] = 1
+    elif currentside[0] == main.size[1] - main.char_y[char]:
+        main.side[char] = 2
+    elif currentside[0] == main.size[0] - main.char_x[char]:
+        main.side[char] = 3
+
 #Figures out when and where to spawn an enemy
-def spawn_enemy(char, enemy_type):
+def spawn_enemy(enemy_type):
     import main
     if main.is_alive[enemy_type] == False and (main.gametime >= main.time_to_spawn[enemy_type]):
         if enemy_type == 9:
             main.pink_skin = round(random.randrange(0, 2))
             main.enemy_img[enemy_type] = main.pink_enemy_img[pink_skin]
         main.is_alive[enemy_type] = True
-        chooseside = round(random.randrange(1, 5))
-        if chooseside == 1:
-            main.enemy_x[enemy_type], main.enemy_y[enemy_type] = random.randrange(enemy_width[enemy_type], size[0] - enemy_width[enemy_type]), 0
-        elif chooseside == 2:
-            main.enemy_x[enemy_type], main.enemy_y[enemy_type] = 0, random.randrange(enemy_height[enemy_type], size[1] - enemy_height[enemy_type])
-        elif chooseside == 3:
-            main.enemy_x[enemy_type], main.enemy_y[enemy_type] = random.randrange(enemy_width[enemy_type], size[0] - enemy_width[enemy_type]), size[1] - enemy_height[enemy_type]
-        elif chooseside == 4:
-            main.enemy_x[enemy_type], main.enemy_y[enemy_type] = size[0] - enemy_width[enemy_type], random.randrange(enemy_height[enemy_type], size[1] - enemy_height[enemy_type])
+        while True:
+            chooseside = round(random.randrange(0, 4))
+            if (multiplayer == False and chooseside != main.side[0]) or (multiplayer == True and chooseside != main.side[0] and chooseside != main.side[1]):
+                if chooseside == 0:
+                    main.enemy_x[enemy_type], main.enemy_y[enemy_type] = random.randrange(enemy_width[enemy_type], size[0] - enemy_width[enemy_type]), 0
+                elif chooseside == 1:
+                    main.enemy_x[enemy_type], main.enemy_y[enemy_type] = 0, random.randrange(enemy_height[enemy_type], size[1] - enemy_height[enemy_type])
+                elif chooseside == 2:
+                    main.enemy_x[enemy_type], main.enemy_y[enemy_type] = random.randrange(enemy_width[enemy_type], size[0] - enemy_width[enemy_type]), size[1] - enemy_height[enemy_type]
+                elif chooseside == 3:
+                    main.enemy_x[enemy_type], main.enemy_y[enemy_type] = size[0] - enemy_width[enemy_type], random.randrange(enemy_height[enemy_type], size[1] - enemy_height[enemy_type])
+                break
 
 #Gives points to player when enemy killed
 def give_points(char, enemy_type):
@@ -929,12 +952,15 @@ while rungame:
                 use_ability(char[1])
                 run_ability(char[1])
 
+        #Finds the side the player is on
+        find_player_side(char[0])
+        if multiplayer == True:
+            find_player_side(char[1])
+
         #Spawning enemies
         for i in range(len(enemy_type)):
             set_enemy_position(enemy_type[i])
-            spawn_enemy(char[0], enemy_type[i])
-            if multiplayer == True:
-               spawn_enemy(char[1], enemy_type[i]) 
+            spawn_enemy(enemy_type[i])
 
         #Drawing Enemies
         for i in range(len(enemy_type)):
