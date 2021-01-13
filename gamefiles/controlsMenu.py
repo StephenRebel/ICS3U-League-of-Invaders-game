@@ -60,7 +60,7 @@ def controls():
     if 431 <= mouse[0] <= 820 and 561 <= mouse[1] <= 675 and pressed[0] == True:
         menu_select_sound.play()
         main.window = 0
-        pygame.time.delay(100)
+        pygame.time.delay(200)
     elif 431 <= mouse[0] <= 820 and 561 <= mouse[1] <= 675:
         pygame.draw.rect(screen, DARK_GR, ((size[0]/2) - 209, 561, 389, 114))
         screen.blit(text2, (478, 585))

@@ -37,7 +37,7 @@ def pause():
     if 440 <= mouse[0] <= 840 and 240 <= mouse[1] <= 365 and pressed[0] == True:
         menu_select_sound.play()
         main.window = 4
-        pygame.time.delay(100)
+        pygame.time.delay(200)
     elif 440 <= mouse[0] <= 840 and 240 <= mouse[1] <= 365:
         pygame.draw.rect(screen, DARK_GR, ((size[0]/2) - 200, (size[1]/2) - 120, 400, 125))
         pygame.draw.rect(screen, BLACK, ((size[0]/2) - 203, (size[1]/2) + - 123, 406, 131), 3, 7)
@@ -52,7 +52,7 @@ def pause():
         menu_select_sound.play()
         main.window = 0
         reset_menu()
-        pygame.time.delay(100)
+        pygame.time.delay(200)
     elif 440 <= mouse[0] <= 840 and 440 <= mouse[1] <= 565:
         pygame.draw.rect(screen, DARK_GR, ((size[0]/2) - 200, (size[1]/2) + 80, 400, 125))
         pygame.draw.rect(screen, BLACK, ((size[0]/2) - 203, (size[1]/2) + 77, 406, 131), 3, 7)
