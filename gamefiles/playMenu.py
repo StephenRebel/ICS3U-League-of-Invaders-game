@@ -135,7 +135,7 @@ def char_selection():
                 screen.blit(arrow_img, (133, 200))
                 pygame.draw.rect(screen, GOLD, (130, 197, 70, 70), 5)
                 menu_select_sound.play()
-                main.char_ability[0] = 1
+                main.char_ability[0] = 0
                 pygame.time.delay(200)
         elif selected[0] == 1:
             pygame.draw.rect(screen, DARK_GREEN, (133, 200, 64, 64))
@@ -161,7 +161,7 @@ def char_selection():
                 screen.blit(sword_img, (208, 200))
                 pygame.draw.rect(screen, GOLD, (205, 197, 70, 70), 5)
                 menu_select_sound.play()
-                main.char_ability[0] = 2
+                main.char_ability[0] = 1
                 pygame.time.delay(200)
         elif selected[0] == 2:
             pygame.draw.rect(screen, DARK_GREEN, (208, 200, 64, 64))
@@ -187,7 +187,7 @@ def char_selection():
                 screen.blit(staff_img, (283, 200))
                 pygame.draw.rect(screen, GOLD, (280, 197, 70, 70), 5)
                 menu_select_sound.play()
-                main.char_ability[0] = 3
+                main.char_ability[0] = 2
                 pygame.time.delay(200)
         elif selected[0] == 3:
             pygame.draw.rect(screen, DARK_GREEN, (283, 200, 64, 64))
@@ -202,7 +202,7 @@ def char_selection():
             screen.blit(staff_img, (283, 200))
             pygame.draw.rect(screen, BLACK, (280, 197, 70, 70), 5)
 
-        if char_ability[0] == 0:
+        if char_ability[0] == -1:
             screen.blit(gray_out_enterBattle, (730, 470))
         else:
             #Allows user to interact with the enter into battle button
@@ -238,7 +238,7 @@ def char_selection():
                 screen.blit(arrow_img, (133, 200))
                 pygame.draw.rect(screen, GOLD, (130, 197, 70, 70), 5)
                 menu_select_sound.play()
-                main.char_ability[0] = 1
+                main.char_ability[0] = 0
                 pygame.time.delay(200)
         elif selected[0] == 1:
             pygame.draw.rect(screen, DARK_GREEN, (133, 200, 64, 64))
@@ -264,7 +264,7 @@ def char_selection():
                 screen.blit(sword_img, (208, 200))
                 pygame.draw.rect(screen, GOLD, (205, 197, 70, 70), 5)
                 menu_select_sound.play()
-                main.char_ability[0] = 2
+                main.char_ability[0] = 1
                 pygame.time.delay(200)
         elif selected[0] == 2:
             pygame.draw.rect(screen, DARK_GREEN, (208, 200, 64, 64))
@@ -290,7 +290,7 @@ def char_selection():
                 screen.blit(staff_img, (283, 200))
                 pygame.draw.rect(screen, GOLD, (280, 197, 70, 70), 5)
                 menu_select_sound.play()
-                main.char_ability[0] = 3
+                main.char_ability[0] = 2
                 pygame.time.delay(200)
         elif selected[0] == 3:
             pygame.draw.rect(screen, DARK_GREEN, (283, 200, 64, 64))
@@ -316,7 +316,7 @@ def char_selection():
                 screen.blit(arrow_img, (133, 515))
                 pygame.draw.rect(screen, GOLD, (130, 512, 70, 70), 5)
                 menu_select_sound.play()
-                main.char_ability[1] = 1
+                main.char_ability[1] = 0
                 pygame.time.delay(200)
         elif selected[1] == 1:
             pygame.draw.rect(screen, DARK_GREEN, (133, 515, 64, 64))
@@ -342,7 +342,7 @@ def char_selection():
                 screen.blit(sword_img, (208, 515))
                 pygame.draw.rect(screen, GOLD, (205, 512, 70, 70), 5)
                 menu_select_sound.play()
-                main.char_ability[1] = 2
+                main.char_ability[1] = 1
                 pygame.time.delay(200)
         elif selected[1] == 2:
             pygame.draw.rect(screen, DARK_GREEN, (208, 515, 64, 64))
@@ -368,7 +368,7 @@ def char_selection():
                 screen.blit(staff_img, (283, 515))
                 pygame.draw.rect(screen, GOLD, (280, 512, 70, 70), 5)
                 menu_select_sound.play()
-                main.char_ability[1] = 3
+                main.char_ability[1] = 2
                 pygame.time.delay(200)
         elif selected[1] == 3:
             pygame.draw.rect(screen, DARK_GREEN, (283, 515, 64, 64))
@@ -383,7 +383,7 @@ def char_selection():
             screen.blit(staff_img, (283, 515))
             pygame.draw.rect(screen, BLACK, (280, 512, 70, 70), 5)
 
-        if char_ability[0] == 0 or char_ability[1] == 0:
+        if char_ability[0] == -1 or char_ability[1] == -1:
             screen.blit(gray_out_enterBattle, (730, 470))
         else:
             #Allows user to interact with the enter into battle button
