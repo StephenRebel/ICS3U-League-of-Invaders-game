@@ -41,7 +41,7 @@ def instructions():
     screen.blit(enemy_img[4], (150, 580))
     screen.blit(ball_img, (300, 580))
     pygame.draw.rect(screen, RED, (975, 563, 146, 12))
-    screen.blit(enemy_img[-4], (1000, 580))
+    screen.blit(enemy_img[-5], (1000, 580))
 
     #Creates the main menu button and handles animations
     if 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675 and pressed[0] == True:

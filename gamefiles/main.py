@@ -29,7 +29,7 @@ bolt_img = [pygame.image.load("gamefiles/images/fire_ball.png").convert_alpha(),
 heart_img = pygame.image.load("gamefiles/images/heart.png").convert_alpha()
 empty_heart_img = pygame.image.load("gamefiles/images/heart_empty.png").convert_alpha()
 frozen_img = pygame.image.load("gamefiles/images/ice.png").convert_alpha()
-cannon_ball_img = pygame.image.load("gamefiles/images/pirate_shot.png").conver_alpha()
+cannon_ball_img = pygame.image.load("gamefiles/images/pirate_shot.png").convert_alpha()
 pygame.display.set_icon(enemy_img[1])
 frozen_img.set_alpha(200)
 
@@ -883,8 +883,8 @@ def reset_menu():
     import playMenu
 
     main.player_count, main.char_ability, main.char_x, main.char_y, main.arrow_x, main.arrow_y, main.sword_x, main.sword_y, main.bolt_x, main.bolt_y, main.staff_x, main.staff_y = 0, [0,0], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [-100, -100], [0, 0], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100], [-100, -100]
-    main.enemy_x, main.enemy_y, main.is_alive = [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [False, False, False, False, False, False, False, False, False, False, False]
-    main.time_to_spawn = [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220]
+    main.enemy_x, main.enemy_y, main.is_alive = [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [False, False, False, False, False, False, False, False, False, False, False, False]
+    main.time_to_spawn = [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220, 240]
     main.b_enemy_health, main.gold_enemy, main.gold_max_health = [4, 1, 3], 1, 1
     main.char_health = [3, 3]
     main.char_face, main.arrow_face, main.sword_face = [0, 0], [0, 0], [0, 0]
@@ -896,7 +896,7 @@ def reset_menu():
     main.player_score, main.enemies_killed, main.abilities_used, main.time_played, main.distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
     main.unpause_time = 0
     main.button_cooldown_started, main.button_start_time, main.button_passed_time, main.is_button_pressed = False, 0, 0, False
-    main.enemy_end_screen_type, main.enemy_amount_killed = 0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    main.enemy_end_screen_type, main.enemy_amount_killed = 0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     main.has_saved = False
 
 #Main game loop
