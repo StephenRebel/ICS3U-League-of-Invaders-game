@@ -48,7 +48,7 @@ pirate_shot_x, pirate_shot_y, pirate_shot_width, pirate_shot_height, pirate_shot
 icicle_x, icicle_y, icicle_width, icicle_height, icicle_face = -100, -100, 32, 64, 0
 explosion, explosion_x, explosion_y, explosion_radius, explosion_color = 1, -100, -100, 64, [255, 255, 255]
 ball_ammo, ball_is_active, ball_can_shoot, ball_cooldown_started, ball_start_time, ball_passed_time = 1, False, True, False, 0, 0
-pirate_shot_ammo, pirate_shot_is_active, pirate_shot_can_shoot, pirate_shot_cooldown_started, pirate_shot_start_time, pirate_shot_passed_time = 1, False, True, False, 0, 0
+pirate_shot_ammo, pirate_shot_is_active, pirate_shot_can_shoot, pirate_shot_cooldown_started, pirate_shot_start_time, pirate_shot_passed_time, pirate_enemy_shot = 1, False, True, False, 0, 0, True
 icicle_ammo, icicle_is_active, icicle_can_shoot, icicle_cooldown_started, icicle_start_time, icicle_passed_time, is_frozen, frozen_cooldown_started, frozen_start_time, frozen_passed_time = 1, False, True, False, 0, 0, [False, False], [False, False], [0, 0], [0, 0]
 invisible_value, decrease, is_invisible, invisible_cooldown_started, invisible_start_time, invisible_passed_time = 255, True, False, False, 0, 0
 explosion_ammo, explosion_is_active, can_take_damage, explosion_can_shoot, explosion_cooldown_started, explosion_start_time, explosion_passed_time = 1, False, False, True, False, 0, 0
@@ -513,6 +513,7 @@ def pirate_shoot_shot():
         main.pirate_shot_x, main.pirate_shot_y = main.enemy_x[11], main.enemy_y[11]
         main.pirate_shot_is_active = True
         main.pirate_shot_can_shoot = False
+        main.pirate_enemy_shot = True
     #Pirate cannon ball in air
     if main.pirate_shot_is_active == True:
         if main.pirate_shot_face == 0 and main.pirate_shot_y > -main.pirate_shot_height:
@@ -860,17 +861,34 @@ def explosion_player_collision(char):
 def enemy_ability_collision(char, enemy_type, t):
     import main
 
-    for enemy_xpos in range(int(main.enemy_x[enemy_type]), int(main.enemy_x[enemy_type] + main.enemy_width[enemy_type])):
-        if main.ability_x[t][char] + main.ability_width[t][char] >= enemy_xpos >= main.ability_x[t][char]:
-            for enemy_ypos in range(int(main.enemy_y[enemy_type]), int(main.enemy_y[enemy_type] + main.enemy_height[enemy_type])):
-                if main.ability_y[t][char] + main.ability_height[t][char] >= enemy_ypos >= main.ability_y[t][char]:
-                    collision_sorting(char, enemy_type)
-                    if t == 0:
-                        main.ability_collision_occured[char] = True
-                        main.ability_x[t][char], main.ability_y[t][char] = -100000, -100000 
-                        main.is_active[char] = False
-                    break
-            break
+    if enemy_type != 11:
+        for enemy_xpos in range(int(main.enemy_x[enemy_type]), int(main.enemy_x[enemy_type] + main.enemy_width[enemy_type])):
+            if main.ability_x[t][char] + main.ability_width[t][char] >= enemy_xpos >= main.ability_x[t][char]:
+                for enemy_ypos in range(int(main.enemy_y[enemy_type]), int(main.enemy_y[enemy_type] + main.enemy_height[enemy_type])):
+                    if main.ability_y[t][char] + main.ability_height[t][char] >= enemy_ypos >= main.ability_y[t][char]:
+                        collision_sorting(char, enemy_type)
+                        if t == 0:
+                            main.ability_collision_occured[char] = True
+                            main.ability_x[t][char], main.ability_y[t][char] = -100000, -100000 
+                            main.is_active[char] = False
+                        break
+                break
+    
+    elif enemy_type == 11 and main.pirate_enemy_shot == True and main.pirate_shot_is_active == True:
+        for pirate_shot_pos_x in range(int(main.pirate_shot_x), int(main.pirate_shot_x + main.pirate_shot_width)):
+            if main.ability_x[t][char] + main.ability_width[t][char] >= pirate_shot_pos_x >= main.ability_x[t][char]:
+                for pirate_shot_pos_y in range(int(main.pirate_shot_y), int(main.pirate_shot_y + main.pirate_shot_height)):
+                    if main.ability_y[t][char] + main.ability_height[t][char] >= pirate_shot_pos_y >= main.ability_y[t][char]:
+                        enemy_hit.play()
+                        main.pirate_enemy_shot = False
+                        main.pirate_shot_face = main.ability_face[t][char]
+                        if t == 0:
+                            main.ability_collision_occured[char] = True
+                            main.ability_x[t][char], main.ability_y[t][char] = -100000, -100000 
+                            main.is_active[char] = False
+                        break
+                break
+
 
     if t == 0 and main.ability_collision_occured[char] == True:
         main.ability_cooldown_started[char], main.ability_start_time[char], main.ability_passed_time[char] = ability_cooldown(main.ability_cooldown_started[char], main.ability_start_time[char], main.ability_passed_time[char])
@@ -892,7 +910,7 @@ def reset_menu():
     main.char_health = [3, 3]
     main.char_face = [0, 0]
     main.enemy_ball_x, main.enemy_ball_y, main.explosion_x, main.explosion_y, main.ball_is_active, main.ball_ammo, main.explosion_ammo, main.explosion_is_active, main.can_take_damage, main.explosion_color = -100, -100, -100, -100, False, 1, 1, False, False, [255, 255, 255]
-    main.pirate_shot_x, main.pirate_shot_y, main. pirate_shot_is_active, main.pirate_shot_ammo = -100, -100, False, 1
+    main.pirate_shot_x, main.pirate_shot_y, main. pirate_shot_is_active, main.pirate_shot_ammo, main.pirate_enemy_shot = -100, -100, False, 1, True
     main.icicle_ammo, main.icicle_is_active, main.icicle_can_shoot, main.icicle_cooldown_started, main.icicle_start_time, main.icicle_passed_time, main.is_frozen, main.frozen_cooldown_started, main.frozen_start_time, main.frozen_passed_time, main.icicle_x, main.icicle_y = 1, False, True, False, 0, 0, [False, False], [False, False], [0, 0], [0, 0], -100, -100
     playMenu.selected = [0, 0]
     main.ability_collision_occured, main.sword_cooldown_started, main.sword_start_time, main.sword_passed_time, main.bolt_cooldown_started, main.bolt_start_time, main.bolt_passes_time = [False, False], [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
