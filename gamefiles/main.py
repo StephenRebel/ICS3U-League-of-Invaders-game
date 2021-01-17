@@ -42,7 +42,7 @@ sword_cooldown_started, sword_start_time, sword_passed_time, bolt_cooldown_start
 ability_start_time, ability_cooldown_started, ability_passed_time = [0, 0], [False, False], [0, 0]
 is_active, can_use = [False, False], [True, True]
 enemy_type, enemy_x, enemy_y, enemy_width, enemy_height, enemy_face, enemy_speed, is_alive, enemy_points, enemy_amount_killed, enemy_end_screen_type = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 64, 32, 64, 96, 64, 64, 64, 96], [64, 64, 64, 64, 64, 32, 64, 96, 64, 64, 64, 96], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0.5, 1, 0.5, 0, 0.25, 1.25, 0.75, 0.35, 0.5, 1.75, 0.75, 0.25], [False, False, False, False, False, False, False, False, False, False, False, False], [5, 10, 20, 25, 40, 50, 50, 100, 60, 75, 60, 150], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 0
-b_enemy_type, b_enemy_health, b_enemy_hit, gold_max_health = [0, 1, 2], [4, 1, 3], [[False, False, False], [False, False, False]], 1
+b_enemy_type, b_enemy_health, b_enemy_hit, gold_max_health = [0, 1, 2, 3], [4, 1, 3, 2], [[False, False, False, False], [False, False, False, False]], 1
 enemy_ball_x, enemy_ball_y, enemy_ball_width, enemy_ball_height, enemy_ball_face = -100, -100, 18, 18, 0
 pirate_shot_x, pirate_shot_y, pirate_shot_width, pirate_shot_height, pirate_shot_face = -100, -100, 48, 48, 0
 icicle_x, icicle_y, icicle_width, icicle_height, icicle_face = -100, -100, 32, 64, 0
@@ -237,6 +237,9 @@ def draw_screen():
 
     pygame.draw.rect(screen, BLACK, (enemy_x[8], enemy_y[8] - 20, enemy_width[8], 10))
     pygame.draw.rect(screen, GOLD, (enemy_x[8], enemy_y[8] - 20, enemy_width[8] / main.gold_max_health * b_enemy_health[1], 10))
+
+    pygame.draw.rect(screen, BLACK, (enemy_x[11], enemy_y[11] - 25, enemy_width[11], 15))
+    pygame.draw.rect(screen, RED, ( enemy_x[11], enemy_y[11] - 25, enemy_width[11] / 2 * b_enemy_health[3], 15))
 
     #Spike ball
     screen.blit(ball_img, (enemy_ball_x, enemy_ball_y))
@@ -527,6 +530,8 @@ def pirate_shoot_shot():
         else:
             main.pirate_shot_is_active = False
             main.pirate_shot_ammo += 1
+            main.b_enemy_hit[0][3] = False
+            main.b_enemy_hit[1][3] = False
     elif main.is_alive[11] == True:
         main.pirate_shot_cooldown_started, main.pirate_shot_start_time, main.pirate_shot_passed_time = ability_cooldown(main.pirate_shot_cooldown_started, main.pirate_shot_start_time, main.pirate_shot_passed_time)
         if main.pirate_shot_passed_time >= 4000:
@@ -736,6 +741,8 @@ def boss_collision_sorting(char, enemy_type, b_enemy_type):
             main.b_enemy_health[1] = main.gold_max_health
         elif b_enemy_type == 2:
             main.b_enemy_health[2] = 3
+        elif b_enemy_type == 3:
+            main.b_enemy_health[3] = 2
         else:
             main.b_enemy_health[b_enemy_type] = 4
         enemy_hit.play()
@@ -760,7 +767,9 @@ def collision_sorting(char, enemy_type):
         boss_collision_sorting(char, enemy_type, main.b_enemy_type[1])
     elif enemy_type == 10:
         boss_collision_sorting(char, enemy_type, main.b_enemy_type[2])
-    if enemy_type != 7 and enemy_type != 8 and enemy_type != 10:
+    elif enemy_type == 11:
+        boss_collision_sorting(char, enemy_type, main.b_enemy_type[3])
+    if enemy_type != 7 and enemy_type != 8 and enemy_type != 10 and enemy_type != 11:
         if enemy_type == 6:
             main.invisible_value = 255
             main.invisible_cooldown_started = False
@@ -889,6 +898,21 @@ def enemy_ability_collision(char, enemy_type, t):
                         break
                 break
 
+    elif enemy_type == 11 and main.pirate_enemy_shot == False and main.pirate_shot_is_active == True:
+        for pirate_pos_x in range(int(main.enemy_x[11]), int(main.enemy_x[11] + main.enemy_width[11])):
+            if main.pirate_shot_x + main.pirate_shot_width >= pirate_pos_x >= main.pirate_shot_x:
+                for pirate_pos_y in range(int(main.enemy_y[11]), int(main.enemy_y[11] + main.enemy_height[11])):
+                    if main.pirate_shot_y + main.pirate_shot_height >= pirate_pos_y >= main.pirate_shot_y:
+                        collision_sorting(char, enemy_type)
+                        main.pirate_shot_x, main.pirate_shot_y = 100000, 100000
+                        main.pirate_shot_is_active = False
+                        main.pirate_shot_ammo += 1
+                        if t == 0:
+                            main.ability_collision_occured[char] = True
+                            main.ability_x[t][char], main.ability_y[t][char] = -100000, -100000 
+                            main.is_active[char] = False
+                        break
+                break
 
     if t == 0 and main.ability_collision_occured[char] == True:
         main.ability_cooldown_started[char], main.ability_start_time[char], main.ability_passed_time[char] = ability_cooldown(main.ability_cooldown_started[char], main.ability_start_time[char], main.ability_passed_time[char])
@@ -906,7 +930,7 @@ def reset_menu():
     main.player_count, main.char_ability, main.char_x, main.char_y, main.ability_x, main.ability_y, main.staff_x, main.staff_y = 0, [-1, -1], [size[0] / 2, size[0] / 2 + 100], [size[1] / 2, size[1] / 2], [[-100, -100], [-100, -100], [-100, -100]], [[-100, -100], [-100, -100], [-100, -100]], [-100, -100], [-100, -100]
     main.enemy_x, main.enemy_y, main.is_alive = [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [False, False, False, False, False, False, False, False, False, False, False, False]
     main.time_to_spawn = [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220, 240]
-    main.b_enemy_health, main.gold_enemy, main.gold_max_health = [4, 1, 3], 1, 1
+    main.b_enemy_health, main.gold_enemy, main.gold_max_health = [4, 1, 3, 2], 1, 1
     main.char_health = [3, 3]
     main.char_face = [0, 0]
     main.enemy_ball_x, main.enemy_ball_y, main.explosion_x, main.explosion_y, main.ball_is_active, main.ball_ammo, main.explosion_ammo, main.explosion_is_active, main.can_take_damage, main.explosion_color = -100, -100, -100, -100, False, 1, 1, False, False, [255, 255, 255]
