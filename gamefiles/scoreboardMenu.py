@@ -25,22 +25,57 @@ def save_score():
     main.has_saved = True
     #Convert scores to ints and add player score to the end
     f = open("highscores.txt", "r")
-    highscores = f.read().splitlines()
-    for i in range(len(highscores)):
-        highscores[i] = int(highscores[i])
-    highscores.append(sum(main.player_score))
+    main.highscores[0] = f.read().splitlines()
+    for i in range(len(main.highscores[0])):
+        main.highscores[0][i] = int(main.highscores[0][i])
+    main.highscores[0].append(sum(main.player_score))
+    main.highscores[1].append(main.user_name)
     f.close()
 
     #Sorts and removes all the lowest scores until there are 3 left
-    highscores.sort(reverse = True)
-    while len(highscores) > 3:
-        highscores.pop(-1)
+    main.highscores[0].sort(reverse = True)
+    while len(main.highscores[0]) > 3:
+        main.highscores[0].pop(-1)
 
     #Rewrite the file with the new scores
     f = open("highscores.txt", "w")
-    for i in range(len(highscores)):
-        f.write(str(highscores[i]) + "\n")
+    for i in range(len(main.highscores[0])):
+        f.write(str(main.highscores[0][i]) + "\n")
     f.close()
+
+def enter_name():
+    import main
+    from main import pygame, screen, LIGHT_GR, DARK_GR, BLACK, sml_font
+
+    mouse = pygame.mouse.get_pos()
+    pressed = pygame.mouse.get_pressed()
+
+    pygame.draw.rect(screen, BLACK, (95, 495, 160, 40))
+
+    if 100 <= mouse[0] <= 235 and 500 <= mouse[1] <= 530 and pressed[0] == True:
+        if main.text_box_active == False:
+            main.text_box_active = True
+            pygame.draw.rect(screen, DARK_GR, (100, 500, 150, 30))
+        else:
+            main.text_box_active = False
+            pygame.draw.rect(screen, LIGHT_GR, (100, 500, 150, 30))
+        pygame.time.delay(200)
+    else:
+        if main.text_box_active == False:
+            pygame.draw.rect(screen, DARK_GR, (100, 500, 150, 30))
+        else:
+            pygame.draw.rect(screen, LIGHT_GR, (100, 500, 150, 30))
+
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if main.text_box_active == True:
+                if event.key == pygame.K_BACKSPACE:
+                    main.user_name = main.user_name[:-1]
+                elif len(main.user_name) < 9:
+                    main.user_name += event.unicode
+
+    txt_surface = sml_font.render(main.user_name, True, BLACK)
+    screen.blit(txt_surface, (100, 500))
 
 def scoreboard_menu():
     import main
@@ -118,3 +153,5 @@ def scoreboard_menu():
     else:
         pygame.draw.rect(screen, LIGHT_GR, (985, 545, 200, 125))
         screen.blit(text1, (1020, 595))
+
+    enter_name()

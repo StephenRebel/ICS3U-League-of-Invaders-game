@@ -54,6 +54,7 @@ invisible_value, decrease, is_invisible, invisible_cooldown_started, invisible_s
 explosion_ammo, explosion_is_active, can_take_damage, explosion_can_shoot, explosion_cooldown_started, explosion_start_time, explosion_passed_time = 1, False, False, True, False, 0, 0
 spawn_timer, time_to_spawn, respawn_timer, can_spawn_on_position, unpause_time = [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220, 240], [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220, 240], [0, 2, 10, 15, 15, 10, 10, 20, 15, 15, 10, 20], True, 0
 has_saved = False
+text_box_active, user_name, highscores = False, '', [[], []]
 
 #Menu setup
 window = 0
@@ -908,13 +909,16 @@ rungame = True
 while rungame:
     import main
 
-    pygame.time.delay(10)
+    if window != 7:
+        pygame.time.delay(10)
+    else:
+        pygame.time.delay(0)
     
     #Close game when quit
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             rungame = False
-    
+
     if window != 4 and window != 5:
         gamestart = pygame.time.get_ticks()
 
@@ -974,9 +978,6 @@ while rungame:
         #Drawing enemy spike ball
         enemy_shoot_spike_ball()
 
-        #Drawing pirate shot
-        pirate_shoot_shot()
-
         #Drawing the explosion
         enemy_shoot_explosion()
 
@@ -988,6 +989,9 @@ while rungame:
 
         #Changes size
         enemy_change_size()
+
+        #Drawing pirate shot
+        pirate_shoot_shot()
         
         #Enemy collision with player
         for i in range(len(enemy_type)):
