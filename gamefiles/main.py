@@ -41,7 +41,7 @@ staff_x, staff_y, staff_face, img_num = [-100, -100], [-100, -100], [0, 0], [0, 
 sword_cooldown_started, sword_start_time, sword_passed_time, bolt_cooldown_started, bolt_start_time, bolt_passes_time = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
 ability_start_time, ability_cooldown_started, ability_passed_time = [0, 0], [False, False], [0, 0]
 is_active, can_use = [False, False], [True, True]
-enemy_type, enemy_x, enemy_y, enemy_width, enemy_height, enemy_face, enemy_speed, is_alive, enemy_points, enemy_amount_killed, enemy_end_screen_type = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 64, 32, 64, 96, 64, 64, 64, 96], [64, 64, 64, 64, 64, 32, 64, 96, 64, 64, 64, 96], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0.5, 1, 0.5, 0, 0.25, 1.25, 0.75, 0.35, 0.5, 1.75, 0.75, 0.25], [False, False, False, False, False, False, False, False, False, False, False, False], [5, 10, 20, 25, 40, 50, 50, 100, 60, 75, 60, 150], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 0
+enemy_type, enemy_x, enemy_y, enemy_width, enemy_height, enemy_face, enemy_speed, is_alive, enemy_points, enemy_amount_killed, enemy_end_screen_type = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 64, 32, 64, 96, 64, 64, 64, 96], [64, 64, 64, 64, 64, 32, 64, 96, 64, 64, 64, 96], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0.5, 1, 0.5, 0, 0.25, 1.25, 0.75, 0.35, 0.5, 1.75, 0.75, 0.4], [False, False, False, False, False, False, False, False, False, False, False, False], [5, 10, 20, 25, 40, 50, 50, 100, 60, 75, 60, 150], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 0
 b_enemy_type, b_enemy_health, b_enemy_hit, gold_max_health = [0, 1, 2, 3], [4, 1, 3, 2], [[False, False, False, False], [False, False, False, False]], 1
 enemy_ball_x, enemy_ball_y, enemy_ball_width, enemy_ball_height, enemy_ball_face = -100, -100, 18, 18, 0
 pirate_shot_x, pirate_shot_y, pirate_shot_width, pirate_shot_height, pirate_shot_face = -100, -100, 48, 48, 0
@@ -54,7 +54,7 @@ invisible_value, decrease, is_invisible, invisible_cooldown_started, invisible_s
 explosion_ammo, explosion_is_active, can_take_damage, explosion_can_shoot, explosion_cooldown_started, explosion_start_time, explosion_passed_time = 1, False, False, True, False, 0, 0
 spawn_timer, time_to_spawn, respawn_timer, can_spawn_on_position, unpause_time = [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220, 240], [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220, 240], [0, 2, 10, 15, 15, 10, 10, 20, 15, 15, 10, 20], True, 0
 has_saved = False
-text_box_active, user_name, highscores = False, '', [[], []]
+text_box_active, user_name, name_score, text1_transparency_value, text2_transparency_value, text3_transparency_value = False, "", [[], [], []], 0, 0, 0
 
 #Menu setup
 window = 0
@@ -507,39 +507,6 @@ def enemy_shoot_spike_ball():
             main.ball_cooldown_started = False
             main.ball_can_shoot = True
 
-#Run for pirate to shoot cannon ball
-def pirate_shoot_shot():
-    import main
-    #Pirate shoots the cannon ball
-    if main.pirate_shot_ammo > 0 and main.pirate_shot_is_active == False and main.pirate_shot_can_shoot == True and main.is_alive[11] == True:
-        main.pirate_shot_ammo -= 1
-        main.pirate_shot_face = main.enemy_face[11]
-        main.pirate_shot_x, main.pirate_shot_y = main.enemy_x[11], main.enemy_y[11]
-        main.pirate_shot_is_active = True
-        main.pirate_shot_can_shoot = False
-        main.pirate_enemy_shot = True
-    #Pirate cannon ball in air
-    if main.pirate_shot_is_active == True:
-        if main.pirate_shot_face == 0 and main.pirate_shot_y > -main.pirate_shot_height:
-            main.pirate_shot_y -= 1.5
-        elif main.pirate_shot_face == 270 and main.pirate_shot_x < size[0] + main.pirate_shot_width:
-            main.pirate_shot_x += 1.5
-        elif main.pirate_shot_face == 180 and main.pirate_shot_y < size[1] + main.pirate_shot_height:
-            main.pirate_shot_y += 1.5
-        elif main.pirate_shot_face == 90 and main.pirate_shot_x > -main.pirate_shot_width:
-            main.pirate_shot_x -= 1.5
-        else:
-            main.pirate_shot_is_active = False
-            main.pirate_shot_ammo += 1
-            main.b_enemy_hit[0][3] = False
-            main.b_enemy_hit[1][3] = False
-    elif main.is_alive[11] == True:
-        main.pirate_shot_cooldown_started, main.pirate_shot_start_time, main.pirate_shot_passed_time = ability_cooldown(main.pirate_shot_cooldown_started, main.pirate_shot_start_time, main.pirate_shot_passed_time)
-        if main.pirate_shot_passed_time >= 4000:
-            main.pirate_shot_passed_time = 0
-            main.pirate_shot_cooldown_started = False
-            main.pirate_shot_can_shoot = True 
-
 #Run shoot explosion function
 def enemy_shoot_explosion():
     import main
@@ -591,6 +558,39 @@ def enemy_invisible():
                 main.invisible_value -= 1
             elif main.decrease == False and main.invisible_value <= 255:
                 main.invisible_value += 1
+
+#Run for pirate to shoot cannon ball
+def pirate_shoot_shot():
+    import main
+    #Pirate shoots the cannon ball
+    if main.pirate_shot_ammo > 0 and main.pirate_shot_is_active == False and main.pirate_shot_can_shoot == True and main.is_alive[11] == True:
+        main.pirate_shot_ammo -= 1
+        main.pirate_shot_face = main.enemy_face[11]
+        main.pirate_shot_x, main.pirate_shot_y = main.enemy_x[11], main.enemy_y[11]
+        main.pirate_shot_is_active = True
+        main.pirate_shot_can_shoot = False
+        main.pirate_enemy_shot = True
+    #Pirate cannon ball in air
+    if main.pirate_shot_is_active == True:
+        if main.pirate_shot_face == 0 and main.pirate_shot_y > -main.pirate_shot_height:
+            main.pirate_shot_y -= 2.5
+        elif main.pirate_shot_face == 270 and main.pirate_shot_x < size[0] + main.pirate_shot_width:
+            main.pirate_shot_x += 2.5
+        elif main.pirate_shot_face == 180 and main.pirate_shot_y < size[1] + main.pirate_shot_height:
+            main.pirate_shot_y += 2.5
+        elif main.pirate_shot_face == 90 and main.pirate_shot_x > -main.pirate_shot_width:
+            main.pirate_shot_x -= 2.5
+        else:
+            main.pirate_shot_is_active = False
+            main.pirate_shot_ammo += 1
+            main.b_enemy_hit[0][3] = False
+            main.b_enemy_hit[1][3] = False
+    elif main.is_alive[11] == True:
+        main.pirate_shot_cooldown_started, main.pirate_shot_start_time, main.pirate_shot_passed_time = ability_cooldown(main.pirate_shot_cooldown_started, main.pirate_shot_start_time, main.pirate_shot_passed_time)
+        if main.pirate_shot_passed_time >= 4000:
+            main.pirate_shot_passed_time = 0
+            main.pirate_shot_cooldown_started = False
+            main.pirate_shot_can_shoot = True 
 
 #Run spike ball function
 def enemy_shoot_icicle(): 
@@ -685,6 +685,7 @@ def set_enemy_position(enemy_type):
     if main.is_alive[enemy_type] == False:
         main.enemy_x[enemy_type], main.enemy_y[enemy_type] = 100000, 100000
 
+#Finds whichever side the player is closest to
 def find_player_side(char):
     import main
 
@@ -871,43 +872,13 @@ def explosion_player_collision(char):
 def enemy_ability_collision(char, enemy_type, t):
     import main
 
+    #Abilities and enemies
     if enemy_type != 11:
         for enemy_xpos in range(int(main.enemy_x[enemy_type]), int(main.enemy_x[enemy_type] + main.enemy_width[enemy_type])):
             if main.ability_x[t][char] + main.ability_width[t][char] >= enemy_xpos >= main.ability_x[t][char]:
                 for enemy_ypos in range(int(main.enemy_y[enemy_type]), int(main.enemy_y[enemy_type] + main.enemy_height[enemy_type])):
                     if main.ability_y[t][char] + main.ability_height[t][char] >= enemy_ypos >= main.ability_y[t][char]:
                         collision_sorting(char, enemy_type)
-                        if t == 0:
-                            main.ability_collision_occured[char] = True
-                            main.ability_x[t][char], main.ability_y[t][char] = -100000, -100000 
-                            main.is_active[char] = False
-                        break
-                break
-    
-    elif enemy_type == 11 and main.pirate_enemy_shot == True and main.pirate_shot_is_active == True:
-        for pirate_shot_pos_x in range(int(main.pirate_shot_x), int(main.pirate_shot_x + main.pirate_shot_width)):
-            if main.ability_x[t][char] + main.ability_width[t][char] >= pirate_shot_pos_x >= main.ability_x[t][char]:
-                for pirate_shot_pos_y in range(int(main.pirate_shot_y), int(main.pirate_shot_y + main.pirate_shot_height)):
-                    if main.ability_y[t][char] + main.ability_height[t][char] >= pirate_shot_pos_y >= main.ability_y[t][char]:
-                        enemy_hit.play()
-                        main.pirate_enemy_shot = False
-                        main.pirate_shot_face = main.ability_face[t][char]
-                        if t == 0:
-                            main.ability_collision_occured[char] = True
-                            main.ability_x[t][char], main.ability_y[t][char] = -100000, -100000 
-                            main.is_active[char] = False
-                        break
-                break
-
-    elif enemy_type == 11 and main.pirate_enemy_shot == False and main.pirate_shot_is_active == True:
-        for pirate_pos_x in range(int(main.enemy_x[11]), int(main.enemy_x[11] + main.enemy_width[11])):
-            if main.pirate_shot_x + main.pirate_shot_width >= pirate_pos_x >= main.pirate_shot_x:
-                for pirate_pos_y in range(int(main.enemy_y[11]), int(main.enemy_y[11] + main.enemy_height[11])):
-                    if main.pirate_shot_y + main.pirate_shot_height >= pirate_pos_y >= main.pirate_shot_y:
-                        collision_sorting(char, enemy_type)
-                        main.pirate_shot_x, main.pirate_shot_y = 100000, 100000
-                        main.pirate_shot_is_active = False
-                        main.pirate_shot_ammo += 1
                         if t == 0:
                             main.ability_collision_occured[char] = True
                             main.ability_x[t][char], main.ability_y[t][char] = -100000, -100000 
@@ -922,6 +893,39 @@ def enemy_ability_collision(char, enemy_type, t):
             main.ability_cooldown_started[char] = False
             main.ability_collision_occured[char] = False
             main.can_use[char] = True
+
+#Run function to detect collision between pirate and abilities
+def pirate_ability_collision(char, enemy_type, t):
+    import main
+
+    #Allows players to attack cannon ball when it is first shot
+    if enemy_type == 11 and main.pirate_enemy_shot == True and main.pirate_shot_is_active == True:
+        for pirate_shot_pos_x in range(int(main.pirate_shot_x), int(main.pirate_shot_x + main.pirate_shot_width)):
+            if main.ability_x[t][char] + main.ability_width[t][char] >= pirate_shot_pos_x >= main.ability_x[t][char]:
+                for pirate_shot_pos_y in range(int(main.pirate_shot_y), int(main.pirate_shot_y + main.pirate_shot_height)):
+                    if main.ability_y[t][char] + main.ability_height[t][char] >= pirate_shot_pos_y >= main.ability_y[t][char]:
+                        enemy_hit.play()
+                        main.pirate_enemy_shot = False
+                        main.pirate_shot_face = main.ability_face[t][char]
+                        if t == 0:
+                            main.ability_collision_occured[char] = True
+                            main.ability_x[t][char], main.ability_y[t][char] = -100000, -100000 
+                            main.is_active[char] = False
+                        break
+                break
+
+    #Collision between the cannon ball and pirate after it has been hit by player
+    elif enemy_type == 11 and main.pirate_enemy_shot == False and main.pirate_shot_is_active == True:
+        for pirate_pos_x in range(int(main.enemy_x[11]), int(main.enemy_x[11] + main.enemy_width[11])):
+            if main.pirate_shot_x + main.pirate_shot_width >= pirate_pos_x >= main.pirate_shot_x:
+                for pirate_pos_y in range(int(main.enemy_y[11]), int(main.enemy_y[11] + main.enemy_height[11])):
+                    if main.pirate_shot_y + main.pirate_shot_height >= pirate_pos_y >= main.pirate_shot_y:
+                        collision_sorting(char, enemy_type)
+                        main.pirate_shot_x, main.pirate_shot_y = 100000, 100000
+                        main.pirate_shot_is_active = False
+                        main.pirate_shot_ammo += 1
+                        break
+                break
 
 #Run function to reset menu variables when using a button to take you back to main menu
 def reset_menu():
@@ -944,7 +948,7 @@ def reset_menu():
     main.unpause_time = 0
     main.button_cooldown_started, main.button_start_time, main.button_passed_time, main.is_button_pressed = False, 0, 0, False
     main.enemy_end_screen_type, main.enemy_amount_killed = 0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    main.has_saved = False
+    main.has_saved, main.user_name, main.text_box_active, main.text1_transparency_value,  main.text2_transparency_value, main.text3_transparency_value = False, "", False, 0, 0, 0
 
 #Main game loop
 rungame = True
@@ -1068,6 +1072,11 @@ while rungame:
             enemy_ability_collision(char[0], enemy_type[i], main.char_ability[char[0]])
             if multiplayer == True:
                 enemy_ability_collision(char[1], enemy_type[i], main.char_ability[char[1]]) 
+
+        #Ability collision with pirate
+        pirate_ability_collision(char[0], enemy_type[11], main.char_ability[char[0]])
+        if multiplayer == True:
+            pirate_ability_collision(char[1], enemy_type[i], main.char_ability[char[1]]) 
 
         #Ends game when players lose all health
         if (multiplayer == False and char_health[0] <= 0) or (multiplayer == True and char_health[0] <= 0 and char_health[1] <= 0):
