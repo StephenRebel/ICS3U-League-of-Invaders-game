@@ -871,6 +871,7 @@ def explosion_player_collision(char):
 def enemy_ability_collision(char, enemy_type, t):
     import main
 
+    #CHecks for collisions with normal enemies
     if enemy_type != 11:
         for enemy_xpos in range(int(main.enemy_x[enemy_type]), int(main.enemy_x[enemy_type] + main.enemy_width[enemy_type])):
             if main.ability_x[t][char] + main.ability_width[t][char] >= enemy_xpos >= main.ability_x[t][char]:
@@ -883,7 +884,8 @@ def enemy_ability_collision(char, enemy_type, t):
                             main.is_active[char] = False
                         break
                 break
-    
+
+   #Checks for collision with the pirate shot 
     elif enemy_type == 11 and main.pirate_enemy_shot == True and main.pirate_shot_is_active == True:
         for pirate_shot_pos_x in range(int(main.pirate_shot_x), int(main.pirate_shot_x + main.pirate_shot_width)):
             if main.ability_x[t][char] + main.ability_width[t][char] >= pirate_shot_pos_x >= main.ability_x[t][char]:
@@ -898,7 +900,8 @@ def enemy_ability_collision(char, enemy_type, t):
                             main.is_active[char] = False
                         break
                 break
-
+    
+    #Checks for collisions between a player owned pirate shot and the pirate enemy
     elif enemy_type == 11 and main.pirate_enemy_shot == False and main.pirate_shot_is_active == True:
         for pirate_pos_x in range(int(main.enemy_x[11]), int(main.enemy_x[11] + main.enemy_width[11])):
             if main.pirate_shot_x + main.pirate_shot_width >= pirate_pos_x >= main.pirate_shot_x:
