@@ -31,6 +31,9 @@ empty_heart_img = pygame.image.load("gamefiles/images/heart_empty.png").convert_
 frozen_img = pygame.image.load("gamefiles/images/ice.png").convert_alpha()
 frozen_img.set_alpha(200)
 cannon_ball_img = pygame.image.load("gamefiles/images/pirate_shot.png").convert_alpha()
+heal_powerup_img = pygame.image.load("gamefiles/images/heal_powerup.png").convert_alpha()
+speed_powerup_img = pygame.image.load("gamefiles/images/speed_powerup.png").convert_alpha()
+cooldown_powerup_img = pygame.image.load("gamefiles/images/cooldown_powerup.png").convert_alpha()
 pygame.display.set_icon(enemy_img[1])
 
 #Game variables
@@ -52,9 +55,13 @@ pirate_shot_ammo, pirate_shot_is_active, pirate_shot_can_shoot, pirate_shot_cool
 icicle_ammo, icicle_is_active, icicle_can_shoot, icicle_cooldown_started, icicle_start_time, icicle_passed_time, is_frozen, frozen_cooldown_started, frozen_start_time, frozen_passed_time = 1, False, True, False, 0, 0, [False, False], [False, False], [0, 0], [0, 0]
 invisible_value, decrease, is_invisible, invisible_cooldown_started, invisible_start_time, invisible_passed_time = 255, True, False, False, 0, 0
 explosion_ammo, explosion_is_active, can_take_damage, explosion_can_shoot, explosion_cooldown_started, explosion_start_time, explosion_passed_time = 1, False, False, True, False, 0, 0
-spawn_timer, time_to_spawn, respawn_timer, can_spawn_on_position, unpause_time = [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220, 240], [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220, 240], [0, 2, 10, 15, 15, 10, 10, 20, 15, 15, 10, 20], True, 0
+time_to_spawn, respawn_timer, unpause_time = [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220, 240], [0, 2, 10, 15, 15, 10, 10, 20, 15, 15, 10, 20], 0
 has_saved = False
 text_box_active, user_name, name_score, text1_transparency_value, text2_transparency_value, text3_transparency_value = False, "", [[], [], []], 0, 0, 0
+powerup_type, powerup_x, powerup_y, powerup_width, powerup_height = [0, 1, 2], [-100, -100, -100], [-100, -100, -100], 64, 64
+powerup_time_to_spawn, powerup_respawn_timer, is_powerup_active = 30, 40, False
+bonus_speed, has_bonus_speed, speed_cooldown_started, speed_start_time, speed_passed_time = [0, 0], [False, False], [False, False], [0, 0], [0, 0]
+bonus_cooldown, has_bonus_cooldown, cooldown_cooldown_started, cooldown_start_time, cooldown_passed_time = [0, 0], [False, False], [False, False], [0, 0], [0, 0]
 
 #Menu setup
 window = 0
@@ -71,6 +78,9 @@ staff_use = pygame.mixer.Sound("gamefiles/sounds/staff_use.wav")
 enemy_hit = pygame.mixer.Sound("gamefiles/sounds/enemy_hit.wav")
 player_hit = pygame.mixer.Sound("gamefiles/sounds/player_hit.wav")
 ice_effect = pygame.mixer.Sound("gamefiles/sounds/ice_effect.wav")
+heal_powerup = pygame.mixer.Sound("gamefiles/sounds/heal_powerup.wav")
+speed_powerup = pygame.mixer.Sound("gamefiles/sounds/speed_powerup.wav")
+cooldown_powerup = pygame.mixer.Sound("gamefiles/sounds/cooldown_powerup.wav")
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 LIGHT_GR = (211, 211, 211)
@@ -79,6 +89,8 @@ WHITE = (255, 255, 255)
 GOLD = (255, 215, 0)
 SILVER = (192, 192, 192)
 BRONZE = (205, 127, 50)
+ORANGE = (255, 126, 28)
+BLUE = (88, 231, 252)
 player_count = 0
 player_score, enemies_killed, abilities_used, time_played, distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
 button_cooldown_started, button_start_time, button_passed_time, is_button_pressed = False, 0, 0, False
@@ -153,6 +165,7 @@ def pause_button():
 
 #Draw the cooldown indicators
 def draw_cooldowns():
+    import main
     pos = (0, 0)
     font = med_font
     if ability_passed_time[0] / 1000 == 1 or ability_passed_time[0] / 1000 == 0:
@@ -160,12 +173,15 @@ def draw_cooldowns():
         pos = (527, 637)
         font = sml_font
     else:
-        cooldown = str(round(1 - ability_passed_time[0] / 1000, 2))
+        cooldown = str(round(1 - (main.bonus_cooldown[0] / 1000) - ability_passed_time[0] / 1000, 2))
         pos = (535, 627)
         font = med_font
     pygame.draw.rect(screen, BLACK, (515, 595, 110, 110), 0, 0, 30, 0, 30, 0)
     pygame.draw.rect(screen, DARK_GR, (520, 600, 100, 100), 0, 0, 30, 0, 30, 0)
-    pygame.draw.rect(screen, LIGHT_GR, (520, 600, ability_passed_time[0] / 10, 100), 0, 0, 30, 0, 30, 0)
+    if main.has_bonus_cooldown[0] == True:
+        pygame.draw.rect(screen, LIGHT_GR, (520, 600, (ability_passed_time[0] / 10) * 2, 100), 0, 0, 30, 0, 30, 0)
+    else:
+        pygame.draw.rect(screen, LIGHT_GR, (520, 600, ability_passed_time[0] / 10, 100), 0, 0, 30, 0, 30, 0)
     p1cooldown = font.render((cooldown), True, WHITE)
     screen.blit(p1cooldown, pos)
     if multiplayer:
@@ -174,12 +190,15 @@ def draw_cooldowns():
             pos = (670, 637)
             font = sml_font
         else:
-            cooldown = str(round(1 - ability_passed_time[1] / 1000, 2))
+            cooldown = str(round(1 - (main.bonus_cooldown[1] / 1000) - ability_passed_time[1] / 1000, 2))
             pos = (675, 627)
             font = med_font
         pygame.draw.rect(screen, BLACK, (655, 595, 110, 110), 0, 0, 0, 30, 0, 30)
         pygame.draw.rect(screen, DARK_GR, (660, 600, 100, 100), 0, 0, 0, 30, 0, 30)
-        pygame.draw.rect(screen, LIGHT_GR, (760, 600, 0.99 - ability_passed_time[1] / 1000 * 100, 100), 0, 0, 0, 30, 0, 30)
+        if main.has_bonus_cooldown[1] == True:
+            pygame.draw.rect(screen, LIGHT_GR, (760, 600, (0.99 - ability_passed_time[1] * 2) / 1000 * 100, 100), 0, 0, 0, 30, 0, 30)
+        else:
+            pygame.draw.rect(screen, LIGHT_GR, (760, 600, 0.99 - ability_passed_time[1] / 1000 * 100, 100), 0, 0, 0, 30, 0, 30)
         p2cooldown = font.render((cooldown), True, WHITE)
         screen.blit(p2cooldown, pos)
 
@@ -206,12 +225,26 @@ def draw_player_score(player_score):
     pygame.draw.rect(screen, LIGHT_GR, (470, 10, 375, 70), 0, 30, 30, 30, 30)
     screen.blit(score, (500, 10))
 
+def draw_powerup_cooldown(char):
+    import main
+    if main.has_bonus_speed[char] == True:
+        pygame.draw.rect(screen, BLACK, (char_x[char], char_y[char] - 25, char_width, 15))
+        pygame.draw.rect(screen, ORANGE, (char_x[char], char_y[char] - 25, char_width - (main.speed_passed_time[char] / 10000 * char_width), 15))
+    elif main.has_bonus_cooldown[char] == True:
+        pygame.draw.rect(screen, BLACK, (char_x[char], char_y[char] - 25, char_width, 15))
+        pygame.draw.rect(screen, BLUE, (char_x[char], char_y[char] - 25, char_width - (main.cooldown_passed_time[char] / 10000 * char_width), 15))
+
 #Draw the screen
 def draw_screen():
     import main
 
     #Background
     screen.blit(bg, (0, 0))
+
+    #Draw powerups
+    screen.blit(heal_powerup_img, (main.powerup_x[0], main.powerup_y[0]))
+    screen.blit(speed_powerup_img, (main.powerup_x[1], main.powerup_y[1]))
+    screen.blit(cooldown_powerup_img, (main.powerup_x[2], main.powerup_y[2]))
 
     #Characters
     draw_char(char1_img, char_x[0], char_y[0], char_face[0])
@@ -232,7 +265,7 @@ def draw_screen():
             new_enemy_size = pygame.transform.scale(enemy_img[10], (main.enemy_width[10], main.enemy_height[10]))
             screen.blit(new_enemy_size, (enemy_x[i], enemy_y[i]))
 
-    #Draw boss health
+    #Draw boss healths
     pygame.draw.rect(screen, BLACK, (enemy_x[7], enemy_y[7] - 25, enemy_width[7], 15))
     pygame.draw.rect(screen, RED, (enemy_x[7], enemy_y[7] - 25, enemy_width[7] / 4 * b_enemy_health[0], 15))
 
@@ -278,6 +311,10 @@ def draw_screen():
     #Total score
     draw_player_score(player_score)
 
+    draw_powerup_cooldown(char[0])
+    if multiplayer == True:
+        draw_powerup_cooldown(char[1])
+
 #Move character function
 def move_char(char):
     import main
@@ -302,29 +339,29 @@ def move_char(char):
             if main.char_x[char] - 1 <= 0:
                 main.char_x[char] = 0
             else:
-                main.char_x[char] -= 2 + extraspeed
-                main.distance_travelled[char] += 2 + extraspeed
+                main.char_x[char] -= 2 + extraspeed + main.bonus_speed[char]
+                main.distance_travelled[char] += 2 + extraspeed + main.bonus_speed[char]
         elif key_type[1]:
             main.char_face[char] = 270
             if main.char_x[char] + 1 >= size[0] - char_width:
                 main.char_x[char] = size[0] - char_width
             else:
-                main.char_x[char] += 2 + extraspeed
-                main.distance_travelled[char] += 2 + extraspeed
+                main.char_x[char] += 2 + extraspeed + main.bonus_speed[char]
+                main.distance_travelled[char] += 2 + extraspeed + main.bonus_speed[char]
         elif key_type[2]:
             main.char_face[char] = 0
             if main.char_y[char] - 1 <= 0:
                 main.char_y[char] = 0
             else:
-                main.char_y[char] -= 2 + extraspeed
-                main.distance_travelled[char] += 2 + extraspeed
+                main.char_y[char] -= 2 + extraspeed + main.bonus_speed[char]
+                main.distance_travelled[char] += 2 + extraspeed + main.bonus_speed[char]
         elif key_type[3]:
             main.char_face[char] = 180
             if main.char_y[char] + 1 >= size[1] - char_height:
                 main.char_y[char] = size[1] - char_height
             else:
-                main.char_y[char] += 2 + extraspeed
-                main.distance_travelled[char] += 2 + extraspeed
+                main.char_y[char] += 2 + extraspeed + main.bonus_speed[char]
+                main.distance_travelled[char] += 2 + extraspeed + main.bonus_speed[char]
 
 def frozen(char):
     if is_frozen[char] == True:
@@ -458,7 +495,7 @@ def run_ability(char):
     #Starts the cooldown after ability is done
     if main.is_active[char] == False and main.can_use[char] == False and main.ability_collision_occured[char] == False:
         main.ability_cooldown_started[char], main.ability_start_time[char], main.ability_passed_time[char] = ability_cooldown(main.ability_cooldown_started[char], main.ability_start_time[char], main.ability_passed_time[char])
-        if main.ability_passed_time[char] >= 1000:
+        if main.ability_passed_time[char] >= 1000 - main.bonus_cooldown[char]:
             main.ability_passed_time[char] = 0
             main.ability_cooldown_started[char] = False
             main.can_use[char] = True
@@ -559,39 +596,6 @@ def enemy_invisible():
             elif main.decrease == False and main.invisible_value <= 255:
                 main.invisible_value += 1
 
-#Run for pirate to shoot cannon ball
-def pirate_shoot_shot():
-    import main
-    #Pirate shoots the cannon ball
-    if main.pirate_shot_ammo > 0 and main.pirate_shot_is_active == False and main.pirate_shot_can_shoot == True and main.is_alive[11] == True:
-        main.pirate_shot_ammo -= 1
-        main.pirate_shot_face = main.enemy_face[11]
-        main.pirate_shot_x, main.pirate_shot_y = main.enemy_x[11], main.enemy_y[11]
-        main.pirate_shot_is_active = True
-        main.pirate_shot_can_shoot = False
-        main.pirate_enemy_shot = True
-    #Pirate cannon ball in air
-    if main.pirate_shot_is_active == True:
-        if main.pirate_shot_face == 0 and main.pirate_shot_y > -main.pirate_shot_height:
-            main.pirate_shot_y -= 2.5
-        elif main.pirate_shot_face == 270 and main.pirate_shot_x < size[0] + main.pirate_shot_width:
-            main.pirate_shot_x += 2.5
-        elif main.pirate_shot_face == 180 and main.pirate_shot_y < size[1] + main.pirate_shot_height:
-            main.pirate_shot_y += 2.5
-        elif main.pirate_shot_face == 90 and main.pirate_shot_x > -main.pirate_shot_width:
-            main.pirate_shot_x -= 2.5
-        else:
-            main.pirate_shot_is_active = False
-            main.pirate_shot_ammo += 1
-            main.b_enemy_hit[0][3] = False
-            main.b_enemy_hit[1][3] = False
-    elif main.is_alive[11] == True:
-        main.pirate_shot_cooldown_started, main.pirate_shot_start_time, main.pirate_shot_passed_time = ability_cooldown(main.pirate_shot_cooldown_started, main.pirate_shot_start_time, main.pirate_shot_passed_time)
-        if main.pirate_shot_passed_time >= 4000:
-            main.pirate_shot_passed_time = 0
-            main.pirate_shot_cooldown_started = False
-            main.pirate_shot_can_shoot = True 
-
 #Run spike ball function
 def enemy_shoot_icicle(): 
     import main
@@ -625,6 +629,39 @@ def enemy_shoot_icicle():
             main.icicle_passed_time = 0
             main.icicle_cooldown_started = False
             main.icicle_can_shoot = True
+
+#Run for pirate to shoot cannon ball
+def pirate_shoot_shot():
+    import main
+    #Pirate shoots the cannon ball
+    if main.pirate_shot_ammo > 0 and main.pirate_shot_is_active == False and main.pirate_shot_can_shoot == True and main.is_alive[11] == True:
+        main.pirate_shot_ammo -= 1
+        main.pirate_shot_face = main.enemy_face[11]
+        main.pirate_shot_x, main.pirate_shot_y = main.enemy_x[11] + 24, main.enemy_y[11] + 24
+        main.pirate_shot_is_active = True
+        main.pirate_shot_can_shoot = False
+        main.pirate_enemy_shot = True
+    #Pirate cannon ball in air
+    if main.pirate_shot_is_active == True:
+        if main.pirate_shot_face == 0 and main.pirate_shot_y > -main.pirate_shot_height:
+            main.pirate_shot_y -= 2.5
+        elif main.pirate_shot_face == 270 and main.pirate_shot_x < size[0] + main.pirate_shot_width:
+            main.pirate_shot_x += 2.5
+        elif main.pirate_shot_face == 180 and main.pirate_shot_y < size[1] + main.pirate_shot_height:
+            main.pirate_shot_y += 2.5
+        elif main.pirate_shot_face == 90 and main.pirate_shot_x > -main.pirate_shot_width:
+            main.pirate_shot_x -= 2.5
+        else:
+            main.pirate_shot_is_active = False
+            main.pirate_shot_ammo += 1
+            main.b_enemy_hit[0][3] = False
+            main.b_enemy_hit[1][3] = False
+    elif main.is_alive[11] == True:
+        main.pirate_shot_cooldown_started, main.pirate_shot_start_time, main.pirate_shot_passed_time = ability_cooldown(main.pirate_shot_cooldown_started, main.pirate_shot_start_time, main.pirate_shot_passed_time)
+        if main.pirate_shot_passed_time >= 4000:
+            main.pirate_shot_passed_time = 0
+            main.pirate_shot_cooldown_started = False
+            main.pirate_shot_can_shoot = True 
 
 #Changes the enemy stats when hit
 def enemy_change_size():
@@ -705,6 +742,14 @@ def spawn_enemy(enemy_type):
     import main
 
     if main.is_alive[enemy_type] == False and (main.gametime >= main.time_to_spawn[enemy_type]):
+        if enemy_type == 7:
+            main.b_enemy_health[0] = 4
+        elif enemy_type == 8:
+            main.b_enemy_health[1] = main.gold_max_health
+        elif enemy_type == 10:
+            main.b_enemy_health[2] = 3
+        elif enemy_type == 11:
+            main.b_enemy_health[3] = 2
         if enemy_type == 9:
             pink_skin = round(random.randrange(0, 2))
             main.enemy_img[enemy_type] = main.pink_enemy_img[pink_skin]
@@ -723,6 +768,41 @@ def spawn_enemy(enemy_type):
                 elif chooseside == 3:
                     main.enemy_x[enemy_type], main.enemy_y[enemy_type] = size[0] - enemy_width[enemy_type], random.randrange(enemy_height[enemy_type], size[1] - enemy_height[enemy_type])
                 break
+
+#Spawns powerups
+def spawn_powerup(powerup_type):
+    if main.is_powerup_active == False and main.powerup_time_to_spawn <= main.gametime:
+        main.is_powerup_active = True
+        powerup_type_rand = random.randrange(0, 3)
+        main.powerup_x[powerup_type_rand], main.powerup_y[powerup_type_rand] = random.randrange(96, size[0] - 96), random.randrange(96, size[1] - 96)
+
+#Gives player extra speed powerup
+def speed(char):
+    import main
+    if main.has_bonus_speed[char] == True:
+        #Gives player bonus speed for 10 seconds
+        main.bonus_speed[char] = 1
+        main.speed_cooldown_started[char], main.speed_start_time[char], main.speed_passed_time[char] = ability_cooldown(main.speed_cooldown_started[char], main.speed_start_time[char], main.speed_passed_time[char])
+        if main.speed_passed_time[char] >= 10000:
+            main.speed_passed_time[char] = 0
+            main.speed_cooldown_started[char] = False
+            main.has_bonus_speed[char] = False
+    else:
+        main.bonus_speed[char] = 0
+
+#Gives player shorter cooldowns powerup
+def cooldown(char):
+    import main
+    if main.has_bonus_cooldown[char] == True:
+        #Gives player bonus cooldown reduction for 10 seconds
+        main.bonus_cooldown[char] = 500
+        main.cooldown_cooldown_started[char], main.cooldown_start_time[char], main.cooldown_passed_time[char] = ability_cooldown(main.cooldown_cooldown_started[char], main.cooldown_start_time[char], main.cooldown_passed_time[char])
+        if main.cooldown_passed_time[char] >= 10000:
+            main.cooldown_passed_time[char] = 0
+            main.cooldown_cooldown_started[char] = False
+            main.has_bonus_cooldown[char] = False
+    else:
+        main.bonus_cooldown[char] = 0
 
 #Gives points to player when enemy killed
 def give_points(char, enemy_type):
@@ -779,7 +859,8 @@ def collision_sorting(char, enemy_type):
         enemy_hit.play()
         main.is_alive[enemy_type] = False
         give_points(char, enemy_type)
-    main.time_to_spawn[enemy_type] = main.gametime + main.respawn_timer[enemy_type] + random.randrange(0, 5)
+    if main.is_alive[enemy_type] == False:
+        main.time_to_spawn[enemy_type] = main.gametime + main.respawn_timer[enemy_type] + random.randrange(0, 5)
         
 #Run function to detect collision between enemy and player
 def enemy_player_collision(char, enemy_type):
@@ -792,12 +873,6 @@ def enemy_player_collision(char, enemy_type):
                     main.is_alive[enemy_type] = False
                     player_hit.play()
                     main.char_health[char] -= 1
-                    if enemy_type == 7:
-                        main.b_enemy_health[0] = 4
-                    elif enemy_type == 8:
-                        main.b_enemy_health[1] = main.gold_max_health
-                    elif enemy_type == 10:
-                        main.b_enemy_health[2] = 3
                     if main.char_health[char] <= 0:
                         main.char_x[char], main.char_y[char] = -100000, -100000
                     break
@@ -815,24 +890,6 @@ def player_ball_collision(char):
                     main.enemy_ball_x, main.enemy_ball_y = 100000, 100000 
                     main.ball_is_active = False
                     main.ball_ammo += 1
-                    main.char_health[char] -= 1
-                    if main.char_health[char] <= 0:
-                        main.char_x[char], main.char_y[char] = -100000, -100000
-                    break
-            break
-
-#Run function to detect collision between player and pirate shot
-def player_pirate_shot_collision(char):
-    import main
-
-    for shotxpos in range(int(main.pirate_shot_x), int(main.pirate_shot_x + main.pirate_shot_width)):
-        if main.char_x[char] + main.char_width >= shotxpos >= main.char_x[char]:
-            for shotypos in range(int(main.pirate_shot_y), int(main.pirate_shot_y + main.pirate_shot_height)):
-                if main.char_y[char] + main.char_height >= shotypos >= main.char_y[char]:
-                    player_hit.play()
-                    main.pirate_shot_x, main.pirate_shot_y = 100000, 100000
-                    main.pirate_shot_is_active = False
-                    main.pirate_shot_ammo += 1
                     main.char_health[char] -= 1
                     if main.char_health[char] <= 0:
                         main.char_x[char], main.char_y[char] = -100000, -100000
@@ -868,31 +925,23 @@ def explosion_player_collision(char):
                     break
             break
 
-#Run function to detect collision between enemy and ability
-def enemy_ability_collision(char, enemy_type, t):
+#Run function to detect collision between player and pirate shot
+def player_pirate_shot_collision(char):
     import main
 
-    #Abilities and enemies
-    if enemy_type != 11:
-        for enemy_xpos in range(int(main.enemy_x[enemy_type]), int(main.enemy_x[enemy_type] + main.enemy_width[enemy_type])):
-            if main.ability_x[t][char] + main.ability_width[t][char] >= enemy_xpos >= main.ability_x[t][char]:
-                for enemy_ypos in range(int(main.enemy_y[enemy_type]), int(main.enemy_y[enemy_type] + main.enemy_height[enemy_type])):
-                    if main.ability_y[t][char] + main.ability_height[t][char] >= enemy_ypos >= main.ability_y[t][char]:
-                        collision_sorting(char, enemy_type)
-                        if t == 0:
-                            main.ability_collision_occured[char] = True
-                            main.ability_x[t][char], main.ability_y[t][char] = -100000, -100000 
-                            main.is_active[char] = False
-                        break
-                break
-
-    if t == 0 and main.ability_collision_occured[char] == True:
-        main.ability_cooldown_started[char], main.ability_start_time[char], main.ability_passed_time[char] = ability_cooldown(main.ability_cooldown_started[char], main.ability_start_time[char], main.ability_passed_time[char])
-        if main.ability_passed_time[char] >= 1000:
-            main.ability_passed_time[char] = 0
-            main.ability_cooldown_started[char] = False
-            main.ability_collision_occured[char] = False
-            main.can_use[char] = True
+    for shotxpos in range(int(main.pirate_shot_x), int(main.pirate_shot_x + main.pirate_shot_width)):
+        if main.char_x[char] + main.char_width >= shotxpos >= main.char_x[char]:
+            for shotypos in range(int(main.pirate_shot_y), int(main.pirate_shot_y + main.pirate_shot_height)):
+                if main.char_y[char] + main.char_height >= shotypos >= main.char_y[char]:
+                    player_hit.play()
+                    main.pirate_shot_x, main.pirate_shot_y = 100000, 100000
+                    main.pirate_shot_is_active = False
+                    main.pirate_shot_ammo += 1
+                    main.char_health[char] -= 1
+                    if main.char_health[char] <= 0:
+                        main.char_x[char], main.char_y[char] = -100000, -100000
+                    break
+            break
 
 #Run function to detect collision between pirate and abilities
 def pirate_ability_collision(char, enemy_type, t):
@@ -927,6 +976,55 @@ def pirate_ability_collision(char, enemy_type, t):
                         break
                 break
 
+#Run function to detect collision between enemy and ability
+def enemy_ability_collision(char, enemy_type, t):
+    import main
+
+    #Abilities and enemies
+    if enemy_type != 11:
+        for enemy_xpos in range(int(main.enemy_x[enemy_type]), int(main.enemy_x[enemy_type] + main.enemy_width[enemy_type])):
+          if main.ability_x[t][char] + main.ability_width[t][char] >= enemy_xpos >= main.ability_x[t][char]:
+                for enemy_ypos in range(int(main.enemy_y[enemy_type]), int(main.enemy_y[enemy_type] + main.enemy_height[enemy_type])):
+                    if main.ability_y[t][char] + main.ability_height[t][char] >= enemy_ypos >= main.ability_y[t][char]:
+                        collision_sorting(char, enemy_type)
+                        if t == 0:
+                            main.ability_collision_occured[char] = True
+                            main.ability_x[t][char], main.ability_y[t][char] = -100000, -100000 
+                            main.is_active[char] = False
+                        break
+                break
+
+    if t == 0 and main.ability_collision_occured[char] == True:
+        main.ability_cooldown_started[char], main.ability_start_time[char], main.ability_passed_time[char] = ability_cooldown(main.ability_cooldown_started[char], main.ability_start_time[char], main.ability_passed_time[char])
+        if main.ability_passed_time[char] >= 1000 - main.bonus_cooldown[char]:
+            main.ability_passed_time[char] = 0
+            main.ability_cooldown_started[char] = False
+            main.ability_collision_occured[char] = False
+            main.can_use[char] = True
+
+#Run function to detect collision between explosion and player
+def powerup_player_collision(char, powerup_type):
+    import main
+    for powerup_xpos in range(int(main.powerup_x[powerup_type]), int(main.powerup_x[powerup_type] + main.powerup_width)):
+        if main.char_x[char] + main.char_width >= powerup_xpos >= main.char_x[char]:
+            for powerup_ypos in range(int(main.powerup_y[powerup_type]), int(main.powerup_y[powerup_type] + main.powerup_width)):
+                if main.char_y[char] + main.char_height >= powerup_ypos >= main.char_y[char]:
+                    if powerup_type == 0:
+                        heal_powerup.play()
+                        if main.char_health[char] < 3:
+                            main.char_health[char] += 1
+                    elif powerup_type == 1:
+                        speed_powerup.play()
+                        main.has_bonus_speed[char] = True
+                    elif powerup_type == 2:
+                        cooldown_powerup.play()
+                        main.has_bonus_cooldown[char] = True
+                    main.powerup_x[powerup_type], main.powerup_y[powerup_type] = -100, -100
+                    main.is_powerup_active = False
+                    main.powerup_time_to_spawn = main.gametime + main.powerup_respawn_timer
+                    break
+            break
+
 #Run function to reset menu variables when using a button to take you back to main menu
 def reset_menu():
     import main
@@ -949,6 +1047,9 @@ def reset_menu():
     main.button_cooldown_started, main.button_start_time, main.button_passed_time, main.is_button_pressed = False, 0, 0, False
     main.enemy_end_screen_type, main.enemy_amount_killed = 0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     main.has_saved, main.user_name, main.text_box_active, main.text1_transparency_value,  main.text2_transparency_value, main.text3_transparency_value = False, "", False, 0, 0, 0
+    main.powerup_x, main.powerup_y, main.powerup_time_to_spawn, main.is_powerup_active, main.has_bonus_speed, main.has_bonus_cooldown = [-100, -100, -100], [-100, -100, -100], 30, False, [False, False], [False, False]
+    main.speed_cooldown_started, main.speed_start_time, main.speed_passed_time = [False, False], [0, 0], [0, 0]
+    main.cooldown_cooldown_started, main.cooldown_start_time, main.cooldown_passed_time = [False, False], [0, 0], [0, 0]
 
 #Main game loop
 rungame = True
@@ -1038,6 +1139,17 @@ while rungame:
 
         #Drawing pirate shot
         pirate_shoot_shot()
+
+        #Spawning powerups
+        for i in range(len(powerup_type)):
+            spawn_powerup(powerup_type[i])
+
+        #Applies powerup effects
+        speed(char[0])
+        cooldown(char[0])
+        if multiplayer == True:
+            speed(char[1])
+            cooldown(char[1])
         
         #Enemy collision with player
         for i in range(len(enemy_type)):
@@ -1077,6 +1189,12 @@ while rungame:
         pirate_ability_collision(char[0], enemy_type[11], main.char_ability[char[0]])
         if multiplayer == True:
             pirate_ability_collision(char[1], enemy_type[i], main.char_ability[char[1]]) 
+
+        #Powerup collision with player
+        for i in range(len(powerup_type)):
+            powerup_player_collision(char[0], powerup_type[i])
+            if multiplayer == True:
+                powerup_player_collision(char[1], powerup_type[i])
 
         #Ends game when players lose all health
         if (multiplayer == False and char_health[0] <= 0) or (multiplayer == True and char_health[0] <= 0 and char_health[1] <= 0):
