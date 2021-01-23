@@ -208,6 +208,7 @@ def char_selection():
             #Allows user to interact with the enter into battle button
             if 730 <= mouse[0] <= 1230 and 470 <= mouse[1] <= 645 and pressed[0] == True:
                 menu_select_sound.play()
+                pygame.mixer.music.play(-1)
                 main.window = 4
                 pygame.time.delay(200)
             elif 730 <= mouse[0] <= 1230 and 470 <= mouse[1] <= 645:
@@ -389,6 +390,7 @@ def char_selection():
             #Allows user to interact with the enter into battle button
             if 730 <= mouse[0] <= 1230 and 470 <= mouse[1] <= 645 and pressed[0] == True:
                 menu_select_sound.play()
+                pygame.mixer.music.play(-1)
                 main.window = 4
                 pygame.time.delay(200)
             elif 730 <= mouse[0] <= 1230 and 470 <= mouse[1] <= 645:

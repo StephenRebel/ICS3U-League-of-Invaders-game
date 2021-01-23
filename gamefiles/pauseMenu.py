@@ -50,6 +50,7 @@ def pause():
     #Allows for interactions with the main menu button
     if 440 <= mouse[0] <= 840 and 440 <= mouse[1] <= 565 and pressed[0] == True:
         menu_select_sound.play()
+        pygame.mixer.music.stop()
         main.window = 0
         reset_menu()
         pygame.time.delay(200)

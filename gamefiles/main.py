@@ -44,7 +44,7 @@ staff_x, staff_y, staff_face, img_num = [-100, -100], [-100, -100], [0, 0], [0, 
 sword_cooldown_started, sword_start_time, sword_passed_time, bolt_cooldown_started, bolt_start_time, bolt_passes_time = [False, False], [0, 0], [0, 0], [False, False], [0, 0], [0, 0]
 ability_start_time, ability_cooldown_started, ability_passed_time = [0, 0], [False, False], [0, 0]
 is_active, can_use = [False, False], [True, True]
-enemy_type, enemy_x, enemy_y, enemy_width, enemy_height, enemy_face, enemy_speed, is_alive, enemy_points, enemy_amount_killed, enemy_end_screen_type = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 64, 32, 64, 96, 64, 64, 64, 96], [64, 64, 64, 64, 64, 32, 64, 96, 64, 64, 64, 96], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0.5, 1, 0.5, 0, 0.25, 1.25, 0.75, 0.35, 0.5, 1.75, 0.75, 0.4], [False, False, False, False, False, False, False, False, False, False, False, False], [5, 10, 20, 25, 40, 50, 50, 100, 60, 75, 60, 150], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 0
+enemy_type, enemy_x, enemy_y, enemy_width, enemy_height, enemy_face, enemy_speed, is_alive, enemy_points, enemy_amount_killed, enemy_end_screen_type = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100], [64, 64, 64, 64, 64, 32, 64, 96, 64, 64, 64, 96], [64, 64, 64, 64, 64, 32, 64, 96, 64, 64, 64, 96], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0.5, 1, 0.5, 0, 0.25, 1.25, 0.75, 0.35, 0.5, 1.75, 0.75, 0.4], [False, False, False, False, False, False, False, False, False, False, False, False], [5, 10, 20, 25, 40, 50, 50, 100, 75, 75, 80, 150], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 0
 b_enemy_type, b_enemy_health, b_enemy_hit, gold_max_health = [0, 1, 2, 3], [4, 1, 3, 2], [[False, False, False, False], [False, False, False, False]], 1
 enemy_ball_x, enemy_ball_y, enemy_ball_width, enemy_ball_height, enemy_ball_face = -100, -100, 18, 18, 0
 pirate_shot_x, pirate_shot_y, pirate_shot_width, pirate_shot_height, pirate_shot_face = -100, -100, 48, 48, 0
@@ -55,11 +55,11 @@ pirate_shot_ammo, pirate_shot_is_active, pirate_shot_can_shoot, pirate_shot_cool
 icicle_ammo, icicle_is_active, icicle_can_shoot, icicle_cooldown_started, icicle_start_time, icicle_passed_time, is_frozen, frozen_cooldown_started, frozen_start_time, frozen_passed_time = 1, False, True, False, 0, 0, [False, False], [False, False], [0, 0], [0, 0]
 invisible_value, decrease, is_invisible, invisible_cooldown_started, invisible_start_time, invisible_passed_time = 255, True, False, False, 0, 0
 explosion_ammo, explosion_is_active, can_take_damage, explosion_can_shoot, explosion_cooldown_started, explosion_start_time, explosion_passed_time = 1, False, False, True, False, 0, 0
-time_to_spawn, respawn_timer, unpause_time = [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220, 240], [0, 2, 10, 15, 15, 10, 10, 20, 15, 15, 10, 20], 0
+time_to_spawn, respawn_timer, unpause_time = [0, 20, 40, 60, 80, 100, 120, 140, 180, 200, 220, 240], [0, 2, 15, 15, 15, 10, 10, 20, 15, 15, 15, 20], 0
 has_saved = False
 text_box_active, user_name, name_score, text1_transparency_value, text2_transparency_value, text3_transparency_value = False, "", [[], [], []], 0, 0, 0
 powerup_type, powerup_x, powerup_y, powerup_width, powerup_height = [0, 1, 2], [-100, -100, -100], [-100, -100, -100], 64, 64
-powerup_time_to_spawn, powerup_respawn_timer, is_powerup_active = 30, 40, False
+powerup_time_to_spawn, powerup_respawn_timer, is_powerup_active = 30, 35, False
 bonus_speed, has_bonus_speed, speed_cooldown_started, speed_start_time, speed_passed_time = [0, 0], [False, False], [False, False], [0, 0], [0, 0]
 bonus_cooldown, has_bonus_cooldown, cooldown_cooldown_started, cooldown_start_time, cooldown_passed_time = [0, 0], [False, False], [False, False], [0, 0], [0, 0]
 
@@ -81,16 +81,12 @@ ice_effect = pygame.mixer.Sound("gamefiles/sounds/ice_effect.wav")
 heal_powerup = pygame.mixer.Sound("gamefiles/sounds/heal_powerup.wav")
 speed_powerup = pygame.mixer.Sound("gamefiles/sounds/speed_powerup.wav")
 cooldown_powerup = pygame.mixer.Sound("gamefiles/sounds/cooldown_powerup.wav")
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-LIGHT_GR = (211, 211, 211)
-DARK_GR = (71, 71, 71)
-WHITE = (255, 255, 255)
-GOLD = (255, 215, 0)
-SILVER = (192, 192, 192)
-BRONZE = (205, 127, 50)
-ORANGE = (255, 126, 28)
-BLUE = (88, 231, 252)
+sword_use.set_volume(0.2)
+bow_use.set_volume(0.2)
+staff_use.set_volume(0.2)
+pygame.mixer.music.load("gamefiles/sounds/game_music.mp3")
+pygame.mixer.music.set_volume(0.1)
+BLACK, RED, LIGHT_GR, DARK_GR, WHITE, GOLD, SILVER, BRONZE, ORANGE, BLUE = (0, 0, 0), (255, 0, 0), (211, 211, 211), (71, 71, 71), (255, 255, 255), (255, 215, 0), (192, 192, 192), (205, 127, 50), (255, 126, 28), (88, 231, 252)
 player_count = 0
 player_score, enemies_killed, abilities_used, time_played, distance_travelled = [0, 0], [0, 0], [0, 0], 0, [0, 0]
 button_cooldown_started, button_start_time, button_passed_time, is_button_pressed = False, 0, 0, False
@@ -143,7 +139,7 @@ def pause_button():
     pressed = pygame.mouse.get_pressed()
 
     #Allow for interactions with the pause button
-    if 1233 <= mouse[0] <= 1270 and 8 <= mouse[1] <= 43 and pressed[0] == True:
+    if (1233 <= mouse[0] <= 1270 and 8 <= mouse[1] <= 43 and pressed[0] == True) or pygame.key.get_pressed()[pygame.K_ESCAPE] == True:
         main.startpause = pygame.time.get_ticks()
         menu_select_sound.play()
         main.window = 5
@@ -234,7 +230,7 @@ def draw_powerup_cooldown(char):
         pygame.draw.rect(screen, BLACK, (char_x[char], char_y[char] - 25, char_width, 15))
         pygame.draw.rect(screen, BLUE, (char_x[char], char_y[char] - 25, char_width - (main.cooldown_passed_time[char] / 10000 * char_width), 15))
 
-#Draw the screen
+#Draw things to the screen
 def draw_screen():
     import main
 
@@ -265,25 +261,6 @@ def draw_screen():
             new_enemy_size = pygame.transform.scale(enemy_img[10], (main.enemy_width[10], main.enemy_height[10]))
             screen.blit(new_enemy_size, (enemy_x[i], enemy_y[i]))
 
-    #Draw boss healths
-    pygame.draw.rect(screen, BLACK, (enemy_x[7], enemy_y[7] - 25, enemy_width[7], 15))
-    pygame.draw.rect(screen, RED, (enemy_x[7], enemy_y[7] - 25, enemy_width[7] / 4 * b_enemy_health[0], 15))
-
-    pygame.draw.rect(screen, BLACK, (enemy_x[8], enemy_y[8] - 20, enemy_width[8], 10))
-    pygame.draw.rect(screen, GOLD, (enemy_x[8], enemy_y[8] - 20, enemy_width[8] / main.gold_max_health * b_enemy_health[1], 10))
-
-    pygame.draw.rect(screen, BLACK, (enemy_x[11], enemy_y[11] - 25, enemy_width[11], 15))
-    pygame.draw.rect(screen, RED, ( enemy_x[11], enemy_y[11] - 25, enemy_width[11] / 2 * b_enemy_health[3], 15))
-
-    #Spike ball
-    screen.blit(ball_img, (enemy_ball_x, enemy_ball_y))
-
-    #Pirate shot
-    screen.blit(cannon_ball_img, (pirate_shot_x, pirate_shot_y))
-
-    #Explosion
-    pygame.draw.circle(screen, explosion_color, [explosion_x + 32, explosion_y + 32], explosion_radius / 2)
-
     #Icicle
     draw_icicle(ice_img, icicle_x, icicle_y, icicle_face)
     if main.is_frozen[0]:
@@ -293,8 +270,30 @@ def draw_screen():
     else:
         screen.blit(frozen_img, (-100, -100))
 
-    #Pause Button
-    pause_button()
+    #Explosion
+    pygame.draw.circle(screen, explosion_color, [explosion_x + 32, explosion_y + 32], explosion_radius / 2)
+
+    #Spike ball
+    screen.blit(ball_img, (enemy_ball_x, enemy_ball_y))
+
+    #Pirate shot
+    screen.blit(cannon_ball_img, (pirate_shot_x, pirate_shot_y))
+
+    #Draw boss healths
+    pygame.draw.rect(screen, BLACK, (enemy_x[7], enemy_y[7] - 25, enemy_width[7], 15))
+    pygame.draw.rect(screen, RED, (enemy_x[7], enemy_y[7] - 25, enemy_width[7] / 4 * b_enemy_health[0], 15))
+    pygame.draw.rect(screen, BLACK, (enemy_x[8], enemy_y[8] - 20, enemy_width[8], 10))
+    pygame.draw.rect(screen, GOLD, (enemy_x[8], enemy_y[8] - 20, enemy_width[8] / main.gold_max_health * b_enemy_health[1], 10))
+    pygame.draw.rect(screen, BLACK, (enemy_x[11], enemy_y[11] - 25, enemy_width[11], 15))
+    pygame.draw.rect(screen, RED, ( enemy_x[11], enemy_y[11] - 25, enemy_width[11] / 2 * b_enemy_health[3], 15))
+
+    #Powerup cooldown bar
+    draw_powerup_cooldown(char[0])
+    if multiplayer == True:
+        draw_powerup_cooldown(char[1])
+
+    #Total score
+    draw_player_score(player_score)
 
     #Draw timer
     pygame.draw.rect(screen, BLACK, (10, 10, 185, 70), 0, 30, 30, 30, 30)
@@ -302,18 +301,14 @@ def draw_screen():
     time = med_font.render(str(gametime), True, BLACK)
     screen.blit(time, (25, 20))
 
+    #Pause Button
+    pause_button()
+
     #Cooldown
     draw_cooldowns()
 
     #Hearts
     draw_hearts(heart_img, empty_heart_img)
-
-    #Total score
-    draw_player_score(player_score)
-
-    draw_powerup_cooldown(char[0])
-    if multiplayer == True:
-        draw_powerup_cooldown(char[1])
 
 #Move character function
 def move_char(char):
@@ -327,10 +322,10 @@ def move_char(char):
 
     #Changes speed based on ability
     extraspeed = 0
-    if main.char_ability[char] == 1:
-        extraspeed = 0.5
+    if main.char_ability[char] == 0:
+        extraspeed = 0.25
     elif main.char_ability[char] == 2:
-        extraspeed = 0.3
+        extraspeed = 0.5
 
     # Movement for both players
     if main.char_health[char] > 0 and main.is_frozen[char] == False:
@@ -818,17 +813,10 @@ def boss_collision_sorting(char, enemy_type, b_enemy_type):
 
     #Checks if the boss is dead
     if main.b_enemy_health[b_enemy_type] == 1 and main.b_enemy_hit[char][b_enemy_type] == False:
-        if b_enemy_type == 1:
-            main.gold_max_health += 1
-            main.b_enemy_health[1] = main.gold_max_health
-        elif b_enemy_type == 2:
-            main.b_enemy_health[2] = 3
-        elif b_enemy_type == 3:
-            main.b_enemy_health[3] = 2
-        else:
-            main.b_enemy_health[b_enemy_type] = 4
         enemy_hit.play()
         main.is_alive[enemy_type] = False
+        if b_enemy_type == 1:
+            main.gold_max_health += 1
         give_points(char, enemy_type)
     elif main.b_enemy_hit[char][b_enemy_type] == False:
         if b_enemy_type == 2:
@@ -1013,6 +1001,8 @@ def powerup_player_collision(char, powerup_type):
                         heal_powerup.play()
                         if main.char_health[char] < 3:
                             main.char_health[char] += 1
+                        else:
+                            main.player_score[char] += 50
                     elif powerup_type == 1:
                         speed_powerup.play()
                         main.has_bonus_speed[char] = True
@@ -1198,6 +1188,7 @@ while rungame:
 
         #Ends game when players lose all health
         if (multiplayer == False and char_health[0] <= 0) or (multiplayer == True and char_health[0] <= 0 and char_health[1] <= 0):
+            pygame.mixer.music.stop()
             window = 6
 
         #Draw all the changes
