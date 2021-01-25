@@ -1,3 +1,16 @@
+"""
+Stephen Rebel and Danial McIntyre: League of Invaders
+Dec. 23, 2020.
+
+This is a game created for our ICS3U course summative. It uses pygame to display graphics.
+The game is a simplistic stylised game reflecting something like space invaders owever it is
+a arena style combat game. There are multiples menus that the user will naviagte through. The 
+game itself has many aspects such as unique enemy types and their respective abilities as well
+as multiple classes for the player to chose from. The game can also be played singleplayer or 
+multiplayer which lends for increased replayability. The game will end when all players are dead
+and the game will go to the end menus and the user has the chance to replay or quit the game.
+"""
+
 import pygame
 import random, math, time
 pygame.init()
