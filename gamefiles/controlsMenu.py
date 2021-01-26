@@ -1,14 +1,12 @@
 #Controls Menu
 def controls():
-    #Importing the necessary libraries and varibales from the main
     import main
     from main import pygame, window, big_font, title_font, back_ground, BLACK, RED, DARK_GR, LIGHT_GR, WHITE, screen, size, menu_select_sound
-    pygame.init()
     
     #Allows for a quit event
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
+            main.rungame = False
 
     #Handles mouse interaction
     mouse = pygame.mouse.get_pos()

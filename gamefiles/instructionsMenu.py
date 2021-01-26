@@ -1,14 +1,12 @@
 #Instructions Menu
 def instructions():
-    #Importing the necessary libraries and varibales from the main
     import main
     from main import pygame, window, big_font, med_font, title_font, back_ground, BLACK, RED, DARK_GR, LIGHT_GR, WHITE, screen, size, menu_select_sound, enemy_img, ball_img
-    pygame.init()
 
     #Handles a quit event
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
+            main.rungame = False
 
     #Handles mouse interactions
     mouse = pygame.mouse.get_pos()
@@ -21,7 +19,7 @@ def instructions():
     text1 = title_font.render("Instructions", True, BLACK)
     text2 = med_font.render("Defend youselves from incoming enemies!", True, WHITE)
     text3 = med_font.render("Use your chracter's unique abilities to kill your foes!", True, WHITE)
-    text4 = med_font.render("If you get attacked too many times, you may lose your life!", True, WHITE)
+    text4 = med_font.render("Collect powerups to make you character even stronger!", True, WHITE)
     text5 = med_font.render("Earn points for each enemy you defeat!", True, WHITE)
     text6 = med_font.render("The game ends when you and your ally both fall!", True, WHITE)
     text7 = med_font.render("Some enemies may have special abilities that allow them to fire projectiles!", True, WHITE)
@@ -40,7 +38,7 @@ def instructions():
     screen.blit(text8, (115, 480))
     screen.blit(enemy_img[4], (150, 580))
     screen.blit(ball_img, (300, 580))
-    pygame.draw.rect(screen, RED, (975, 563, 146, 12))
+    pygame.draw.rect(screen, RED, (1000, 563, 96, 12))
     screen.blit(enemy_img[-5], (1000, 580))
 
     #Creates the main menu button and handles animations

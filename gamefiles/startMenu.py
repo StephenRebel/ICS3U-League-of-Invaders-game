@@ -1,14 +1,12 @@
 #Start Menu
 def menu():
-    #Importing the necessary libraries and varibales from the main
     import main
     from main import pygame, window, big_font, med_font, back_ground, BLACK, RED, DARK_GR, LIGHT_GR, screen, size, menu_select_sound
-    pygame.init()
 
     #Handles a quit event
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
+            main.rungame = False
 
     #Allows for interaction with the mouse
     mouse = pygame.mouse.get_pos()
@@ -28,11 +26,28 @@ def menu():
     text4 = med_font.render("CONTROLS", True, RED)
     text5 = med_font.render("INSTRUCTIONS", True, BLACK)
     text6 = med_font.render("INSTRUCTIONS", True, RED)
+    text7 = med_font.render("EXIT", True, BLACK)
+    text8 = med_font.render("EXIT", True, RED)
     
-    # Play Button
+    #Exit game button
+    if 8 <= mouse[0] <= 108 and 8 <= mouse[1] <= 58 and pressed[0] == True:
+        menu_select_sound.play()
+        main.rungame = False
+        pygame.time.delay(200)
+    elif 8 <= mouse[0] <= 108 and 8 <= mouse[1] <= 58:
+        pygame.draw.rect(screen, DARK_GR, (8, 8, 100, 50))
+        pygame.draw.rect(screen, BLACK, (5, 5, 106, 56), 3, 5)
+        screen.blit(text8, (17, 10))
+    else:
+        pygame.draw.rect(screen, LIGHT_GR, (8, 8, 100, 50))
+        pygame.draw.rect(screen, BLACK, (5, 5, 106, 56), 3, 5)
+        screen.blit(text7, (17, 10))    
+
+    #Play Button
     if 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675 and pressed[0] == True:
         menu_select_sound.play()
         main.window = 3
+        main.player_count = 0
         pygame.time.delay(200)
     elif 446 <= mouse[0] <= 835 and 561 <= mouse[1] <= 675:
         pygame.draw.rect(screen, DARK_GR, ((size[0]/2) - 194, 561, 389, 114))

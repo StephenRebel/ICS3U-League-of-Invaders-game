@@ -1,10 +1,8 @@
 selected = [0, 0]
 #Chracter selection menu
 def char_selection():
-    #Importing all necessary libraries and variables from main
     import main
     from main import pygame, title_font, big_font, med_font, back_ground, window, BLACK, RED, DARK_GR, LIGHT_GR, screen, arrow_img, staff_img, sword_img, grayed_out, player_count, char_ability, reset_menu, menu_select_sound
-    pygame.init()
 
     #Added variables needed for this menu
     GREEN = (0, 230, 0)
@@ -16,7 +14,7 @@ def char_selection():
     #Handles a quit event
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
+            main.rungame = False
 
     #Allows for interaction with the mouse
     mouse = pygame.mouse.get_pos()
@@ -67,43 +65,43 @@ def char_selection():
         pygame.time.delay(200)
     elif 8 <= mouse[0] <= 108 and 8 <= mouse[1] <= 58:
         pygame.draw.rect(screen, DARK_GR, (8, 8, 100, 50))
-        pygame.draw.rect(screen, RED, (5, 5, 106, 56), 3, 5)
+        pygame.draw.rect(screen, BLACK, (5, 5, 106, 56), 3, 5)
         screen.blit(text14, (10, 10))
     else:
         pygame.draw.rect(screen, LIGHT_GR, (8, 8, 100, 50))
         pygame.draw.rect(screen, BLACK, (5, 5, 106, 56), 3, 5)
         screen.blit(text13, (10, 10))    
 
-    #Allows for interaction with singleplayer button
+    #Singleplayer button
     if 830 <= mouse[0] <= 1230 and 75 <= mouse[1] <= 175 and pressed[0] == True:
         menu_select_sound.play()
         main.player_count = 1
         main.multiplayer = False
         pygame.draw.rect(screen, DARK_GR, (830, 75, 400, 100))
-        pygame.draw.rect(screen, RED, (825, 70, 410, 110), 5, 8)
+        pygame.draw.rect(screen, BLACK, (825, 70, 410, 110), 5, 8)
         screen.blit(text6, (840, 90))
         pygame.time.delay(200)
     elif 830 <= mouse[0] <= 1230 and 75 <= mouse[1] <= 175:
         pygame.draw.rect(screen, DARK_GR, (830, 75, 400, 100))
-        pygame.draw.rect(screen, RED, (825, 70, 410, 110), 5, 8)
+        pygame.draw.rect(screen, BLACK, (825, 70, 410, 110), 5, 8)
         screen.blit(text6, (840, 90))
     else:
         pygame.draw.rect(screen, LIGHT_GR, (830, 75, 400, 100))
         pygame.draw.rect(screen, BLACK, (825, 70, 410, 110), 5, 8)
         screen.blit(text5, (840, 90))
 
-    #Allows for interaction with multiplayer button
+    #Multiplayer button
     if 830 <= mouse[0] <= 1230 and 225 <= mouse[1] <= 325 and pressed[0] == True:
         menu_select_sound.play()
         main.player_count = 2
         main.multiplayer = True
         pygame.draw.rect(screen, DARK_GR, (830, 225, 400, 100))
-        pygame.draw.rect(screen, RED, (825, 220, 410, 110), 5, 8)
+        pygame.draw.rect(screen, BLACK, (825, 220, 410, 110), 5, 8)
         screen.blit(text8, (850, 240))
         pygame.time.delay(200)
     elif 830 <= mouse[0] <= 1230 and 225 <= mouse[1] <= 325:
         pygame.draw.rect(screen, DARK_GR, (830, 225, 400, 100))
-        pygame.draw.rect(screen, RED, (825, 220, 410, 110), 5, 8)
+        pygame.draw.rect(screen, BLACK, (825, 220, 410, 110), 5, 8)
         screen.blit(text8, (850, 240))
     else:
         pygame.draw.rect(screen, LIGHT_GR, (830, 225, 400, 100))
@@ -116,15 +114,10 @@ def char_selection():
         screen.blit(gray_out_playerSelect, (100, 65))
         screen.blit(gray_out_playerSelect, (100, 380))
 
-    #Allows user to select character for singleplayer
-    elif player_count == 1:
-        screen.blit(gray_out_playerSelect, (100, 380))
-        #Show that the singleplayer button is selected
-        pygame.draw.rect(screen, DARK_GR, (830, 75, 400, 100))
-        pygame.draw.rect(screen, GOLD, (825, 70, 410, 110), 5, 8)
-        screen.blit(text6, (840, 90))
+    #Allows player 1 to select their character during single of multiplayer
+    elif player_count == 1 or player_count == 2:
 
-        #Player 1 character 1
+        #Player 1 Arrow button
         if 133 <= mouse[0] <= 197 and 200 <= mouse[1] <= 264 and pressed[0] == True:
             pygame.draw.rect(screen, DARK_GREEN, (133, 200, 64, 64))
             screen.blit(arrow_img, (133, 200))
@@ -150,7 +143,7 @@ def char_selection():
             screen.blit(arrow_img, (133, 200))
             pygame.draw.rect(screen, BLACK, (130, 197, 70, 70), 5)
 
-        #Player 1 character 2
+        #Player 1 Sword button
         if 208 <= mouse[0] <= 272 and 200 <= mouse[1] <= 264 and pressed[0] == True:
             pygame.draw.rect(screen, DARK_GREEN, (208, 200, 64, 64))
             screen.blit(sword_img, (208, 200))
@@ -176,7 +169,7 @@ def char_selection():
             screen.blit(sword_img, (208, 200))
             pygame.draw.rect(screen, BLACK, (205, 197, 70, 70), 5)
 
-        #Player 1 character 3
+        #Player 1 Mage button
         if 283 <= mouse[0] <= 347 and 200 <= mouse[1] <= 264 and pressed[0] == True:
             pygame.draw.rect(screen, DARK_GREEN, (283, 200, 64, 64))
             screen.blit(staff_img, (283, 200))
@@ -201,112 +194,11 @@ def char_selection():
             pygame.draw.rect(screen, GREEN, (283, 200, 64, 64))
             screen.blit(staff_img, (283, 200))
             pygame.draw.rect(screen, BLACK, (280, 197, 70, 70), 5)
+                  
+    #Allows player 2 to select their character only in multiplayer
+    if player_count == 2:
 
-        if char_ability[0] == -1:
-            screen.blit(gray_out_enterBattle, (730, 470))
-        else:
-            #Allows user to interact with the enter into battle button
-            if 730 <= mouse[0] <= 1230 and 470 <= mouse[1] <= 645 and pressed[0] == True:
-                menu_select_sound.play()
-                pygame.mixer.music.play(-1)
-                main.window = 4
-                pygame.time.delay(200)
-            elif 730 <= mouse[0] <= 1230 and 470 <= mouse[1] <= 645:
-                pygame.draw.rect(screen, DARK_GR, (730, 470, 500, 175))
-                screen.blit(text2, (795, 485))
-                screen.blit(text4, (865, 555))
-            else:
-                pygame.draw.rect(screen, LIGHT_GR, (730, 470, 500, 175))
-                pygame.draw.rect(screen, BLACK, (720, 460, 520, 195), 10, 15)
-                screen.blit(text1, (795, 485))   
-                screen.blit(text3, (865, 555))      
-
-    #Allows users to select characters for multiplayer
-    elif player_count == 2:
-        #Show that the multiplayer option is selected
-        pygame.draw.rect(screen, DARK_GR, (830, 225, 400, 100))
-        pygame.draw.rect(screen, GOLD, (825, 220, 410, 110), 5, 8)
-        screen.blit(text8, (850, 240))
-
-        #Player 1 character 1
-        if 133 <= mouse[0] <= 197 and 200 <= mouse[1] <= 264 and pressed[0] == True:
-            pygame.draw.rect(screen, DARK_GREEN, (133, 200, 64, 64))
-            screen.blit(arrow_img, (133, 200))
-            pygame.draw.rect(screen, GOLD, (130, 197, 70, 70), 5)
-            if selected[0] != 1:
-                selected[0] = 1
-                pygame.draw.rect(screen, DARK_GREEN, (133, 200, 64, 64))
-                screen.blit(arrow_img, (133, 200))
-                pygame.draw.rect(screen, GOLD, (130, 197, 70, 70), 5)
-                menu_select_sound.play()
-                main.char_ability[0] = 0
-                pygame.time.delay(200)
-        elif selected[0] == 1:
-            pygame.draw.rect(screen, DARK_GREEN, (133, 200, 64, 64))
-            screen.blit(arrow_img, (133, 200))
-            pygame.draw.rect(screen, GOLD, (130, 197, 70, 70), 5)   
-        elif 133 <= mouse[0] <= 197 and 200 <= mouse[1] <= 264:
-            pygame.draw.rect(screen, GREEN, (133, 200, 64, 64))
-            screen.blit(arrow_img, (133, 200))
-            pygame.draw.rect(screen, RED, (130, 197, 70, 70), 5)
-        else:
-            pygame.draw.rect(screen, GREEN, (133, 200, 64, 64))
-            screen.blit(arrow_img, (133, 200))
-            pygame.draw.rect(screen, BLACK, (130, 197, 70, 70), 5)
-
-        #Player 1 character 2
-        if 208 <= mouse[0] <= 272 and 200 <= mouse[1] <= 264 and pressed[0] == True:
-            pygame.draw.rect(screen, DARK_GREEN, (208, 200, 64, 64))
-            screen.blit(sword_img, (208, 200))
-            pygame.draw.rect(screen, GOLD, (205, 197, 70, 70), 5)
-            if selected[0] != 2:
-                selected[0] = 2
-                pygame.draw.rect(screen, DARK_GREEN, (208, 200, 64, 64))
-                screen.blit(sword_img, (208, 200))
-                pygame.draw.rect(screen, GOLD, (205, 197, 70, 70), 5)
-                menu_select_sound.play()
-                main.char_ability[0] = 1
-                pygame.time.delay(200)
-        elif selected[0] == 2:
-            pygame.draw.rect(screen, DARK_GREEN, (208, 200, 64, 64))
-            screen.blit(sword_img, (208, 200))
-            pygame.draw.rect(screen, GOLD, (205, 197, 70, 70), 5)   
-        elif 208 <= mouse[0] <= 272 and 200 <= mouse[1] <= 264:
-            pygame.draw.rect(screen, GREEN, (208, 200, 64, 64))
-            screen.blit(sword_img, (208, 200))
-            pygame.draw.rect(screen, RED, (205, 197, 70, 70), 5)
-        else:
-            pygame.draw.rect(screen, GREEN, (208, 200, 64, 64))
-            screen.blit(sword_img, (208, 200))
-            pygame.draw.rect(screen, BLACK, (205, 197, 70, 70), 5)
-
-        #Player 1 character 3
-        if 283 <= mouse[0] <= 347 and 200 <= mouse[1] <= 264 and pressed[0] == True:
-            pygame.draw.rect(screen, DARK_GREEN, (283, 200, 64, 64))
-            screen.blit(staff_img, (283, 200))
-            pygame.draw.rect(screen, GOLD, (280, 197, 70, 70), 5)
-            if selected[0] != 3:
-                selected[0] = 3
-                pygame.draw.rect(screen, DARK_GREEN, (283, 200, 64, 64))
-                screen.blit(staff_img, (283, 200))
-                pygame.draw.rect(screen, GOLD, (280, 197, 70, 70), 5)
-                menu_select_sound.play()
-                main.char_ability[0] = 2
-                pygame.time.delay(200)
-        elif selected[0] == 3:
-            pygame.draw.rect(screen, DARK_GREEN, (283, 200, 64, 64))
-            screen.blit(staff_img, (283, 200))
-            pygame.draw.rect(screen, GOLD, (280, 197, 70, 70), 5)
-        elif 283 <= mouse[0] <= 347 and 200 <= mouse[1] <= 264:
-            pygame.draw.rect(screen, GREEN, (283, 200, 64, 64))
-            screen.blit(staff_img, (283, 200))
-            pygame.draw.rect(screen, RED, (280, 197, 70, 70), 5)
-        else:
-            pygame.draw.rect(screen, GREEN, (283, 200, 64, 64))
-            screen.blit(staff_img, (283, 200))
-            pygame.draw.rect(screen, BLACK, (280, 197, 70, 70), 5)
-
-        #Player 2 character 1
+        #Player 2 Arrow button
         if 133 <= mouse[0] <= 197 and 515 <= mouse[1] <= 579 and pressed[0] == True:
             pygame.draw.rect(screen, DARK_GREEN, (133, 515, 64, 64))
             screen.blit(arrow_img, (133, 515))
@@ -332,7 +224,7 @@ def char_selection():
             screen.blit(arrow_img, (133, 515))
             pygame.draw.rect(screen, BLACK, (130, 512, 70, 70), 5)
 
-        #Player 2 character 2
+        #Player 2 Sword button
         if 208 <= mouse[0] <= 272 and 515 <= mouse[1] <= 579 and pressed[0] == True:
             pygame.draw.rect(screen, DARK_GREEN, (208, 515, 64, 64))
             screen.blit(sword_img, (208, 515))
@@ -358,7 +250,7 @@ def char_selection():
             screen.blit(sword_img, (208, 515))
             pygame.draw.rect(screen, BLACK, (205, 512, 70, 70), 5)
 
-        #Player 2 character 3
+        #Player 2 Mage button
         if 283 <= mouse[0] <= 347 and 515 <= mouse[1] <= 579 and pressed[0] == True:
             pygame.draw.rect(screen, DARK_GREEN, (283, 515, 64, 64))
             screen.blit(staff_img, (283, 515))
@@ -384,10 +276,47 @@ def char_selection():
             screen.blit(staff_img, (283, 515))
             pygame.draw.rect(screen, BLACK, (280, 512, 70, 70), 5)
 
+    #Shows if single or multiplayer button is selected, and allows user to enter into battle if they chose their characters
+    if player_count == 1:
+
+        #Shows that the single player button is selected
+        screen.blit(gray_out_playerSelect, (100, 380))
+        pygame.draw.rect(screen, DARK_GR, (830, 75, 400, 100))
+        pygame.draw.rect(screen, GOLD, (825, 70, 410, 110), 5, 8)
+        screen.blit(text6, (840, 90))
+
+        #Grays out enter into battle button if the player hasn't selected a character
+        if char_ability[0] == -1:
+            screen.blit(gray_out_enterBattle, (730, 470))
+        else:
+            #Enter into battle button
+            if 730 <= mouse[0] <= 1230 and 470 <= mouse[1] <= 645 and pressed[0] == True:
+                menu_select_sound.play()
+                pygame.mixer.music.play(-1)
+                main.window = 4
+                pygame.time.delay(200)
+            elif 730 <= mouse[0] <= 1230 and 470 <= mouse[1] <= 645:
+                pygame.draw.rect(screen, DARK_GR, (730, 470, 500, 175))
+                screen.blit(text2, (795, 485))
+                screen.blit(text4, (865, 555))
+            else:
+                pygame.draw.rect(screen, LIGHT_GR, (730, 470, 500, 175))
+                pygame.draw.rect(screen, BLACK, (720, 460, 520, 195), 10, 15)
+                screen.blit(text1, (795, 485))   
+                screen.blit(text3, (865, 555))
+                
+    elif player_count == 2:
+
+        #Show that the multiplayer option is selected
+        pygame.draw.rect(screen, DARK_GR, (830, 225, 400, 100))
+        pygame.draw.rect(screen, GOLD, (825, 220, 410, 110), 5, 8)
+        screen.blit(text8, (850, 240))
+
+        #Grays out enter into battle button if both players haven't selected a character
         if char_ability[0] == -1 or char_ability[1] == -1:
             screen.blit(gray_out_enterBattle, (730, 470))
         else:
-            #Allows user to interact with the enter into battle button
+            #Enter into battle button
             if 730 <= mouse[0] <= 1230 and 470 <= mouse[1] <= 645 and pressed[0] == True:
                 menu_select_sound.play()
                 pygame.mixer.music.play(-1)

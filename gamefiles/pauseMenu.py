@@ -1,9 +1,7 @@
 #Pause menu for mid game pauses
 def pause():
-    #Importing the necessary variables and functions
     import main
     from main import pygame, window, title_font, big_font, RED, BLACK, LIGHT_GR, DARK_GR, grayed_out, screen, size, reset_menu, bg, menu_select_sound
-    pygame.init()
 
     #Generating any new vaiables
     gray_out_screen = pygame.transform.scale(grayed_out, (1280, 720))
@@ -12,7 +10,7 @@ def pause():
     #Handles a quit event
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
+            main.rungame = False
 
     #Allows for interaction with the mouse
     mouse = pygame.mouse.get_pos()
